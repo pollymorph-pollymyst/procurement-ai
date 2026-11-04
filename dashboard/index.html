@@ -118,6 +118,40 @@ details.supc[open]{padding-bottom:20px}
 .ct-edit .iconbtn{width:44px;height:44px}
 .ct-ic{display:grid;place-items:center}
 .ct-ic svg,.ct-edit .iconbtn svg{width:20px;height:20px}
+.ct-msg{all:unset;box-sizing:border-box;height:36px;padding:0 12px;display:flex;gap:7px;align-items:center;border:1px solid var(--rule-strong);border-radius:2px;cursor:pointer;font-size:14px;font-weight:600;background:var(--leaf)}
+.ct-msg:hover{background:var(--ink);color:var(--leaf)}
+.ct-msg:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.ct-msg svg{width:17px;height:17px}
+/* сообщение поставщику и шаблоны */
+.tpl-f{display:block;margin:0 0 12px}
+.tpl-f>span{display:block;font-size:13px;font-weight:600;margin:0 0 5px}
+.tpl-f input,.tpl-f textarea,.tpl-f select{width:100%;box-sizing:border-box;font:inherit;font-size:15px;color:var(--ink);background:var(--leaf);border:1px solid var(--rule-strong);border-radius:2px;padding:9px 11px}
+.tpl-f textarea{min-height:240px;resize:vertical;line-height:1.5}
+.tpl-f input:focus-visible,.tpl-f textarea:focus-visible,.tpl-f select:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.tpl-f input:disabled,.tpl-f textarea:disabled{color:var(--ink-2)}
+.tpl-top{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:12px;align-items:end}
+.tpl-top .seg{margin:0 0 12px}
+.tpl-send{border-top:1px solid var(--rule);padding-top:14px;margin-top:6px}
+.tpl-send h3{font-size:15px;margin:0 0 10px}
+.tpl-send .btnrow{margin-bottom:10px}
+.tpl-send .btn svg{width:17px;height:17px;flex:none}
+.tpl-send .btn{white-space:normal;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.tpl-note{font-size:14px;color:var(--ink-2);margin:4px 0 10px;max-width:62ch}
+.tpl-ph{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.tpl-ph button{all:unset;cursor:pointer;font-size:13px;padding:4px 8px;border:1px dashed var(--rule-strong);border-radius:2px}
+.tpl-ph button:hover{background:var(--leaf)}
+.tpl-ph button:focus-visible{outline:2px solid var(--focus)}
+.seg button .mod{font-size:12px;color:var(--ink-2);font-weight:400}
+.seg button[aria-pressed="true"] .mod{color:inherit;opacity:.8}
+@media (max-width:760px){.tpl-top{grid-template-columns:1fr}.tpl-f textarea{min-height:200px}}
+.stop-box{border:1px solid var(--rule-strong);padding:12px 14px;margin:12px 0;max-width:70ch}
+.stop-box>summary{cursor:pointer;font-weight:600;font-size:15px}
+.stop-box[open]>summary{margin-bottom:10px}
+.stop-box.on{border-color:var(--ink);background:var(--leaf)}
+.stop-box .opts{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 0 10px;font-size:15px}
+.stop-box .opts label{display:flex;gap:7px;align-items:center;min-height:32px}
+.stop-box .opts input[type=date]{font:inherit;font-size:14px;padding:4px 6px;border:1px solid var(--rule-strong);border-radius:2px;background:var(--ground);color:var(--ink)}
+.stop-row{display:flex;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;align-items:baseline;padding:10px 0;border-top:1px solid var(--rule);font-size:15px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--leaf);padding:11px 16px;font-size:14px;font-weight:600;border-radius:2px;z-index:60;box-shadow:var(--shadow);max-width:calc(100vw - 32px)}
 @media (max-width:760px){
   .ct-edit{grid-template-columns:28px minmax(0,1fr) 44px;padding-bottom:10px;border-bottom:1px solid var(--rule)}
@@ -473,6 +507,7 @@ footer{border-top:1px solid var(--rule);padding:20px 0 40px;color:var(--ink-2);f
 <dialog class="card" id="card" aria-labelledby="card-title"></dialog>
 <dialog class="card" id="ctl" aria-labelledby="ctl-title"></dialog>
 <dialog class="setup" id="setup" aria-labelledby="setup-title"></dialog>
+<dialog class="setup" id="msg" aria-labelledby="msg-title"></dialog>
 <div class="tip" id="tip" role="status" aria-live="polite"></div>
 
 <script>
@@ -530,13 +565,15 @@ const I = {
   pencil: '<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   trash: '<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13"/>',
+  copy: '<rect x="8.5" y="8.5" width="11" height="11"/><path d="M15.5 8.5v-4h-11v11h4"/>',
+  chat: '<path d="M4 5.5h16v10H9l-5 4v-14Z"/>',
 };
 const ic = (k, cls = "") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
 
 const ST = {
   ORDER_NOW: ["critical", "alert"], ORDER_SOON: ["warning", "clock"], NEED_SUPPLIER: ["serious", "user"],
   REVIEW_PRICE: ["serious", "tag"], RARE: ["neutral", "minus"], PLANNED: ["neutral", "calendar"],
-  OK: ["good", "check"], EXCESS: ["warning", "layers"], DEAD: ["neutral", "box"], INACTIVE: ["neutral", "empty"],
+  OK: ["good", "check"], EXCESS: ["warning", "layers"], DEAD: ["neutral", "box"], INACTIVE: ["neutral", "empty"], STOPPED: ["neutral", "x"],
 };
 const LABEL = Object.fromEntries(Object.entries(D.meta.statuses).map(([k, v]) => [k, v.label]));
 const KEY_BY_LABEL = Object.fromEntries(Object.entries(LABEL).map(([k, v]) => [v, k]));
@@ -590,15 +627,22 @@ function ctHref(c) {
     default: return isUrl(v) ? v : null;
   }
 }
-function ctIcons(id) {
+function ctIcons(id, i) {
   const list = CONTACTS[id] || [];
+  const msg = i != null ? `<button class="ct-msg" type="button" data-msg="${i}" aria-label="Написать поставщику ${esc(supText(id))}">${ic("chat")}Написать</button>` : "";
   const edit = LOCAL() && id ? `<button class="ct edit" type="button" data-sup-card="${esc(id)}" title="${list.length ? "Изменить контакты" : "Добавить контакты"}" aria-label="${list.length ? "Изменить" : "Добавить"} контакты поставщика ${esc(supText(id))}">${ic(list.length ? "pencil" : "plus")}</button>` : "";
-  if (!list.length && !edit) return "";
+  if (!list.length && !edit && !msg) return "";
   return `<div class="ct-row">${list.map(c => {
     const label = `${(SCH.kinds[c.kind] || {}).label || c.kind}: ${c.value}${c.note ? ` (${c.note})` : ""}`, h = ctHref(c), i = ic(CT_ICON[c.kind] || "link");
     return h ? `<a class="ct" href="${esc(h)}"${/^https?:/.test(h) ? ' target="_blank" rel="noopener"' : ""} title="${esc(label)}" aria-label="${esc(label)}">${i}</a>`
       : `<button class="ct" type="button" data-copy="${esc(c.value)}" title="${esc(label)} — нажмите, чтобы скопировать" aria-label="${esc(label)}. Скопировать">${i}</button>`;
-  }).join("")}${edit}</div>`;
+  }).join("")}${edit}${msg}</div>`;
+}
+// копирование: буфер обмена, а если браузер не дал — старым способом
+function copyText(v, where) {
+  const old = () => { const t = document.createElement("textarea"); t.value = v; t.style.cssText = "position:fixed;opacity:0"; (where || document.body).appendChild(t); t.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch (e) {} t.remove(); return ok; };
+  return (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => true, () => old());
 }
 function toast(text, where) {
   const t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); t.textContent = text;
@@ -608,10 +652,7 @@ document.addEventListener("click", e => {
   const c = e.target.closest("[data-copy]");
   if (c) {
     const v = c.dataset.copy, where = c.closest("dialog");
-    const old = () => { const t = document.createElement("textarea"); t.value = v; t.style.cssText = "position:fixed;opacity:0"; (where || document.body).appendChild(t); t.select();
-      let ok = false; try { ok = document.execCommand("copy"); } catch (e) {} t.remove(); return ok; };
-    const say = ok => toast(ok ? `Скопировано: ${v}` : `${v} — выделите и скопируйте`, where);
-    (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => say(true), () => say(old()));
+    copyText(v, where).then(ok => toast(ok ? `Скопировано: ${v}` : `${v} — выделите и скопируйте`, where));
     return;
   }
   const k = e.target.closest("[data-sup-card]");
@@ -740,7 +781,7 @@ function supRow(g, i) {
   return `<div class="sup" id="sup-${i}">
     <div class="sup-row">
       <div class="c-name"><div class="sup-name">${supHead(g.supplier_id)}</div>
-        <div class="sup-sub">${type}${g.lead_days ? ` · везёт ${g.lead_days} дн.` : ""}${g.holiday_days ? ` + ${g.holiday_days} дн. простоя (${esc(g.holiday)})` : ""}${fill}</div>${ctIcons(g.supplier_id)}</div>
+        <div class="sup-sub">${type}${g.lead_days ? ` · везёт ${g.lead_days} дн.` : ""}${g.holiday_days ? ` + ${g.holiday_days} дн. простоя (${esc(g.holiday)})` : ""}${fill}</div>${ctIcons(g.supplier_id, i)}</div>
       <div class="c-sk"><span class="cell-k">позиций</span><span class="cell-v">${N(g.skus)}</span></div>
       <div class="c-q"><span class="cell-k">штук</span><span class="cell-v">${N(g.qty)}</span></div>
       <div class="c-def"><span class="cell-k">не успеем довезти</span><span class="cell-v ${g.deficit ? "red" : ""}">${N(g.deficit)}</span></div>
@@ -792,6 +833,8 @@ $("#sup-list").addEventListener("click", e => {
     const box = $(".sup-lines", sup); if (open && !box.innerHTML) box.innerHTML = linesTable(D.order_now[i].lines);
     return;
   }
+  const w = e.target.closest("[data-msg]");
+  if (w) { openMsg(+w.dataset.msg); return; }
   const s = e.target.closest("[data-sent]");
   if (s) { setSent(D.order_now[+s.dataset.sent], s.dataset.on === "1"); renderSuppliers(supAll); }
 });
@@ -920,21 +963,23 @@ const S = D.meta.settings;
 const RISKS = {
   deficit: ["Не успеем довезти", "Эти товары закончатся раньше, чем придёт заказ, размещённый сегодня. Если заказ уже в пути — товара не будет до его прихода. Обычной поставкой не спасти: попросите поставщика ускорить отгрузку, ищите быструю поставку (авиа, местный поставщик) или договоритесь о частичной отгрузке.", L_.deficit, ["lost_units", "cover_until", "gap_until"]],
   review_price: ["Пересмотреть цену", `Наценка ниже ${N(S.min_markup_pct)}%. В файлы заказов эти товары не попадают — сначала решите, поднимать ли цену или выводить товар.`, L_.review_price, ["markup", "qty"]],
-  need_supplier: ["Нужен поставщик", "Пора заказывать, но у товара не указан поставщик. Назначьте поставщика в учётной системе.", L_.need_supplier, ["qty", "cover_until"]],
+  need_supplier: ["Нужен поставщик", "Пора заказывать, но заказать не у кого: поставщик не указан или с ним больше не работаем. Назначьте поставщика в учётной системе.", L_.need_supplier, ["qty", "cover_until"]],
   rare: ["Редкий спрос", `Продаются реже ${N(S.rare_per_year)} шт. в год. Держать запас невыгодно — заказывайте под конкретного клиента.`, L_.rare, ["demand_12m"]],
   excess: ["Избыток", `Запаса больше чем на ${N(S.excess_months)} мес. Новых заказов не нужно; часть можно распродать.`, L_.excess, ["excess_qty", "demand_12m"]],
   dead: ["Мёртвый остаток", "Продаж не было больше 12 месяцев, но товар лежит на складе. Кандидаты на распродажу или возврат поставщику.", L_.dead, []],
+  stopped: ["Не заказываем", "Отмечено вручную: товар больше не заказываем — насовсем или до даты. Остаток распродаётся, в файлы заказов товар не попадает. Вернуть его можно в карточке товара.", L_.stopped || [], ["stop_until", "stop_why", "cover_until"]],
   po: ["Заказы в пути под вопросом", `Заказы, которые опаздывают или просрочены больше чем на ${N(S.doubtful_overdue_days)} дн. Сильно просроченные в расчёте не учитываются — уточните у поставщика.`, D.open_po.filter(o => o.state !== "в пути"), null],
 };
 const COLS = { qty: ["К заказу, шт.", r => N(r.qty)], lost_units: ["Упустим, шт.", r => N(r.lost_units)], cover_until: ["Хватит до", r => rdShort(r.cover_until)], gap_until: ["Заказ в пути придёт", r => r.gap_until ? rdShort(r.gap_until) : "—"],
-  markup: ["Наценка", r => r.markup == null ? "—" : N(r.markup) + "%"], demand_12m: ["Спрос за год", r => N(r.demand_12m)], excess_qty: ["Лишнее, шт.", r => N(r.excess_qty)] };
+  markup: ["Наценка", r => r.markup == null ? "—" : N(r.markup) + "%"], demand_12m: ["Спрос за год", r => N(r.demand_12m)], excess_qty: ["Лишнее, шт.", r => N(r.excess_qty)],
+  stop_until: ["Не заказываем", r => r.stop && r.stop.until ? "до " + rdShort(r.stop.until) : "насовсем"], stop_why: ["Причина", r => esc((r.stop && r.stop.why) || "—")] };
 RENDER.risks = p => {
   const [title, lead, rows, cols] = RISKS[riskSel];
   const more = riskMore || !RISK_MAIN.includes(riskSel);
   const keys = Object.keys(RISKS).filter(k => more || RISK_MAIN.includes(k)).sort((a, b) => (RISK_MAIN.indexOf(a) + 1 || 9) - (RISK_MAIN.indexOf(b) + 1 || 9));
   const restN = Object.keys(RISKS).filter(k => !RISK_MAIN.includes(k)).reduce((s, k) => s + RISKS[k][2].length, 0);
   p.innerHTML = `<div class="seg" role="group" aria-label="Список рисков">${keys.map(k => { const v = RISKS[k]; return `<button type="button" data-r="${k}" aria-pressed="${k === riskSel}">${esc(v[0])} <span class="num">${N(v[2].length)}</span></button>`; }).join("")}
-    ${more ? "" : `<button type="button" class="more" data-rmore="1" aria-expanded="false">Ещё 3 списка <span class="num">${N(restN)}</span></button>`}</div>
+    ${more ? "" : `<button type="button" class="more" data-rmore="1" aria-expanded="false">Ещё ${Object.keys(RISKS).length - RISK_MAIN.length} ${plural(Object.keys(RISKS).length - RISK_MAIN.length, "список", "списка", "списков")} <span class="num">${N(restN)}</span></button>`}</div>
   <p class="lead">${esc(lead)}</p>
   ${!rows.length ? `<div class="empty-state">Таких товаров нет.</div>` : cols ? `<div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr><th>Артикул</th><th>Категория</th><th>Поставщик</th><th class="n">На складе</th><th class="n">В пути</th>${cols.map(c => `<th class="n">${COLS[c][0]}</th>`).join("")}<th>Почему</th></tr></thead><tbody>
     ${rows.map(r => `<tr class="click" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(r.category_name)}</td><td class="id">${r.supplier_id ? esc(supText(r.supplier_id)) : "—"}</td><td class="n">${N(r.on_hand)}</td><td class="n">${N(r.pipeline)}</td>${cols.map(c => `<td class="n">${COLS[c][1](r)}</td>`).join("")}<td><div class="why">${esc(r.reason)}</div></td></tr>`).join("")}
@@ -1068,6 +1113,7 @@ function openCard(id) {
     <button class="iconbtn close" type="button" aria-label="Закрыть">${ic("x")}</button></div>
   <div class="card-body">${chip(r.status)}
     <div class="reason">${esc(r.reason)}</div>
+    ${stopBox(r)}
     ${r.flags && r.flags.length ? `<div>${r.flags.map(f => `<span class="flag">${ic("alert")}${esc(f)}</span>`).join("")}</div>` : ""}
     <dl class="facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>
     ${hist.length ? `<h3>Продажи и прогноз по месяцам</h3>${legend([["Продажи", "var(--blue)"], ["Прогноз спроса", "var(--series-2)", "line"], ["Товара не было на складе", "var(--red-wash)"]])}<div class="chart" id="ch-sales"></div>` : ""}
@@ -1076,6 +1122,7 @@ function openCard(id) {
     ${r.po && r.po.length ? `<h3>Уже заказано</h3><div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr><th>Заказ</th><th class="n">Штук</th><th>Обещали к</th><th>Состояние</th></tr></thead><tbody>${r.po.map(o => `<tr><td>${esc(o.po_id)}</td><td class="n">${N(o.qty)}</td><td>${rdShort(o.promised)}</td><td>${esc(o.state)}${o.overdue_days ? `, просрочен на ${N(o.overdue_days)} дн.` : ""}</td></tr>`).join("")}</tbody></table></div>` : ""}
   </div>`;
   $(".close", dlg).onclick = () => dlg.close();
+  bindStop(dlg, r);
   dlg.showModal();
   if (hist.length) {
     const labels = hm.concat(fm.slice(1));
@@ -1148,12 +1195,12 @@ function renderCtl() {
   <div class="card-body">
     ${m === "file" ? `<div class="mode">${ic("alert")}<div>Кнопки управления работают, когда дашборд открыт через файл <b>«Открыть закупки.bat»</b> в папке программы. Сейчас страница открыта напрямую, поэтому здесь можно только посмотреть.</div></div>`
       : m === "online" ? `<div class="mode">${ic("ext")}<div>${gh ? "Обновить, загрузить выгрузку и поменять настройки можно на GitHub — кнопки ниже открывают нужную страницу (нужен вход в аккаунт)." : "Управлять можно на компьютере с программой: «Открыть закупки.bat»."}</div></div>` : ""}
-    ${secRun(m, gh)}${secData(m)}${secSchedule(m, gh)}${secSettings(m, gh)}${secSuppliers(m, gh)}${secHolidays(m, gh)}${secWriter(m)}${secHistory()}
+    ${secRun(m, gh)}${secData(m)}${secSchedule(m, gh)}${secSettings(m, gh)}${secSuppliers(m, gh)}${secStopped(m)}${secTemplates(m, gh)}${secHolidays(m, gh)}${secWriter(m)}${secHistory()}
   </div>
   ${m === "local" ? `<div class="ctl-save" id="ctl-save" hidden><button class="btn primary" type="button" id="set-save">Сохранить и пересчитать</button>
     <button class="btn ghost" type="button" id="set-cancel">Отменить изменения</button><span class="msg" id="save-msg" role="status"></span></div>` : ""}`;
   ctl.scrollTop = y;
-  bindCtl(); bindSuppliers();
+  bindCtl(); bindSuppliers(); bindStopped(); bindTemplates();
   const wp = $("#wr-panel", ctl); if (wp) mountWriter(wp, "p", false);
   renderJob();
 }
@@ -1473,14 +1520,15 @@ function secSuppliers(m, gh) {
     ${list.map((s, i) => {
       const id = s.supplier_id, inf = SI[id] || {}, cs = CONTACTS[id] || [];
       return `<details class="supc" data-sid="${esc(id)}" ${CTL.openSup === id ? "open" : ""}>
-        <summary><span class="supc-n">${supHead(id)}</span><span class="supc-m">файл: ${esc(SCH.langs[inf.lang || "ru"] || "Русский")}${cs.length ? ` · ${cs.length} ${plural(cs.length, "контакт", "контакта", "контактов")}` : ""}</span></summary>
+        <summary><span class="supc-n">${supHead(id)}</span><span class="supc-m">${STOPL.suppliers[id] ? "больше не работаем · " : ""}файл: ${esc(SCH.langs[inf.lang || "ru"] || "Русский")}${cs.length ? ` · ${cs.length} ${plural(cs.length, "контакт", "контакта", "контактов")}` : ""}</span></summary>
         <div class="field"><label for="sn-${i}">Название</label><p class="help">Пусто — показывается код ${esc(id)}.</p>
           <div class="inp"><div class="ibox"><input type="text" id="sn-${i}" data-sn value="${esc(inf.name || "")}" maxlength="80" placeholder="${esc(id)}"></div></div></div>
         <div class="field"><label for="sl-${i}">Язык файла заказа</label><p class="help">Заголовки, даты и пометки в Excel. Названия товаров остаются как в учётной системе.</p>
           <div class="inp"><div class="ibox"><select id="sl-${i}" data-sl>${langs(inf.lang || "ru")}</select></div></div></div>
         ${ro ? "" : `<h4>Контакты</h4><div class="ct-list" data-ctl>${cs.map(ctEdit).join("")}</div>
           <div class="btnrow"><button class="btn ghost" type="button" data-ct-add>${ic("plus")}Добавить контакт</button></div>
-          <div class="btnrow" style="margin-top:16px"><button class="btn" type="button" data-sup-save>Сохранить</button><span class="msg" role="status" data-sup-msg></span></div>`}
+          <div class="btnrow" style="margin-top:16px"><button class="btn" type="button" data-sup-save>Сохранить</button><span class="msg" role="status" data-sup-msg></span></div>
+          ${supStopHtml(id)}`}
       </details>`;
     }).join("")}
     </fieldset></section>`;
@@ -1493,6 +1541,9 @@ function openSupCard(id) {
 function bindSuppliers() {
   ctl.querySelectorAll("details.supc").forEach(d => {
     d.addEventListener("toggle", () => { if (d.open) CTL.openSup = d.dataset.sid; else if (CTL.openSup === d.dataset.sid) CTL.openSup = null; });
+    const son = $("[data-sstop-on]", d), soff = $("[data-sstop-off]", d), smsg = $("[data-sstop-msg]", d);
+    if (son) son.onclick = () => { son.disabled = true; sendStop({ kind: "supplier", id: d.dataset.sid, on: true, why: $("[data-sstop-why]", d).value.trim() }, smsg).finally(() => { son.disabled = false; }); };
+    if (soff) soff.onclick = () => { soff.disabled = true; sendStop({ kind: "supplier", id: d.dataset.sid, on: false }, smsg).finally(() => { soff.disabled = false; }); };
     const list = $("[data-ctl]", d); if (!list) return;
     $("[data-ct-add]", d).onclick = () => {
       if (list.children.length >= 12) { $("[data-sup-msg]", d).textContent = "Не больше 12 контактов."; return; }
@@ -1521,6 +1572,175 @@ function bindSuppliers() {
         .catch(e => { btn.disabled = false; msg.className = "msg bad"; msg.textContent = e.message; });
     };
   });
+}
+/* ---------- «больше не заказывать»: товар и поставщик */
+const STOPL = D.stoplist || { skus: {}, suppliers: {} };
+const tomorrow = () => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10); };
+function stopText(e) { return (e.until ? `Не заказываем до ${rd(e.until)}` : "Больше не заказываем") + (e.why ? ` — ${e.why}` : ""); }
+function stopBox(r) {
+  const e = STOPL.skus[r.sku_id];
+  if (e) return `<div class="stop-box on"><p style="margin:0 0 8px">${ic("x")} <b>${esc(stopText(e))}.</b>${r.status !== "STOPPED" && e.until ? " Срок отметки прошёл — товар снова в расчёте." : ""}</p>
+    ${LOCAL() ? `<div class="btnrow"><button class="btn ghost" type="button" data-stop-off>Вернуть в заказы</button><span class="msg" role="status" data-stop-msg></span></div>` : `<p class="small muted" style="margin:0">Снять отметку можно на компьютере закупщика.</p>`}</div>`;
+  if (!LOCAL() || ["DEAD", "INACTIVE"].includes(r.status)) return "";
+  return `<details class="stop-box"><summary>Больше не заказывать</summary>
+    <p class="small muted" style="margin:0 0 10px;max-width:60ch">Товар уйдёт из заказов и из файла поставщику, остаток на складе продолжит продаваться.</p>
+    <div class="opts" role="radiogroup" aria-label="На какой срок"><label><input type="radio" name="stop-t" value="" checked> Насовсем</label>
+      <label><input type="radio" name="stop-t" value="date"> До даты <input type="date" data-stop-until min="${tomorrow()}" aria-label="Не заказывать до"></label></div>
+    <label class="tpl-f"><span>Причина (не обязательно)</span><input type="text" data-stop-why maxlength="120" placeholder="например: сняли с ассортимента, фабрика на паузе"></label>
+    <div class="btnrow"><button class="btn" type="button" data-stop-on>Убрать из заказов и пересчитать</button><span class="msg" role="status" data-stop-msg></span></div></details>`;
+}
+function sendStop(body, msg, after) {
+  msg.className = "msg"; msg.textContent = "Сохраняю…";
+  return api("/api/stop", body).then(j => { if (after) after(); startedJob(j); openCtl("run"); })
+    .catch(err => { msg.className = "msg bad"; msg.textContent = err.message; });
+}
+function bindStop(box, r) {
+  const on = $("[data-stop-on]", box), off = $("[data-stop-off]", box), msg = $("[data-stop-msg]", box);
+  if (off) off.onclick = () => { off.disabled = true; sendStop({ kind: "sku", id: r.sku_id, on: false }, msg, () => dlg.close()).finally(() => { off.disabled = false; }); };
+  if (!on) return;
+  const until = $("[data-stop-until]", box);
+  until.addEventListener("input", () => { $('input[name="stop-t"][value="date"]', box).checked = true; });
+  on.onclick = () => {
+    const byDate = $('input[name="stop-t"]:checked', box).value === "date";
+    if (byDate && !until.value) { msg.className = "msg bad"; msg.textContent = "Укажите дату."; until.focus(); return; }
+    on.disabled = true;
+    sendStop({ kind: "sku", id: r.sku_id, on: true, until: byDate ? until.value : null, why: $("[data-stop-why]", box).value.trim() }, msg, () => dlg.close())
+      .finally(() => { on.disabled = false; });
+  };
+}
+function supStopHtml(id) {
+  const e = STOPL.suppliers[id];
+  if (e) return `<div class="stop-box on"><p style="margin:0 0 8px"><b>Больше не работаем с этим поставщиком${e.why ? ` — ${esc(e.why)}` : ""}.</b> Его товары — в списке «Нужен поставщик».</p>
+    <div class="btnrow"><button class="btn ghost" type="button" data-sstop-off>Снова работаем</button><span class="msg" role="status" data-sstop-msg></span></div></div>`;
+  return `<details class="stop-box"><summary>Больше не работаем с поставщиком</summary>
+    <p class="small muted" style="margin:0 0 10px;max-width:60ch">Его товары перестанут попадать в заказы и перейдут в список «Нужен поставщик», чтобы найти, у кого их закупать.</p>
+    <label class="tpl-f"><span>Причина (не обязательно)</span><input type="text" data-sstop-why maxlength="120" placeholder="например: закрылась фабрика"></label>
+    <div class="btnrow"><button class="btn" type="button" data-sstop-on>Отметить и пересчитать</button><span class="msg" role="status" data-sstop-msg></span></div></details>`;
+}
+function secStopped(m) {
+  const ks = Object.entries(STOPL.skus), ss = Object.entries(STOPL.suppliers);
+  const row = (label, e, attr) => `<div class="stop-row"><span>${label} · <span class="muted">${esc(stopText(e))}</span></span>${m === "local" ? `<button class="linkbtn" type="button" ${attr}>Вернуть</button>` : ""}</div>`;
+  return `<section class="ctl-sec" id="cs-stop" aria-labelledby="cs-stop-h"><h3 id="cs-stop-h">Не заказываем</h3>
+    <p class="lead">Товары и поставщики, отмеченные «больше не заказывать». Отметить товар — в его карточке, поставщика — в разделе «Поставщики» выше.</p>
+    ${ks.length || ss.length ? ss.map(([id, e]) => `<div class="stop-row"><span>Поставщик <b>${supHead(id)}</b> · <span class="muted">больше не работаем${e.why ? ` — ${esc(e.why)}` : ""}</span></span>${m === "local" ? `<button class="linkbtn" type="button" data-unstop-sup="${esc(id)}">Снова работаем</button>` : ""}</div>`).join("")
+      + ks.map(([id, e]) => row(`<button class="linkbtn sku" type="button" data-sku="${esc(id)}">${esc(id)}</button>${SKU[id] ? ` ${esc(SKU[id].category_name)}` : ""}`, e, `data-unstop="${esc(id)}"`)).join("")
+      : `<p class="small muted">Пока ничего не отмечено.</p>`}
+    <span class="msg" role="status" id="stop-msg"></span></section>`;
+}
+function bindStopped() {
+  const sec = $("#cs-stop", ctl); if (!sec) return;
+  sec.addEventListener("click", e => {
+    const k = e.target.closest("[data-sku]"); if (k) { ctl.close(); openCard(k.dataset.sku); return; }
+    const a = e.target.closest("[data-unstop],[data-unstop-sup]"); if (!a) return;
+    a.disabled = true;
+    sendStop(a.dataset.unstop ? { kind: "sku", id: a.dataset.unstop, on: false } : { kind: "supplier", id: a.dataset.unstopSup, on: false }, $("#stop-msg", sec))
+      .finally(() => { a.disabled = false; });
+  });
+}
+/* ---------- сообщение поставщику по шаблону */
+const TPLS = SCH.tpl || { names: {}, fields: {}, std: {} };
+let TPL_OWN = {};  // шаблоны, изменённые закупщиком, — только с его компьютера
+const tplGet = (lang, key) => (TPL_OWN[lang] || {})[key] || ((TPLS.std[lang] || TPLS.std.ru || {})[key]) || { subject: "", body: "" };
+const EN_M = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+function dateL(iso, lang) {
+  if (!iso) return "—";
+  const d = pd(iso), y = d.getFullYear(), m = d.getMonth(), n = d.getDate();
+  return lang === "en" ? `${n} ${EN_M[m]} ${y}` : lang === "zh" ? `${y}年${m + 1}月${n}日` : `${n} ${MG[m]} ${y}`;
+}
+const MSG_LINES = 25;
+function tplLines(g, lang) {
+  const u = { ru: " — срочно", en: " — urgent", zh: "（加急）" }[lang] || "", pcs = { ru: "шт.", en: "pcs", zh: "件" }[lang] || "шт.";
+  const ls = g.lines || [], out = ls.slice(0, MSG_LINES).map(l =>
+    `• ${l.sku_id}${lang === "ru" && l.category_name ? ` (${l.category_name})` : ""} — ${l.qty} ${pcs}${l.deficit ? u : ""}`);
+  const rest = ls.length - MSG_LINES;
+  if (rest > 0) out.push({ ru: `…и ещё ${rest} поз. — в файле заказа`, en: `…and ${rest} more items — see the order file`, zh: `……另有 ${rest} 个品项，详见订单文件` }[lang]);
+  return out.join("\n");
+}
+function tplFill(text, g, lang) {
+  const v = { "поставщик": supText(g.supplier_id), "дата": dateL(D.meta.as_of, lang), "позиций": g.skus, "штук": lang === "ru" ? N(g.qty) : g.qty,
+    "нужно_к": dateL(g.arrival_date, lang), "товары": tplLines(g, lang) };
+  return String(text || "").replace(/\{([^{}]+)\}/g, (m, k) => k in v ? String(v[k]) : m);
+}
+const msgDlg = $("#msg"), MSG = { i: null, key: "order", lang: "ru" };
+const SEND_KIND = ["email", "whatsapp", "telegram", "wechat"];
+function openMsg(i) {
+  const g = D.order_now[i]; if (!g) return;
+  MSG.i = i; MSG.key = "order"; MSG.lang = (SI[g.supplier_id] || {}).lang || "ru";
+  renderMsg(); if (!msgDlg.open) msgDlg.showModal(); $("#msg-title").focus();
+}
+function renderMsg() {
+  const g = D.order_now[MSG.i], id = g.supplier_id, t = tplGet(MSG.lang, MSG.key);
+  const cs = (CONTACTS[id] || []).map((c, n) => ({ ...c, n })).filter(c => SEND_KIND.includes(c.kind));
+  const f = files[id] ? (LOCAL() ? `api/order.xlsx?sup=${encodeURIComponent(id)}` : fileUrl(files[id])) : null;
+  const how = { email: "Открыть письмо", whatsapp: "Открыть в WhatsApp", telegram: "Скопировать и открыть Telegram", wechat: "Скопировать для WeChat" };
+  const btn = c => `<button class="btn${c === cs[0] ? "" : " ghost"}" type="button" data-send="${c.n}">${ic(CT_ICON[c.kind])}${how[c.kind]} · ${esc(c.value)}${c.note ? ` (${esc(c.note)})` : ""}</button>`;
+  msgDlg.innerHTML = `<div class="card-head"><div><h2 id="msg-title" tabindex="-1">Сообщение поставщику</h2><div class="small muted">${supHead(id)} · ${N(g.skus)} поз., ${N(g.qty)} шт.</div></div>
+    <button class="iconbtn close" type="button" aria-label="Закрыть">${ic("x")}</button></div>
+  <div class="card-body">
+    <div class="tpl-top"><div class="seg" role="group" aria-label="Шаблон">${Object.entries(TPLS.names).map(([k, n]) => `<button type="button" data-tk="${k}" aria-pressed="${k === MSG.key}">${esc(n)}</button>`).join("")}</div>
+      <label class="tpl-f"><span>Язык</span><select id="msg-lang">${Object.entries(SCH.langs).map(([v, n]) => `<option value="${v}" ${v === MSG.lang ? "selected" : ""}>${esc(n)}</option>`).join("")}</select></label></div>
+    <label class="tpl-f"><span>Тема письма</span><input type="text" id="msg-subj" value="${esc(tplFill(t.subject, g, MSG.lang))}" maxlength="200"></label>
+    <label class="tpl-f"><span>Текст</span><textarea id="msg-body" spellcheck="false">${esc(tplFill(t.body, g, MSG.lang))}</textarea></label>
+    <p class="tpl-note">Текст можно поправить перед отправкой — шаблон от этого не изменится.${LOCAL() ? ` <button class="linkbtn" type="button" id="msg-edit">Изменить шаблон</button>` : ""}</p>
+    <div class="tpl-send"><h3>Отправить</h3>
+      ${MSG.key === "order" && f ? `<p class="tpl-note">Приложите к сообщению файл заказа: <a href="${f}" download>скачать заказ (Excel)</a>.</p>` : ""}
+      ${cs.length ? `<div class="btnrow">${cs.map(btn).join("")}</div>`
+        : `<p class="tpl-note">${LOCAL() ? `У поставщика нет почты или мессенджера. <button class="linkbtn" type="button" data-sup-card="${esc(id)}">Добавить контакты</button>` : "Контакты поставщиков хранятся только на компьютере закупщика — здесь текст можно скопировать."}</p>`}
+      <div class="btnrow"><button class="btn ghost" type="button" id="msg-copy">${ic("copy")}Скопировать текст</button></div>
+    </div>
+  </div>`;
+}
+const msgText = () => $("#msg-body", msgDlg).value;
+msgDlg.addEventListener("click", e => {
+  if (e.target === msgDlg || e.target.closest(".close")) { msgDlg.close(); return; }
+  const k = e.target.closest("[data-tk]"); if (k) { MSG.key = k.dataset.tk; renderMsg(); $(`[data-tk="${MSG.key}"]`, msgDlg).focus(); return; }
+  if (e.target.closest("#msg-copy")) { copyText(msgText(), msgDlg).then(ok => toast(ok ? "Текст скопирован" : "Не получилось скопировать — выделите текст вручную", msgDlg)); return; }
+  if (e.target.closest("#msg-edit")) { msgDlg.close(); CTL.tplLang = MSG.lang; CTL.tplKey = MSG.key; openCtl("tpl"); return; }
+  if (e.target.closest("[data-sup-card]")) { msgDlg.close(); return; }
+  const b = e.target.closest("[data-send]"); if (!b) return;
+  const c = (CONTACTS[D.order_now[MSG.i].supplier_id] || [])[+b.dataset.send]; if (!c) return;
+  const body = msgText(), subj = $("#msg-subj", msgDlg).value, v = String(c.value).trim();
+  if (c.kind === "email") { location.href = `mailto:${encodeURIComponent(v).replace(/%40/g, "@")}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`; return; }
+  if (c.kind === "whatsapp") { window.open(`https://wa.me/${digits(v)}?text=${encodeURIComponent(body)}`, "_blank", "noopener"); return; }
+  // Telegram и WeChat не принимают текст по ссылке: копируем, чат открываем сами
+  copyText(body, msgDlg).then(ok => {
+    if (c.kind === "telegram") { const h = ctHref(c); if (h) window.open(h, "_blank", "noopener"); }
+    toast(ok ? (c.kind === "wechat" ? `Текст скопирован — вставьте его в WeChat (${v})` : "Текст скопирован — вставьте его в чат") : "Не получилось скопировать — выделите текст вручную", msgDlg);
+  });
+});
+msgDlg.addEventListener("change", e => { if (e.target.id === "msg-lang") { MSG.lang = e.target.value; renderMsg(); $("#msg-lang", msgDlg).focus(); } });
+
+function secTemplates(m, gh) {
+  if (!TPLS.std.ru) return "";
+  const ro = m !== "local", lang = CTL.tplLang || "ru", key = CTL.tplKey || "order", t = tplGet(lang, key);
+  const own = k => !!(TPL_OWN[lang] || {})[k];
+  return `<section class="ctl-sec" id="cs-tpl" aria-labelledby="cs-tpl-h"><h3 id="cs-tpl-h">Шаблоны сообщений</h3>
+    <p class="lead">Готовые тексты для поставщика. Кнопка «Написать» рядом с поставщиком подставит в них его заказ и откроет почту или мессенджер. Слова в фигурных скобках заменяются сами.</p>
+    ${ro ? `<p class="small muted" style="max-width:62ch">Свои тексты шаблонов хранятся только на компьютере закупщика — здесь показаны стандартные.</p>` : ""}
+    <fieldset class="ro" id="tpl-fs" ${ro ? "disabled" : ""}>
+    <div class="tpl-top"><div class="seg" role="group" aria-label="Шаблон">${Object.entries(TPLS.names).map(([k, n]) => `<button type="button" data-tpl-k="${k}" aria-pressed="${k === key}">${esc(n)}${own(k) ? ` <span class="mod">· свой</span>` : ""}</button>`).join("")}</div>
+      <label class="tpl-f"><span>Язык</span><select id="tpl-lang">${Object.entries(SCH.langs).map(([v, n]) => `<option value="${v}" ${v === lang ? "selected" : ""}>${esc(n)}</option>`).join("")}</select></label></div>
+    <label class="tpl-f"><span>Тема письма</span><input type="text" id="tpl-subj" value="${esc(t.subject)}" maxlength="150"></label>
+    <label class="tpl-f"><span>Текст</span><textarea id="tpl-body" maxlength="3000" spellcheck="false">${esc(t.body)}</textarea></label>
+    ${ro ? "" : `<p class="small muted" style="margin:0 0 6px">Вставить в текст:</p><div class="tpl-ph">${Object.entries(TPLS.fields).map(([k, h]) => `<button type="button" data-ph="${esc(k)}" title="${esc(h)}">{${esc(k)}}</button>`).join("")}</div>
+    <div class="btnrow"><button class="btn" type="button" id="tpl-save">Сохранить шаблон</button>${own(key) ? `<button class="linkbtn" type="button" id="tpl-reset">Вернуть стандартный текст</button>` : ""}<span class="msg" role="status" id="tpl-msg"></span></div>`}
+    </fieldset></section>`;
+}
+function bindTemplates() {
+  const sec = $("#cs-tpl", ctl); if (!sec) return;
+  sec.addEventListener("click", e => {
+    const k = e.target.closest("[data-tpl-k]"); if (k) { CTL.tplKey = k.dataset.tplK; renderCtl(); $(`[data-tpl-k="${CTL.tplKey}"]`, ctl).focus(); return; }
+    const ph = e.target.closest("[data-ph]");
+    if (ph) { const ta = $("#tpl-body", sec), a = ta.selectionStart, z = ta.selectionEnd, ins = `{${ph.dataset.ph}}`;
+      ta.value = ta.value.slice(0, a) + ins + ta.value.slice(z); ta.focus(); ta.selectionStart = ta.selectionEnd = a + ins.length; return; }
+    const save = e.target.closest("#tpl-save"), reset = e.target.closest("#tpl-reset"); if (!save && !reset) return;
+    const msg = $("#tpl-msg", sec), lang = CTL.tplLang || "ru", key = CTL.tplKey || "order";
+    msg.className = "msg"; msg.textContent = "Сохраняю…";
+    api("/api/templates", { lang, key, subject: reset ? "" : $("#tpl-subj", sec).value.trim(), body: reset ? "" : $("#tpl-body", sec).value })
+      .then(j => { TPL_OWN = j.templates || {}; renderCtl(); const m2 = $("#tpl-msg", ctl); if (m2) m2.textContent = reset ? "Вернули стандартный текст." : "Шаблон сохранён."; })
+      .catch(err => { msg.className = "msg bad"; msg.textContent = err.message; });
+  });
+  sec.addEventListener("change", e => { if (e.target.id === "tpl-lang") { CTL.tplLang = e.target.value; renderCtl(); $("#tpl-lang", ctl).focus(); } });
 }
 function secHolidays(m, gh) {
   const H_ = CTL.st.holidays; if (!H_) return "";
@@ -1664,7 +1884,7 @@ function bindCtl() {
 
 function loadContacts() {
   fetch("api/contacts", { cache: "no-store", headers: { "X-Procurement": "1" } }).then(r => r.ok ? r.json() : null)
-    .then(j => { if (!j) return; CONTACTS = j.contacts || {}; renderSuppliers(supAll); if (ctl.open) renderCtl(); }).catch(() => {});
+    .then(j => { if (!j) return; CONTACTS = j.contacts || {}; TPL_OWN = j.templates || {}; renderSuppliers(supAll); if (ctl.open) renderCtl(); }).catch(() => {});
 }
 function mergeSent(server) { if (!server) return; sent = { ...server }; try { localStorage.setItem(SENT_KEY, JSON.stringify(sent)); } catch (e) {} renderSuppliers(supAll); }
 renderHead();

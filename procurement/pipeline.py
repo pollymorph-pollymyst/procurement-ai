@@ -17,9 +17,11 @@ ORDER_FIELDS = ["sku_id", "category_name", "brand_id", "abc", "qty", "round_step
                 "weight_kg", "markup", "holiday_days", "holiday"]
 
 
-def compute(ds: Dataset, s: Settings, with_backtest: bool = True) -> dict:
+def compute(ds: Dataset, s: Settings, with_backtest: bool = True, stop: dict | None = None) -> dict:
+    from . import stoplist
     fr = fit(ds, s)
-    p = build_plan(ds, s, fr)
+    stop = stoplist.read(s) if stop is None else stop
+    p = build_plan(ds, s, fr, stop)
     weight = ds.sku.set_index("sku_id")["weight_kg"].to_dict() if "weight_kg" in ds.sku else {}
     for r in p.skus:
         w = weight.get(r["sku_id"])
@@ -61,7 +63,7 @@ def compute(ds: Dataset, s: Settings, with_backtest: bool = True) -> dict:
     order_now = group(["ORDER_NOW"])
     order_soon = group(["ORDER_SOON"])
 
-    active = [r for r in p.skus if r["status"] not in ("DEAD", "INACTIVE")]
+    active = [r for r in p.skus if r["status"] not in ("DEAD", "INACTIVE", "STOPPED")]
     kpi = {
         "order_now_skus": len(by["ORDER_NOW"]),
         "order_now_qty": int(sum(r["qty"] for r in by["ORDER_NOW"])),
@@ -78,6 +80,7 @@ def compute(ds: Dataset, s: Settings, with_backtest: bool = True) -> dict:
         "review_price_skus": len(by["REVIEW_PRICE"]),
         "need_supplier_skus": len(by["NEED_SUPPLIER"]),
         "rare_skus": len(by["RARE"]),
+        "stopped_skus": len(by["STOPPED"]),
         "planned_skus": len(by["PLANNED"]),
         "ok_skus": len(by["OK"]),
         "active_skus": len(active),
@@ -131,7 +134,7 @@ def compute(ds: Dataset, s: Settings, with_backtest: bool = True) -> dict:
                           "cycle_days": info.cycle_days,
                           "fill_rate": round(info.fill_rate, 2) if info.fill_rate is not None else None,
                           "closed_orders": info.closed_orders, "open_orders": info.open_orders,
-                          "active_skus": len(mine),
+                          "active_skus": len(mine), "stopped": stoplist.active(stop["suppliers"].get(sid), p.as_of),
                           "order_now_qty": int(sum(r["qty"] for r in mine if r["status"] == "ORDER_NOW"))})
     suppliers.sort(key=lambda x: -x["order_now_qty"])
 
@@ -163,6 +166,7 @@ def compute(ds: Dataset, s: Settings, with_backtest: bool = True) -> dict:
             "rare": [_short(r) for r in by["RARE"]],
             "excess": [_short(r) for r in sorted(by["EXCESS"], key=lambda r: -r["excess_qty"])],
             "dead": [_short(r) for r in sorted(by["DEAD"], key=lambda r: -r["on_hand"])],
+            "stopped": [_short(r) | {"stop": r["stop"]} for r in by["STOPPED"]],
             "deficit": [_short(r) for r in skus if r["deficit"]],
         },
         "calendar": calendar,

@@ -34,6 +34,7 @@ STATUS = {
     "EXCESS": ("Избыток", 7),
     "DEAD": ("Мёртвый остаток", 8),
     "INACTIVE": ("Не продаётся", 9),
+    "STOPPED": ("Не заказываем", 9),
 }
 
 
@@ -201,8 +202,10 @@ def _fmt(d: date | None) -> str | None:
 
 
 # ---------------------------------------------------------------- главный расчёт
-def build_plan(ds: Dataset, s: Settings, fr: ForecastResult) -> Plan:
+def build_plan(ds: Dataset, s: Settings, fr: ForecastResult, stop: dict | None = None) -> Plan:
+    from . import stoplist
     as_of = ds.as_of
+    stop = stop or {"skus": {}, "suppliers": {}}
     suppliers = supplier_table(ds, s)
     oh = on_hand_at(ds)
     po = open_orders(ds, s, suppliers)
@@ -240,6 +243,8 @@ def build_plan(ds: Dataset, s: Settings, fr: ForecastResult) -> Plan:
         cat = info["category"]
         sup_id = info["supplier_id"] if isinstance(info["supplier_id"], str) else None
         sup = suppliers.get(sup_id) if sup_id else None
+        stop_sku = stop["skus"].get(sid) if stoplist.active(stop["skus"].get(sid), as_of) else None
+        stop_sup = stop["suppliers"].get(sup_id) if sup_id and stoplist.active(stop["suppliers"].get(sup_id), as_of) else None
         lead = sup.lead_days if sup else (s.local_lead_days if info["supply_type"] == "local" else s.default_lead_days)
         cycle = sup.cycle_days if sup else s.cycle_max
         country = country_of(sup_id, sup.supply_type if sup else info["supply_type"], s.supplier_country)
@@ -383,6 +388,15 @@ def build_plan(ds: Dataset, s: Settings, fr: ForecastResult) -> Plan:
             status = "PLANNED"
         else:
             status = "OK"
+        # отметки закупщика: с поставщиком больше не работаем — товар нужно закупать у другого;
+        # товар больше не заказываем — в заказы не попадает, остаток распродаётся
+        if stop_sup and status in ("ORDER_NOW", "ORDER_SOON", "PLANNED"):
+            status = "NEED_SUPPLIER" if order_day is not None and order_day <= 30 else "OK"
+        if stop_sup:
+            flags.append("с этим поставщиком больше не работаем — нужен другой"
+                         + (f" ({stop_sup['why']})" if stop_sup.get("why") else ""))
+        if stop_sku and status not in ("DEAD", "INACTIVE"):
+            status = "STOPPED"
 
         if doubtful > 0:
             flags.append(f"заказ на {int(doubtful)} шт. сильно просрочен — уточните у поставщика")
@@ -437,9 +451,11 @@ def build_plan(ds: Dataset, s: Settings, fr: ForecastResult) -> Plan:
             "holiday": hol_reason, "country": country,
             "cover_after": _fmt(dt(so_after)) if plan_orders else None,
             # дефицит показываем у всех товаров, которые держим на складе, — и тогда, когда заказ уже в пути
-            "deficit": bool(deficit) and status not in ("DEAD", "INACTIVE", "REVIEW_PRICE", "RARE"),
+            "deficit": bool(deficit) and status not in ("DEAD", "INACTIVE", "REVIEW_PRICE", "RARE", "STOPPED"),
             "gap_until": (_fmt(as_of + timedelta(days=int(gap))) if deficit and gap is not None
-                          and status not in ("DEAD", "INACTIVE", "REVIEW_PRICE", "RARE") else None),
+                          and status not in ("DEAD", "INACTIVE", "REVIEW_PRICE", "RARE", "STOPPED") else None),
+            "stop": ({"until": stop_sku.get("until"), "why": stop_sku.get("why", "")} if stop_sku else None),
+            "supplier_stopped": bool(stop_sup),
             "out_of_stock": on_hand <= 0 and level > 0, "lost_units": round(lost_before_arrival),
             "excess_qty": round(excess_qty) if is_excess else 0,
             "flags": flags, "po": my_po,
@@ -516,6 +532,13 @@ def explain(r: dict, s: Settings) -> str:
     if r["deficit"] and r.get("gap_until"):
         gap = (f" Товара не будет до прихода заказа в пути (к {ru_date(r['gap_until'])}): упустим около {n(r['lost_units'])} шт."
                " Если можно — попросите поставщика ускорить отгрузку или поищите быструю поставку.")
+    if st == "STOPPED":
+        stp = r.get("stop") or {}
+        head = ("Отмечено: не заказываем до " + ru_date(stp["until"]) + "." if stp.get("until")
+                else "Отмечено: больше не заказываем.")
+        if stp.get("why"):
+            head += f" Причина: {stp['why']}."
+        return head + " " + have + (until if r["level"] > 0 else "")
     if st == "DEAD":
         return f"Продаж не было больше 12 месяцев, а на складе {n(r['on_hand'])} шт. Стоит распродать или вернуть поставщику."
     if st == "INACTIVE":
@@ -527,6 +550,8 @@ def explain(r: dict, s: Settings) -> str:
         return (f"Продаётся редко — около {n(r['demand_12m'])} шт. в год. Держать запас невыгодно: "
                 "заказывайте под конкретного клиента." + (" Сейчас на складе нет." if not r["on_hand"] else f" На складе {n(r['on_hand'])} шт."))
     if st == "NEED_SUPPLIER":
+        if r.get("supplier_stopped"):
+            return have + dem + until + " С поставщиком этого товара больше не работаем — найдите другого, чтобы разместить заказ."
         return have + dem + until + " У товара не указан поставщик — назначьте поставщика, чтобы разместить заказ."
     if st == "EXCESS":
         return have + dem + until + f" Это больше чем на {s.excess_months} мес.: лишние около {n(r['excess_qty'])} шт. Новых заказов не нужно."

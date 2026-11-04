@@ -14,6 +14,8 @@
   POST /api/open             — {"what": "inbox" | "orders" | "config"} — открыть папку/файл
   GET  /api/contacts         — контакты поставщиков (только с этого компьютера, с заголовком)
   POST /api/suppliers        — {"supplier_id", "name", "lang", "contacts"} — карточка поставщика
+  POST /api/stop             — {"kind": "sku"|"supplier", "id", "on", "until", "why"} — «больше не заказывать» и пересчёт
+  POST /api/templates        — {"lang", "key", "subject", "body"} — свой текст шаблона сообщения поставщику
   GET  /api/order.xlsx?sup=  — файл заказа поставщику с его контактами (в опубликованных файлах их нет)
 Каждый POST требует заголовок X-Procurement: 1 — чужая страница в браузере его не пошлёт.
 """
@@ -32,7 +34,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
 
-from . import control, export, holidays, schedule, sources, suppliers, writers
+from . import control, export, holidays, schedule, sources, stoplist, suppliers, writers
 from . import settings as st
 from .config import ROOT, load_settings
 
@@ -74,7 +76,10 @@ def start_run() -> dict:
             if ln:
                 JOB["lines"] = (JOB["lines"] + [ln])[-40:]
         code = proc.wait()
+        again = JOB.pop("again", False)
         JOB.update(running=False, ok=code == 0, code=code, finished=time.time(), seconds=round(time.time() - JOB["started"]))
+        if again:  # пока считали, закупщик поменял отметки — считаем ещё раз
+            start_run()
     threading.Thread(target=pump, daemon=True).start()
     return JOB
 
@@ -187,7 +192,8 @@ class Handler(SimpleHTTPRequestHandler):
         if path == "/api/contacts":
             if not self._trusted():
                 return self._json({"error": "Запрос отклонён."}, 403)
-            return self._json({"contacts": suppliers.read_contacts(load_settings())})
+            s = load_settings()
+            return self._json({"contacts": suppliers.read_contacts(s), "templates": suppliers.read_templates(s)})
         if path == "/api/order.xlsx":
             # ссылку открывает сам браузер, без заголовка: проверяем, что адрес — этот компьютер
             if not self._local():
@@ -283,11 +289,22 @@ class Handler(SimpleHTTPRequestHandler):
                 save_supplier(body)
                 return self._json({"ok": True, "contacts": suppliers.read_contacts(load_settings()),
                                    "supplier_info": suppliers.read_info(load_settings())})
+            if path == "/api/stop":
+                result = _result()
+                stoplist.save(load_settings(), body, {r.get("sku_id") for r in result.get("skus", [])}, _known(result))
+                if JOB.get("running"):
+                    JOB["again"] = True  # идущий расчёт мог уже прочитать отметки — пересчитаем после него
+                else:
+                    start_run()  # отметка меняет заказы — сразу пересчитываем
+                return self._json({"ok": True, **state()})
+            if path == "/api/templates":
+                return self._json({"ok": True, "templates": suppliers.save_template(load_settings(), body)})
             if path == "/api/open":
                 _open(body.get("what", "inbox"))
                 return self._json({"ok": True})
             return self._json({"error": "Нет такого действия."}, 404)
-        except (st.SettingsError, sources.IntakeError, writers.WriterError, suppliers.SupplierError) as e:
+        except (st.SettingsError, sources.IntakeError, writers.WriterError, suppliers.SupplierError,
+                stoplist.StopError) as e:
             return self._json({"ok": False, "error": str(e)}, 400)
         except Exception as e:  # noqa: BLE001
             return self._json({"ok": False, "error": control.plain_error(e)}, 500)

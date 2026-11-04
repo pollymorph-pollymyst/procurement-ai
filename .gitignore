@@ -21,3 +21,4 @@ video/
 
 # контакты поставщиков — только на этом компьютере
 outputs/contacts.json
+outputs/templates.json

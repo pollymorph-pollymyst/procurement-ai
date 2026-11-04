@@ -142,7 +142,8 @@ def contact_line(c: dict, lang: str = "ru") -> str:
 
 
 def schema() -> dict:
-    return {"langs": LANGS, "kinds": {k: {"label": a, "hint": b} for k, (a, b) in KINDS.items()}}
+    return {"langs": LANGS, "kinds": {k: {"label": a, "hint": b} for k, (a, b) in KINDS.items()},
+            "tpl": {"names": TPL_NAMES, "fields": TPL_FIELDS, "std": TPL}}
 
 
 # ------------------------------------------------------------------ файл заказа на языке поставщика
@@ -188,3 +189,96 @@ def fmt_date(iso, lang: str) -> str:
         return ru_date(iso)
     y, m, d = (int(x) for x in str(iso)[:10].split("-"))
     return f"{d} {EN_MONTHS[m - 1]} {y}" if lang == "en" else f"{y}年{m}月{d}日"
+
+
+# ------------------------------------------------------------------ шаблоны сообщений поставщику
+# Стандартные тексты — здесь, на трёх языках. Изменённые закупщиком хранятся только на его компьютере
+# (outputs/templates.json, рядом с контактами): в шаблон можно вписать подпись с телефоном.
+# Подстановки в фигурных скобках заполняет дашборд по текущему заказу.
+
+TPL_NAMES = {"order": "Отправляем заказ", "dates": "Уточнить сроки отгрузки", "prices": "Запросить цены и наличие"}
+TPL_FIELDS = {
+    "поставщик": "название поставщика", "дата": "дата заказа", "позиций": "сколько позиций",
+    "штук": "сколько штук всего", "нужно_к": "к какому дню нужен товар", "товары": "список товаров с количеством",
+}
+TPL = {
+    "ru": {
+        "order": {"subject": "Заказ от {дата}: {позиций} поз., {штук} шт.",
+                  "body": "Здравствуйте!\n\nОтправляем заказ: {позиций} поз., всего {штук} шт. Файл заказа — во вложении.\n"
+                          "Товар нужен к {нужно_к}. Позиции с пометкой «срочно» просим отгрузить первыми.\n\n{товары}\n\n"
+                          "Подтвердите, пожалуйста, что заказ получен, и напишите дату отгрузки.\n\nСпасибо!"},
+        "dates": {"subject": "Сроки отгрузки заказа",
+                  "body": "Здравствуйте!\n\nПодскажите, пожалуйста, когда сможете отгрузить заказ: {позиций} поз., {штук} шт.? "
+                          "Нам нужно получить товар к {нужно_к}.\n\nЕсли часть будет готова раньше, сообщите — можем забрать "
+                          "частями.\n\nСпасибо!"},
+        "prices": {"subject": "Цены и наличие",
+                   "body": "Здравствуйте!\n\nПришлите, пожалуйста, актуальные цены и наличие по этим позициям:\n\n{товары}\n\n"
+                           "Если чего-то нет на складе — напишите срок производства.\n\nСпасибо!"},
+    },
+    "en": {
+        "order": {"subject": "Purchase order {дата}: {позиций} items, {штук} pcs",
+                  "body": "Hello,\n\nPlease find our purchase order attached: {позиций} items, {штук} pcs in total.\n"
+                          "We need the goods by {нужно_к}. Please ship the items marked “urgent” first.\n\n{товары}\n\n"
+                          "Kindly confirm receipt of the order and let us know the shipping date.\n\nThank you!"},
+        "dates": {"subject": "Shipping date for our order",
+                  "body": "Hello,\n\nCould you please tell us when you can ship our order: {позиций} items, {штук} pcs? "
+                          "We need to receive the goods by {нужно_к}.\n\nIf part of it is ready earlier, please let us know — "
+                          "partial shipment is fine.\n\nThank you!"},
+        "prices": {"subject": "Prices and availability",
+                   "body": "Hello,\n\nCould you please send current prices and availability for these items:\n\n{товары}\n\n"
+                           "If something is out of stock, please tell us the production time.\n\nThank you!"},
+    },
+    "zh": {
+        "order": {"subject": "采购订单 {дата}：{позиций} 个品项，共 {штук} 件",
+                  "body": "您好！\n\n附件是我们的采购订单：{позиций} 个品项，共 {штук} 件。\n"
+                          "我们需要在 {нужно_к} 前收到货物。标记“加急”的品项请优先发货。\n\n{товары}\n\n"
+                          "请确认收到订单，并告知发货日期。\n\n谢谢！"},
+        "dates": {"subject": "订单发货日期",
+                  "body": "您好！\n\n请问我们的订单（{позиций} 个品项，共 {штук} 件）什么时候可以发货？"
+                          "我们需要在 {нужно_к} 前收到货物。\n\n如果部分货物可以提前备好，请告诉我们，可以分批发货。\n\n谢谢！"},
+        "prices": {"subject": "价格和库存",
+                   "body": "您好！\n\n请发给我们以下品项的最新价格和库存情况：\n\n{товары}\n\n如有缺货，请告知生产周期。\n\n谢谢！"},
+    },
+}
+
+
+def templates_path(s: Settings) -> Path:
+    return s.out_dir / "templates.json"
+
+
+def read_templates(s: Settings) -> dict:
+    """Изменённые закупщиком шаблоны: {lang: {key: {"subject", "body"}}}."""
+    out = {}
+    for lang, by in _read(templates_path(s)).items():
+        if lang in LANGS and isinstance(by, dict):
+            for key, t in by.items():
+                if key in TPL_NAMES and isinstance(t, dict):
+                    out.setdefault(lang, {})[key] = {"subject": str(t.get("subject") or ""), "body": str(t.get("body") or "")}
+    return out
+
+
+def save_template(s: Settings, body: dict) -> dict:
+    """body: {"lang", "key", "subject", "body"}; пустые или как стандартные — вернуть стандартный текст."""
+    lang, key = body.get("lang"), body.get("key")
+    if lang not in LANGS or key not in TPL_NAMES:
+        raise SupplierError("Нет такого шаблона.")
+    subject = _clean(body.get("subject"), 150, "Тема")
+    text = str(body.get("body") or "").replace("\r\n", "\n")
+    text = re.sub(r"[\x00-\x08\x0b-\x1f\x7f]", " ", text).strip()
+    if len(text) > 3000:
+        raise SupplierError("Текст: не длиннее 3000 знаков.")
+    data = _read(templates_path(s))
+    by = data.get(lang) if isinstance(data.get(lang), dict) else {}
+    std = TPL[lang][key]
+    if (not subject and not text) or (subject == std["subject"] and text == std["body"]):
+        by.pop(key, None)
+    else:
+        if not text:
+            raise SupplierError("Текст сообщения пустой.")
+        by[key] = {"subject": subject, "body": text}
+    if by:
+        data[lang] = by
+    else:
+        data.pop(lang, None)
+    _write(templates_path(s), data)
+    return read_templates(s)

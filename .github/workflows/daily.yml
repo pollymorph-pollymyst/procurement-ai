@@ -8,7 +8,7 @@ on:
     - cron: "0 4 * * *"          # 04:00 UTC = 07:00 МСК
   push:
     branches: [main, master]
-    paths: ["Входящие/**", "config.toml", "procurement/**", "dashboard/**", "prompts/**", "suppliers.json"]
+    paths: ["Входящие/**", "config.toml", "procurement/**", "dashboard/**", "prompts/**", "suppliers.json", "stoplist.json"]
   workflow_dispatch:
 
 permissions:

@@ -90,3 +90,53 @@ def test_contacts_not_in_dashboard(s):
              {"SUP-1"})
     html = build.build_dashboard({"meta": {"as_of": "2026-08-13"}}, s).read_text(encoding="utf-8")
     assert "Ningbo" in html and "secret@ningbo.cn" not in html
+
+
+def test_templates_saved_locally_and_reset(s):
+    assert sup.read_templates(s) == {}
+    sup.save_template(s, {"lang": "zh", "key": "order", "subject": "订单", "body": "您好 {штук}\r\n谢谢"})
+    assert sup.read_templates(s) == {"zh": {"order": {"subject": "订单", "body": "您好 {штук}\n谢谢"}}}
+    assert sup.templates_path(s).parent == s.out_dir  # рядом с контактами, не в публикуемых файлах
+    std = sup.TPL["ru"]["dates"]
+    sup.save_template(s, {"lang": "ru", "key": "dates", **std})  # как стандартный — не хранится
+    assert "ru" not in sup.read_templates(s)
+    sup.save_template(s, {"lang": "zh", "key": "order", "subject": "", "body": ""})
+    assert sup.read_templates(s) == {}
+
+
+@pytest.mark.parametrize("body", [
+    {"lang": "de", "key": "order", "body": "x"},
+    {"lang": "ru", "key": "spam", "body": "x"},
+    {"lang": "ru", "key": "order", "subject": "тема", "body": ""},
+    {"lang": "ru", "key": "order", "body": "x" * 3001},
+])
+def test_bad_template_rejected(s, body):
+    with pytest.raises(sup.SupplierError):
+        sup.save_template(s, body)
+
+
+def test_standard_templates_complete():
+    for lang in sup.LANGS:
+        for key in sup.TPL_NAMES:
+            t = sup.TPL[lang][key]
+            assert t["subject"] and t["body"]
+            used = set(__import__("re").findall(r"\{([^{}]+)\}", t["subject"] + t["body"]))
+            assert used <= set(sup.TPL_FIELDS), (lang, key, used)
+    assert "std" in sup.schema()["tpl"]
+
+
+def test_stoplist_save(s):
+    from procurement import stoplist
+    skus, sups = {"SKU-1"}, {"SUP-1"}
+    stoplist.save(s, {"kind": "sku", "id": "SKU-1", "on": True, "until": "2099-03-01", "why": "пауза"}, skus, sups)
+    stoplist.save(s, {"kind": "supplier", "id": "SUP-1", "on": True, "why": "закрылись"}, skus, sups)
+    d = stoplist.read(s)
+    assert d["skus"]["SKU-1"]["until"] == "2099-03-01" and d["suppliers"]["SUP-1"]["why"] == "закрылись"
+    for bad in [{"kind": "sku", "id": "NOPE", "on": True}, {"kind": "x", "id": "SKU-1"},
+                {"kind": "sku", "id": "SKU-1", "on": True, "until": "2001-01-01"},
+                {"kind": "sku", "id": "SKU-1", "on": True, "until": "завтра"},
+                {"kind": "supplier", "id": "SUP-1", "on": True, "until": "2099-01-01"}]:
+        with pytest.raises(stoplist.StopError):
+            stoplist.save(s, bad, skus, sups)
+    stoplist.save(s, {"kind": "sku", "id": "SKU-1", "on": False}, skus, sups)
+    assert stoplist.read(s)["skus"] == {}

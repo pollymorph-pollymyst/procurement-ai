@@ -154,3 +154,29 @@ def test_export_writes_file_per_supplier(result, tmp_path):
     for g in result["order_now"]:
         assert (tmp_path / files[g["supplier_id"]].split("/")[-1]).exists()
     assert (tmp_path / files["_all"].split("/")[-1]).exists()
+
+
+def test_stop_marks(ds, s, result):
+    """«Больше не заказывать»: товар уходит из заказа, поставщик «не работаем» — товары ищут другого."""
+    line = order_lines(result)[0]
+    other = next(g for g in result["order_now"] if line["sku_id"] not in [l["sku_id"] for l in g["lines"]])
+    stop = {"skus": {line["sku_id"]: {"until": None, "why": "сняли с ассортимента"},
+                     "X-PAUSE": {"until": "2000-01-01", "why": ""}},
+            "suppliers": {other["supplier_id"]: {"until": None, "why": "закрылась фабрика"}}}
+    r2 = compute(ds, s, with_backtest=False, stop=stop)
+    x = _sku(r2, line["sku_id"])
+    assert x["status"] == "STOPPED" and x["qty"] == 0 and not x["deficit"]
+    assert "сняли с ассортимента" in x["reason"]
+    assert line["sku_id"] not in [l["sku_id"] for l in order_lines(r2)]
+    assert other["supplier_id"] not in [g["supplier_id"] for g in r2["order_now"]]
+    moved = [_sku(r2, l["sku_id"]) for l in other["lines"]]
+    assert all(m["status"] == "NEED_SUPPLIER" and m["supplier_stopped"] for m in moved)
+    assert r2["kpi"]["stopped_skus"] >= 1 and r2["lists"]["stopped"][0]["stop"]["why"]
+    assert next(x for x in r2["suppliers"] if x["supplier_id"] == other["supplier_id"])["stopped"]
+
+
+def test_stop_until_date_expires(ds, s, result):
+    line = order_lines(result)[0]
+    past = {"skus": {line["sku_id"]: {"until": "2000-01-01", "why": ""}}, "suppliers": {}}
+    r2 = compute(ds, s, with_backtest=False, stop=past)
+    assert _sku(r2, line["sku_id"])["status"] == "ORDER_NOW"
