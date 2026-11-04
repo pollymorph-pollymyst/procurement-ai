@@ -98,6 +98,32 @@ button,input,select{font:inherit;color:inherit}
 .comment li{padding:6px 0;border-top:1px solid var(--rule);font-size:14px;line-height:1.45}
 .comment li:first-child{border-top:0;padding-top:0}
 .comment .note{font-size:13px;color:var(--ink-3);margin-top:8px}
+/* поставщики: название вместо кода, значки контактов, карточка */
+.sup-code{font-family:var(--num);font-weight:500;font-size:13px;color:var(--ink-3);margin-left:6px;white-space:nowrap}
+.ct-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.ct{all:unset;box-sizing:border-box;width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--rule-strong);border-radius:2px;cursor:pointer;color:var(--ink);background:var(--leaf)}
+.ct:hover{background:var(--ink);color:var(--leaf)}
+.ct:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.ct svg{width:18px;height:18px}
+.ct.edit{border-style:dashed;color:var(--ink-2)}
+details.supc{border-top:1px solid var(--rule)}
+details.supc>summary{cursor:pointer;padding:14px 0;display:flex;gap:4px 12px;align-items:baseline;flex-wrap:wrap}
+details.supc[open]{padding-bottom:20px}
+.supc-n{font-weight:700;font-size:16px}
+.supc-m{font-size:14px;color:var(--ink-2)}
+.ct-list{display:flex;flex-direction:column;gap:8px;margin:10px 0 12px}
+.ct-list:empty::before{content:"Контактов пока нет.";color:var(--ink-2);font-size:14px}
+.ct-edit{display:grid;grid-template-columns:28px 150px minmax(0,1fr) 180px 44px;gap:8px;align-items:center}
+.ct-edit .ibox input[type=text],.ct-edit .ibox select{width:100%;min-width:0}
+.ct-edit .iconbtn{width:44px;height:44px}
+.ct-ic{display:grid;place-items:center}
+.ct-ic svg,.ct-edit .iconbtn svg{width:20px;height:20px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--leaf);padding:11px 16px;font-size:14px;font-weight:600;border-radius:2px;z-index:60;box-shadow:var(--shadow);max-width:calc(100vw - 32px)}
+@media (max-width:760px){
+  .ct-edit{grid-template-columns:28px minmax(0,1fr) 44px;padding-bottom:10px;border-bottom:1px solid var(--rule)}
+  .ct-edit>.ct-ic{order:1}.ct-edit>.ibox:nth-child(2){order:2}.ct-edit>.iconbtn{order:3}
+  .ct-edit>.ibox:nth-child(3),.ct-edit>.ibox:nth-child(4){order:4;grid-column:1/-1}
+}
 
 /* sections */
 section.block{margin-top:40px}
@@ -493,6 +519,17 @@ const I = {
   ext: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v6H4V6h6"/>',
   send: '<path d="M4 12 20 4l-5 16-3.5-6.5L4 12Z"/><path d="m11.5 13.5 3-3"/>',
   truck: '<path d="M3 6.5h11v9H3zM14 9.5h3.8l3.2 3.3v2.7H14"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/>',
+  // контакты поставщиков — у каждого вида свой значок
+  mail: '<rect x="3.5" y="5.5" width="17" height="13"/><path d="m4 6.5 8 6.5 8-6.5"/>',
+  phone: '<path d="M5.2 4h3.3l1.7 4.2-2.2 1.4a11 11 0 0 0 6.4 6.4l1.4-2.2 4.2 1.7v3.3a1.6 1.6 0 0 1-1.7 1.6C10.5 19.8 4.2 13.5 3.6 5.7A1.6 1.6 0 0 1 5.2 4Z"/>',
+  wa: '<path d="M4 20l1.3-4A8.5 8.5 0 1 1 8.3 18.7L4 20Z"/><path d="M9.3 8.6c0 3.3 2.8 6.1 6.1 6.1l.9-1.6-2-1-.9.8a5 5 0 0 1-2.3-2.3l.8-.9-1-2-1.6.9Z"/>',
+  tg: '<path d="M20.5 4.5 3.5 11.2l5.8 2.1 2.2 6.2 3.1-3.6 4.6 3.4 1.3-14.8Z"/><path d="m9.3 13.3 8-6.2"/>',
+  wechat: '<path d="M10 14.9c-.5.1-1 .1-1.5.1-.8 0-1.5-.1-2.2-.3L3.8 16l.6-2.2C3 12.8 2.2 11.3 2.2 9.7 2.2 6.6 5 4 8.5 4s6.3 2.6 6.3 5.7"/><path d="M15.3 10c3.4 0 6.2 2.2 6.2 4.9 0 1.4-.8 2.7-2 3.6l.5 1.9-2.2-1.1c-.8.3-1.6.4-2.5.4-3.4 0-6.2-2.2-6.2-4.8 0-2.7 2.8-4.9 6.2-4.9Z"/><path d="M6.4 8.3h.1M10.6 8.3h.1M13.4 14.1h.1M17.3 14.1h.1"/>',
+  globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.6 3.5 5.4 3.5 8.5s-1.1 5.9-3.5 8.5c-2.4-2.6-3.5-5.4-3.5-8.5s1.1-5.9 3.5-8.5Z"/>',
+  link: '<path d="M10.2 13.8a4 4 0 0 0 5.6 0l3-3a4 4 0 0 0-5.6-5.6l-1 1"/><path d="M13.8 10.2a4 4 0 0 0-5.6 0l-3 3a4 4 0 0 0 5.6 5.6l1-1"/>',
+  pencil: '<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  trash: '<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13"/>',
 };
 const ic = (k, cls = "") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
 
@@ -533,6 +570,53 @@ const rdNY = s => { const d = pd(s); return `${d.getDate()} ${MG[d.getMonth()]}`
 const asOf = pd(D.meta.as_of);
 const C = D.commentary || {};
 const files = D.files || {};
+/* карточки поставщиков: название и язык — в данных страницы; контакты — только с компьютера закупщика */
+const SI = D.supplier_info || {}, SCH = D.supplier_schema || { langs: {}, kinds: {} };
+let CONTACTS = {};
+const supHead = id => { const n = SI[id] && SI[id].name; return n ? `${esc(n)}<span class="sup-code">${esc(id)}</span>` : esc(id || "Без поставщика"); };
+const supText = id => (SI[id] && SI[id].name) || id || "без поставщика";
+const CT_ICON = { email: "mail", phone: "phone", whatsapp: "wa", telegram: "tg", wechat: "wechat", site: "globe", other: "link" };
+const digits = v => String(v).replace(/\D/g, "");
+const isUrl = v => /^https?:\/\/\S+$/i.test(v);
+// куда ведёт значок; null — открыть нечего (WeChat), значение копируется
+function ctHref(c) {
+  const v = String(c.value || "").trim();
+  switch (c.kind) {
+    case "email": return "mailto:" + v;
+    case "phone": return "tel:" + (v.startsWith("+") ? "+" : "") + digits(v);
+    case "whatsapp": return isUrl(v) ? v : "https://wa.me/" + digits(v);
+    case "telegram": return isUrl(v) ? v : /^\+?[\d\s()-]{6,}$/.test(v) ? "https://t.me/+" + digits(v) : "https://t.me/" + encodeURIComponent(v.replace(/^@/, ""));
+    case "site": return isUrl(v) ? v : /^[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(v) ? "https://" + v : null;
+    default: return isUrl(v) ? v : null;
+  }
+}
+function ctIcons(id) {
+  const list = CONTACTS[id] || [];
+  const edit = LOCAL() && id ? `<button class="ct edit" type="button" data-sup-card="${esc(id)}" title="${list.length ? "Изменить контакты" : "Добавить контакты"}" aria-label="${list.length ? "Изменить" : "Добавить"} контакты поставщика ${esc(supText(id))}">${ic(list.length ? "pencil" : "plus")}</button>` : "";
+  if (!list.length && !edit) return "";
+  return `<div class="ct-row">${list.map(c => {
+    const label = `${(SCH.kinds[c.kind] || {}).label || c.kind}: ${c.value}${c.note ? ` (${c.note})` : ""}`, h = ctHref(c), i = ic(CT_ICON[c.kind] || "link");
+    return h ? `<a class="ct" href="${esc(h)}"${/^https?:/.test(h) ? ' target="_blank" rel="noopener"' : ""} title="${esc(label)}" aria-label="${esc(label)}">${i}</a>`
+      : `<button class="ct" type="button" data-copy="${esc(c.value)}" title="${esc(label)} — нажмите, чтобы скопировать" aria-label="${esc(label)}. Скопировать">${i}</button>`;
+  }).join("")}${edit}</div>`;
+}
+function toast(text, where) {
+  const t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); t.textContent = text;
+  (where || document.body).appendChild(t); setTimeout(() => t.remove(), 2200);
+}
+document.addEventListener("click", e => {
+  const c = e.target.closest("[data-copy]");
+  if (c) {
+    const v = c.dataset.copy, where = c.closest("dialog");
+    const old = () => { const t = document.createElement("textarea"); t.value = v; t.style.cssText = "position:fixed;opacity:0"; (where || document.body).appendChild(t); t.select();
+      let ok = false; try { ok = document.execCommand("copy"); } catch (e) {} t.remove(); return ok; };
+    const say = ok => toast(ok ? `Скопировано: ${v}` : `${v} — выделите и скопируйте`, where);
+    (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => say(true), () => say(old()));
+    return;
+  }
+  const k = e.target.closest("[data-sup-card]");
+  if (k) openSupCard(k.dataset.supCard);
+});
 const app = $("#app");
 const weekday = asOf.toLocaleDateString("ru-RU", { weekday: "long" });
 const today0 = new Date(); today0.setHours(0, 0, 0, 0);
@@ -644,9 +728,10 @@ function setSent(g, on) {
 }
 const dm = iso => { const d = new Date(iso); return isNaN(d) ? "" : `${d.getDate()} ${MS[d.getMonth()]}, ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
 function supRow(g, i) {
-  const f = fileUrl(files[g.supplier_id]);
+  // на компьютере закупщика файл собирается на лету — с контактами поставщика
+  const f = files[g.supplier_id] && LOCAL() ? `api/order.xlsx?sup=${encodeURIComponent(g.supplier_id || "")}` : fileUrl(files[g.supplier_id]);
   if (isSent(g)) return `<div class="sup sent" id="sup-${i}"><div class="sup-row">
-    <div class="c-name"><div class="sup-name">${esc(g.supplier_id || "Без поставщика")}</div><div class="sup-sub">${N(g.skus)} поз. · ${N(g.qty)} шт.${f ? ` · <a href="${f}" download>файл заказа</a>` : ""}</div></div>
+    <div class="c-name"><div class="sup-name">${supHead(g.supplier_id)}</div><div class="sup-sub">${N(g.skus)} поз. · ${N(g.qty)} шт.${f ? ` · <a href="${f}" download>файл заказа</a>` : ""}</div>${ctIcons(g.supplier_id)}</div>
     <div class="c-dl"><span class="sent-mark">${ic("check")}Отправлено ${dm(sent[supKey(g)])}</span>${LOCAL() ? `<span class="small muted">при пересчёте станет заказом «в пути»</span>` : ""}
       <button class="btn ghost" type="button" data-sent="${i}" data-on="0">Вернуть в список</button></div></div></div>`;
   const type = g.supply_type === "local" ? "местный" : g.supply_type === "import" ? "импорт" : "";
@@ -654,15 +739,15 @@ function supRow(g, i) {
   const a = g.arrival_date ? pd(g.arrival_date) : null;
   return `<div class="sup" id="sup-${i}">
     <div class="sup-row">
-      <div class="c-name"><div class="sup-name">${esc(g.supplier_id || "Без поставщика")}</div>
-        <div class="sup-sub">${type}${g.lead_days ? ` · везёт ${g.lead_days} дн.` : ""}${g.holiday_days ? ` + ${g.holiday_days} дн. простоя (${esc(g.holiday)})` : ""}${fill}</div></div>
+      <div class="c-name"><div class="sup-name">${supHead(g.supplier_id)}</div>
+        <div class="sup-sub">${type}${g.lead_days ? ` · везёт ${g.lead_days} дн.` : ""}${g.holiday_days ? ` + ${g.holiday_days} дн. простоя (${esc(g.holiday)})` : ""}${fill}</div>${ctIcons(g.supplier_id)}</div>
       <div class="c-sk"><span class="cell-k">позиций</span><span class="cell-v">${N(g.skus)}</span></div>
       <div class="c-q"><span class="cell-k">штук</span><span class="cell-v">${N(g.qty)}</span></div>
       <div class="c-def"><span class="cell-k">не успеем довезти</span><span class="cell-v ${g.deficit ? "red" : ""}">${N(g.deficit)}</span></div>
       <div class="c-arr">${a ? `<span class="cell-k">придёт к</span><span class="date-leaf"><b>${a.getDate()}</b><span>${MS[a.getMonth()]}<br>${a.getFullYear()}</span></span>` : ""}</div>
       <div class="c-dl">${f ? `<a class="btn" href="${f}" download>${ic("download")}Скачать заказ (Excel)</a>` : ""}
-        <button class="btn ghost" type="button" data-sent="${i}" data-on="1" aria-label="Отметить: заказ поставщику ${esc(g.supplier_id)} отправлен">${ic("send")}Отправлено</button></div>
-      <div class="c-tg"><button class="toggle" type="button" aria-expanded="false" aria-controls="sup-l-${i}" aria-label="Показать состав заказа ${esc(g.supplier_id)}">${ic("chev")}</button></div>
+        <button class="btn ghost" type="button" data-sent="${i}" data-on="1" aria-label="Отметить: заказ поставщику ${esc(supText(g.supplier_id))} отправлен">${ic("send")}Отправлено</button></div>
+      <div class="c-tg"><button class="toggle" type="button" aria-expanded="false" aria-controls="sup-l-${i}" aria-label="Показать состав заказа ${esc(supText(g.supplier_id))}">${ic("chev")}</button></div>
     </div>
     <div class="sup-lines" id="sup-l-${i}"></div>
   </div>`;
@@ -690,7 +775,7 @@ function renderSuppliers(all) {
   const m = $("#sup-more"); if (m) m.onclick = () => renderSuppliers(!all);
   $("#sent-acc").innerHTML = ACC.length ? `<div class="acc"><h3>Уже отправлено — учтено как заказы в пути</h3>
     <p class="small muted">Пока этих заказов нет в выгрузке из учётной системы, расчёт считает их едущими и не предлагает заказать повторно.</p>
-    ${ACC.map(x => `<div class="acc-row"><span><b>${esc(x.supplier_id)}</b> · ${N(x.skus)} поз., ${N(x.qty)} шт. · отправлено ${dm(x.when)}</span>
+    ${ACC.map(x => `<div class="acc-row"><span><b>${supHead(x.supplier_id)}</b> · ${N(x.skus)} поз., ${N(x.qty)} шт. · отправлено ${dm(x.when)}</span>
       ${LOCAL() ? `<button class="linkbtn" type="button" data-unsent="${esc(x.supplier_id)}">Не отправляли — убрать</button>` : ""}</div>`).join("")}</div>` : "";
 }
 $("#sent-acc").addEventListener("click", e => {
@@ -778,6 +863,8 @@ $("#tabs").innerHTML = TABS.map(([id, t, c]) => `<button role="tab" id="t-${id}"
 $("#panels").innerHTML = TABS.map(([id]) => `<section class="panel" role="tabpanel" id="p-${id}" aria-labelledby="t-${id}" hidden></section>`).join("");
 const rendered = {};
 let current = null;
+// после правки названий поставщиков: открытая вкладка рисуется заново, остальные — при открытии
+function rerenderTab() { Object.keys(rendered).forEach(k => delete rendered[k]); if (current) { RENDER[current]($("#p-" + current)); rendered[current] = true; } }
 function showTab(id, scroll) {
   if (!TABS.some(t => t[0] === id)) id = "calendar";
   TABS.forEach(([t]) => { const b = $("#t-" + t), p = $("#p-" + t); const on = t === id; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; p.hidden = !on; });
@@ -822,7 +909,7 @@ function calDetail() {
   if (!calSel) { box.innerHTML = ""; return; }
   const rows = D.calendar_lines.filter(c => c.date.startsWith(calSel)).sort((a, b) => a.date.localeCompare(b.date) || b.qty - a.qty);
   box.innerHTML = `<h3>Заказы на ${ym(calSel + "-01")}</h3><div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr><th>Заказать до</th><th>Поставщик</th><th>Артикул</th><th>Категория</th><th class="n">Штук</th><th>Придёт к</th></tr></thead><tbody>
-    ${rows.map(r => { const s = SKU[r.sku_id] || {}; return `<tr class="click" data-sku="${esc(r.sku_id)}"><td>${rdShort(r.date)}</td><td>${esc(r.supplier_id)}</td><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(s.category_name)}</td><td class="n num">${N(r.qty)}</td><td>${rdShort(r.arrival)}</td></tr>`; }).join("")}
+    ${rows.map(r => { const s = SKU[r.sku_id] || {}; return `<tr class="click" data-sku="${esc(r.sku_id)}"><td>${rdShort(r.date)}</td><td>${esc(supText(r.supplier_id))}</td><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(s.category_name)}</td><td class="n num">${N(r.qty)}</td><td>${rdShort(r.arrival)}</td></tr>`; }).join("")}
   </tbody></table></div>`;
 }
 
@@ -850,9 +937,9 @@ RENDER.risks = p => {
     ${more ? "" : `<button type="button" class="more" data-rmore="1" aria-expanded="false">Ещё 3 списка <span class="num">${N(restN)}</span></button>`}</div>
   <p class="lead">${esc(lead)}</p>
   ${!rows.length ? `<div class="empty-state">Таких товаров нет.</div>` : cols ? `<div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr><th>Артикул</th><th>Категория</th><th>Поставщик</th><th class="n">На складе</th><th class="n">В пути</th>${cols.map(c => `<th class="n">${COLS[c][0]}</th>`).join("")}<th>Почему</th></tr></thead><tbody>
-    ${rows.map(r => `<tr class="click" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(r.category_name)}</td><td class="id">${esc(r.supplier_id || "—")}</td><td class="n">${N(r.on_hand)}</td><td class="n">${N(r.pipeline)}</td>${cols.map(c => `<td class="n">${COLS[c][1](r)}</td>`).join("")}<td><div class="why">${esc(r.reason)}</div></td></tr>`).join("")}
+    ${rows.map(r => `<tr class="click" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(r.category_name)}</td><td class="id">${r.supplier_id ? esc(supText(r.supplier_id)) : "—"}</td><td class="n">${N(r.on_hand)}</td><td class="n">${N(r.pipeline)}</td>${cols.map(c => `<td class="n">${COLS[c][1](r)}</td>`).join("")}<td><div class="why">${esc(r.reason)}</div></td></tr>`).join("")}
   </tbody></table></div>` : `<div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr><th>Заказ</th><th>Артикул</th><th>Поставщик</th><th>Заказан</th><th>Обещали к</th><th class="n">Ждём, шт.</th><th>Состояние</th></tr></thead><tbody>
-    ${rows.sort((a, b) => b.overdue_days - a.overdue_days).map(o => `<tr class="click" data-sku="${esc(o.sku_id)}"><td>${esc(o.po_id)}</td><td><button class="linkbtn sku" type="button">${esc(o.sku_id)}</button></td><td>${esc(o.supplier_id)}</td><td>${rdShort(o.order_date)}</td><td>${rdShort(o.promised)}</td><td class="n">${N(o.qty)}</td>
+    ${rows.sort((a, b) => b.overdue_days - a.overdue_days).map(o => `<tr class="click" data-sku="${esc(o.sku_id)}"><td>${esc(o.po_id)}</td><td><button class="linkbtn sku" type="button">${esc(o.sku_id)}</button></td><td>${esc(supText(o.supplier_id))}</td><td>${rdShort(o.order_date)}</td><td>${rdShort(o.promised)}</td><td class="n">${N(o.qty)}</td>
       <td>${o.state === "сомнительный" ? `<span class="st critical">${ic("alert")}просрочен на ${N(o.overdue_days)} дн. — не учтён</span>` : `<span class="st warning">${ic("clock")}опаздывает на ${N(o.overdue_days)} дн.</span>`}</td></tr>`).join("")}
   </tbody></table></div>`}`;
   p.querySelectorAll("[data-r]").forEach(b => b.onclick = () => { riskSel = b.dataset.r; RENDER.risks(p); });
@@ -892,7 +979,7 @@ function allTable() {
   $("#f-count").textContent = `Показано: ${tov(rows.length)}${f.st ? "" : " (без тех, что не продаются)"}`;
   const max = 300;
   $("#all-tbl").innerHTML = rows.length ? `<div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица" style="max-height:70vh"><table><thead><tr>${ALL_COLS.map(([key, t, num]) => `<th class="sortable ${num ? "n" : ""}" data-k="${key}" ${f.sort === key ? `aria-sort="${f.dir > 0 ? "ascending" : "descending"}"` : ""} tabindex="0">${t}</th>`).join("")}</tr></thead><tbody>
-    ${rows.slice(0, max).map(r => `<tr class="click ${r.deficit ? "warn" : ""}" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${chip(r.status)}</td><td>${esc(r.category_name)}</td><td>${esc(r.supplier_id || "—")}</td>
+    ${rows.slice(0, max).map(r => `<tr class="click ${r.deficit ? "warn" : ""}" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${chip(r.status)}</td><td>${esc(r.category_name)}</td><td>${r.supplier_id ? esc(supText(r.supplier_id)) : "—"}</td>
       <td class="n">${N(r.on_hand)}</td><td class="n">${N(r.pipeline)}</td><td class="n">${N(r.demand_3m)}</td><td style="white-space:nowrap">${r.level > 0 ? (r.cover_until ? rdShort(r.cover_until) : "больше 1,5 лет") : "—"}</td><td style="white-space:nowrap">${r.order_date ? rdShort(r.order_date) : "—"}</td><td class="n num">${r.qty ? N(r.qty) : "—"}</td></tr>`).join("")}
   </tbody></table></div>${rows.length > max ? `<p class="small muted">Показаны первые ${max}. Уточните поиск или фильтр.</p>` : ""}` : `<div class="empty-state">Ничего не найдено. Проверьте артикул или сбросьте фильтры.</div>`;
   document.querySelectorAll("#all-tbl th.sortable").forEach(th => { const go = () => { if (f.sort === th.dataset.k) f.dir *= -1; else { f.sort = th.dataset.k; f.dir = th.classList.contains("n") ? -1 : 1; } allTable(); };
@@ -910,7 +997,7 @@ RENDER.changes = p => {
   <div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица" style="max-width:640px"><table><thead><tr><th>Показатель</th><th class="n">Было</th><th class="n">Стало</th><th class="n">Изменение</th></tr></thead><tbody>
   ${rowsK.map(([t, k]) => `<tr><td>${t}</td><td class="n">${N(kp[k])}</td><td class="n">${N(K[k])}</td><td class="n num">${sign(d[k] || 0)}</td></tr>`).join("")}</tbody></table></div>
   <h3>Добавились в «Заказать сейчас» · ${N(ch.became_order_now.length)}</h3>
-  ${tbl(ch.became_order_now, ["Артикул", "Категория", "Поставщик", "Было", "Заказать, шт."], r => `<tr class="click" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(r.category_name)}</td><td>${esc(r.supplier_id || "—")}</td><td>${chipL(r.from)}</td><td class="num">${N(r.qty)}</td></tr>`)}
+  ${tbl(ch.became_order_now, ["Артикул", "Категория", "Поставщик", "Было", "Заказать, шт."], r => `<tr class="click" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(r.category_name)}</td><td>${r.supplier_id ? esc(supText(r.supplier_id)) : "—"}</td><td>${chipL(r.from)}</td><td class="num">${N(r.qty)}</td></tr>`)}
   <h3>Ушли из «Заказать сейчас» · ${N(ch.left_order_now.length)}</h3>
   ${tbl(ch.left_order_now, ["Артикул", "Категория", "Теперь", "Почему"], r => `<tr class="click" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(r.category_name)}</td><td>${chipL(r.to)}</td><td class="small">${r.why ? esc(r.why.charAt(0).toUpperCase() + r.why.slice(1)) : "—"}</td></tr>`)}
   ${ch.qty_changed.length ? `<h3>Сильно изменилось количество · ${N(ch.qty_changed.length)}</h3>${tbl(ch.qty_changed, ["Артикул", "Категория", "Было, шт.", "Стало, шт."], r => `<tr class="click" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(r.category_name)}</td><td class="num">${N(r.was)}</td><td class="num">${N(r.now)}</td></tr>`)}` : ""}
@@ -949,7 +1036,7 @@ RENDER.forecast = p => {
 RENDER.suppliers = p => {
   p.innerHTML = `<p class="lead">Срок поставки и цикл заказа считаются по истории каждого поставщика. «Довозит» — какая доля заказанного по закрытым заказам действительно пришла.</p>
   <div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr><th>Поставщик</th><th>Тип</th><th class="n">Везёт, дн.</th><th class="n">Заказ раз в, дн.</th><th class="n">Довозит</th><th class="n">Заказов в пути</th><th class="n">Товаров</th><th class="n">Заказать сейчас, шт.</th><th></th></tr></thead><tbody>
-  ${D.suppliers.map(s => `<tr><td class="sku">${esc(s.supplier_id)}</td><td>${s.supply_type === "local" ? "местный" : s.supply_type === "import" ? "импорт" : "—"}</td><td class="n">${N(s.lead_days)}</td><td class="n">${N(s.cycle_days)}</td>
+  ${D.suppliers.map(s => `<tr><td class="${SI[s.supplier_id] && SI[s.supplier_id].name ? "" : "sku"}">${supHead(s.supplier_id)}</td><td>${s.supply_type === "local" ? "местный" : s.supply_type === "import" ? "импорт" : "—"}</td><td class="n">${N(s.lead_days)}</td><td class="n">${N(s.cycle_days)}</td>
     <td class="n">${s.fill_rate == null ? "—" : s.fill_rate >= 0.05 && s.fill_rate < 0.6 ? `<span class="st serious">${ic("alert")}${N(s.fill_rate * 100)}%</span>` : N(s.fill_rate * 100) + "%"}</td>
     <td class="n">${N(s.open_orders)}</td><td class="n">${N(s.active_skus)}</td><td class="n num">${s.order_now_qty ? N(s.order_now_qty) : "—"}</td>
     <td>${files[s.supplier_id] ? `<a href="${fileUrl(files[s.supplier_id])}" download class="small">Excel</a>` : ""}</td></tr>`).join("")}</tbody></table></div>`;
@@ -977,7 +1064,7 @@ function openCard(id) {
   const hist = r.history ? r.history.sales : [];
   const facts = [["На складе", N(r.on_hand)], ["В пути", N(r.pipeline)], ["Спрос в месяц", N(r.demand_3m / 3)], ["Срок поставки", r.lead_days + " дн."],
     ["Хватит до", r.level > 0 ? (r.cover_until ? rdShort(r.cover_until) : "> 1,5 лет") : "—"], ["Заказать до", r.order_date ? rdShort(r.order_date) : "—"], ["Сколько", r.qty ? N(r.qty) : "—"], ["Страховой запас", N(r.safety_stock)]];
-  dlg.innerHTML = `<div class="card-head"><div><h2 id="card-title">${esc(r.sku_id)}</h2><div class="small muted">${esc(r.category_name)} · ${esc(r.supplier_id || "без поставщика")} · ${r.abc === "A" ? "важный товар" : r.abc === "B" ? "средняя важность" : "низкая важность"}${r.markup != null ? ` · наценка ${N(r.markup)}%` : ""}</div></div>
+  dlg.innerHTML = `<div class="card-head"><div><h2 id="card-title">${esc(r.sku_id)}</h2><div class="small muted">${esc(r.category_name)} · ${r.supplier_id ? supHead(r.supplier_id) : "без поставщика"} · ${r.abc === "A" ? "важный товар" : r.abc === "B" ? "средняя важность" : "низкая важность"}${r.markup != null ? ` · наценка ${N(r.markup)}%` : ""}</div></div>
     <button class="iconbtn close" type="button" aria-label="Закрыть">${ic("x")}</button></div>
   <div class="card-body">${chip(r.status)}
     <div class="reason">${esc(r.reason)}</div>
@@ -1061,12 +1148,12 @@ function renderCtl() {
   <div class="card-body">
     ${m === "file" ? `<div class="mode">${ic("alert")}<div>Кнопки управления работают, когда дашборд открыт через файл <b>«Открыть закупки.bat»</b> в папке программы. Сейчас страница открыта напрямую, поэтому здесь можно только посмотреть.</div></div>`
       : m === "online" ? `<div class="mode">${ic("ext")}<div>${gh ? "Обновить, загрузить выгрузку и поменять настройки можно на GitHub — кнопки ниже открывают нужную страницу (нужен вход в аккаунт)." : "Управлять можно на компьютере с программой: «Открыть закупки.bat»."}</div></div>` : ""}
-    ${secRun(m, gh)}${secData(m)}${secSchedule(m, gh)}${secSettings(m, gh)}${secHolidays(m, gh)}${secWriter(m)}${secHistory()}
+    ${secRun(m, gh)}${secData(m)}${secSchedule(m, gh)}${secSettings(m, gh)}${secSuppliers(m, gh)}${secHolidays(m, gh)}${secWriter(m)}${secHistory()}
   </div>
   ${m === "local" ? `<div class="ctl-save" id="ctl-save" hidden><button class="btn primary" type="button" id="set-save">Сохранить и пересчитать</button>
     <button class="btn ghost" type="button" id="set-cancel">Отменить изменения</button><span class="msg" id="save-msg" role="status"></span></div>` : ""}`;
   ctl.scrollTop = y;
-  bindCtl();
+  bindCtl(); bindSuppliers();
   const wp = $("#wr-panel", ctl); if (wp) mountWriter(wp, "p", false);
   renderJob();
 }
@@ -1365,6 +1452,76 @@ function secSettings(m, gh) {
   </section>`;
 }
 
+function ctEdit(c) {
+  c = c || { kind: "email", value: "" };
+  const k = SCH.kinds[c.kind] || {};
+  return `<div class="ct-edit"><span class="ct-ic" aria-hidden="true">${ic(CT_ICON[c.kind] || "link")}</span>
+    <div class="ibox"><select data-ck aria-label="Вид контакта">${Object.entries(SCH.kinds).map(([v, o]) => `<option value="${v}" ${v === c.kind ? "selected" : ""}>${esc(o.label)}</option>`).join("")}</select></div>
+    <div class="ibox"><input type="text" data-cv value="${esc(c.value)}" maxlength="200" placeholder="${esc(k.hint || "")}" aria-label="Контакт"></div>
+    <div class="ibox"><input type="text" data-cn value="${esc(c.note || "")}" maxlength="60" placeholder="кто это (не обязательно)" aria-label="Кто это"></div>
+    <button class="iconbtn" type="button" data-ct-del aria-label="Удалить контакт">${ic("trash")}</button></div>`;
+}
+function secSuppliers(m, gh) {
+  const list = (D.suppliers || []).filter(s => s.supplier_id);
+  if (!list.length) return "";
+  const ro = m !== "local";
+  const langs = sel => Object.entries(SCH.langs).map(([v, t]) => `<option value="${v}" ${v === sel ? "selected" : ""}>${esc(t)}</option>`).join("");
+  return `<section class="ctl-sec" id="cs-sup" aria-labelledby="cs-sup-h"><h3 id="cs-sup-h">Поставщики</h3>
+    <p class="lead">Название показывается вместо кода на страницах и в файле заказа. Файл заказа собирается на языке поставщика. Контакты открываются по значку рядом с поставщиком: почта, телефон, WhatsApp, Telegram, сайт; WeChat — копируется.</p>
+    ${roNote(m, gh, "edit")}${ro ? `<p class="small muted" style="max-width:62ch">Контакты хранятся только на компьютере закупщика: в онлайн-версию и в опубликованные файлы заказов они не попадают.</p>` : ""}
+    <fieldset class="ro" id="sup-fs" ${ro ? "disabled" : ""}>
+    ${list.map((s, i) => {
+      const id = s.supplier_id, inf = SI[id] || {}, cs = CONTACTS[id] || [];
+      return `<details class="supc" data-sid="${esc(id)}" ${CTL.openSup === id ? "open" : ""}>
+        <summary><span class="supc-n">${supHead(id)}</span><span class="supc-m">файл: ${esc(SCH.langs[inf.lang || "ru"] || "Русский")}${cs.length ? ` · ${cs.length} ${plural(cs.length, "контакт", "контакта", "контактов")}` : ""}</span></summary>
+        <div class="field"><label for="sn-${i}">Название</label><p class="help">Пусто — показывается код ${esc(id)}.</p>
+          <div class="inp"><div class="ibox"><input type="text" id="sn-${i}" data-sn value="${esc(inf.name || "")}" maxlength="80" placeholder="${esc(id)}"></div></div></div>
+        <div class="field"><label for="sl-${i}">Язык файла заказа</label><p class="help">Заголовки, даты и пометки в Excel. Названия товаров остаются как в учётной системе.</p>
+          <div class="inp"><div class="ibox"><select id="sl-${i}" data-sl>${langs(inf.lang || "ru")}</select></div></div></div>
+        ${ro ? "" : `<h4>Контакты</h4><div class="ct-list" data-ctl>${cs.map(ctEdit).join("")}</div>
+          <div class="btnrow"><button class="btn ghost" type="button" data-ct-add>${ic("plus")}Добавить контакт</button></div>
+          <div class="btnrow" style="margin-top:16px"><button class="btn" type="button" data-sup-save>Сохранить</button><span class="msg" role="status" data-sup-msg></span></div>`}
+      </details>`;
+    }).join("")}
+    </fieldset></section>`;
+}
+function openSupCard(id) {
+  CTL.openSup = id; openCtl("sup");
+  const d = [...ctl.querySelectorAll("details.supc")].find(x => x.dataset.sid === id);
+  if (d) { d.scrollIntoView({ block: "start" }); const f = $("[data-sn]", d); if (f && !f.disabled) f.focus({ preventScroll: true }); }
+}
+function bindSuppliers() {
+  ctl.querySelectorAll("details.supc").forEach(d => {
+    d.addEventListener("toggle", () => { if (d.open) CTL.openSup = d.dataset.sid; else if (CTL.openSup === d.dataset.sid) CTL.openSup = null; });
+    const list = $("[data-ctl]", d); if (!list) return;
+    $("[data-ct-add]", d).onclick = () => {
+      if (list.children.length >= 12) { $("[data-sup-msg]", d).textContent = "Не больше 12 контактов."; return; }
+      list.insertAdjacentHTML("beforeend", ctEdit()); $("[data-cv]", list.lastElementChild).focus();
+    };
+    list.addEventListener("click", e => { const b = e.target.closest("[data-ct-del]"); if (b) b.closest(".ct-edit").remove(); });
+    list.addEventListener("change", e => {
+      const sel = e.target.closest("[data-ck]"); if (!sel) return;
+      const row = sel.closest(".ct-edit");
+      $(".ct-ic", row).innerHTML = ic(CT_ICON[sel.value] || "link");
+      $("[data-cv]", row).placeholder = (SCH.kinds[sel.value] || {}).hint || "";
+    });
+    $("[data-sup-save]", d).onclick = () => {
+      const id = d.dataset.sid, msg = $("[data-sup-msg]", d), btn = $("[data-sup-save]", d);
+      const contacts = [...list.querySelectorAll(".ct-edit")].map(r => ({ kind: $("[data-ck]", r).value, value: $("[data-cv]", r).value.trim(), note: $("[data-cn]", r).value.trim() })).filter(c => c.value);
+      btn.disabled = true; msg.className = "msg"; msg.textContent = "Сохраняю…";
+      api("/api/suppliers", { supplier_id: id, name: $("[data-sn]", d).value.trim(), lang: $("[data-sl]", d).value, contacts })
+        .then(j => {
+          CONTACTS = j.contacts || {};
+          Object.keys(SI).forEach(k => delete SI[k]); Object.assign(SI, j.supplier_info || {});
+          renderSuppliers(supAll); rerenderTab();
+          CTL.openSup = id; renderCtl();
+          const d2 = [...ctl.querySelectorAll("details.supc")].find(x => x.dataset.sid === id), m2 = d2 && $("[data-sup-msg]", d2);
+          if (m2) { m2.className = "msg"; m2.textContent = "Сохранено. Файл заказа обновлён."; }
+        })
+        .catch(e => { btn.disabled = false; msg.className = "msg bad"; msg.textContent = e.message; });
+    };
+  });
+}
 function secHolidays(m, gh) {
   const H_ = CTL.st.holidays; if (!H_) return "";
   const C = H_.countries || {}, list = H_.country_list || [], ro = m !== "local", today = new Date().toISOString().slice(0, 10);
@@ -1387,7 +1544,7 @@ function secHolidays(m, gh) {
       <div class="field wide"><label for="hc-loc">Местные поставщики</label><div class="inp"><div class="ibox"><select id="hc-loc" data-cty="местный">${opt(C["местный"])}</select></div></div></div>
       ${sups.length ? `<details class="adv"><summary>Страна отдельного поставщика${own ? ` — задано у ${own}` : ""}</summary>
         <p class="lead">Если поставщик не из Китая (например, из Индии или Вьетнама), выберите его страну. Остальные — как у всех своего типа.</p>
-        ${sups.map((s, i) => `<div class="field"><label for="hs-${i}">${esc(s.supplier_id)}</label><p class="help">${s.supply_type === "local" ? "местный" : "импорт"}</p>
+        ${sups.map((s, i) => `<div class="field"><label for="hs-${i}">${supHead(s.supplier_id)}</label><p class="help">${s.supply_type === "local" ? "местный" : "импорт"}</p>
           <div class="inp"><div class="ibox"><select id="hs-${i}" data-cty="${esc(s.supplier_id)}" data-orig="${esc(C[s.supplier_id] || "")}">${opt(C[s.supplier_id], "как у всех " + (s.supply_type === "local" ? "местных" : "импортных"))}</select></div></div></div>`).join("")}
       </details>` : ""}
       <h4>Праздники и простой фабрик</h4>${hol}
@@ -1505,10 +1662,14 @@ function bindCtl() {
   }
 }
 
+function loadContacts() {
+  fetch("api/contacts", { cache: "no-store", headers: { "X-Procurement": "1" } }).then(r => r.ok ? r.json() : null)
+    .then(j => { if (!j) return; CONTACTS = j.contacts || {}; renderSuppliers(supAll); if (ctl.open) renderCtl(); }).catch(() => {});
+}
 function mergeSent(server) { if (!server) return; sent = { ...server }; try { localStorage.setItem(SENT_KEY, JSON.stringify(sent)); } catch (e) {} renderSuppliers(supAll); }
 renderHead();
 if (/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) {
-  api("/api/state").then(j => { CTL.mode = "local"; CTL.st = j.control; CTL.job = j.job; renderHead(); mergeSent(j.control.sent); if (j.job && j.job.running) poll();
+  api("/api/state").then(j => { CTL.mode = "local"; CTL.st = j.control; CTL.job = j.job; renderHead(); mergeSent(j.control.sent); loadContacts(); if (j.job && j.job.running) poll();
     else if (j.control.setup && !j.control.setup.done) { const sb = $("#stale-bar"); if (sb) sb.hidden = true; openSetup(); } }).catch(() => {});
 }
 

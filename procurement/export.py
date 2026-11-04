@@ -9,6 +9,7 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
 from .plan import ru_date
+from . import suppliers as sup
 
 HEAD_FILL = PatternFill("solid", fgColor="E9EEF5")
 WARN_FILL = PatternFill("solid", fgColor="FBE3DF")
@@ -40,7 +41,7 @@ def _filled(cols, rows):
     return [c for c in cols if any(r.get(c[1]) not in (None, "", []) for r in rows)] if rows else cols
 
 
-def _sheet(ws, cols, rows, title_lines, warn_key=None):
+def _sheet(ws, cols, rows, title_lines, warn_key=None, dates=True):
     cols = _filled(cols, rows)
     r0 = 1
     for t in title_lines:
@@ -56,7 +57,7 @@ def _sheet(ws, cols, rows, title_lines, warn_key=None):
     for i, row in enumerate(rows, r0 + 1):
         for j, (_, k, _) in enumerate(cols, 1):
             v = row.get(k)
-            if k in DATE_KEYS:
+            if dates and k in DATE_KEYS:
                 v = ru_date(v) if v else "—"
             if isinstance(v, list):
                 v = "; ".join(v)
@@ -68,33 +69,48 @@ def _sheet(ws, cols, rows, title_lines, warn_key=None):
     return cols
 
 
-def _lead_text(g: dict) -> str:
+def _lead_text(g: dict, lang: str = "ru") -> str:
     if not g.get("lead_days"):
         return ""
-    hol = (f" и {g['holiday_days']} дн. праздников ({g['holiday']})" if g.get("holiday_days") and g.get("holiday")
-           else f" и {g['holiday_days']} дн. праздников" if g.get("holiday_days") else "")
-    return f"срок поставки {g['lead_days']} дн.{hol}"
+    t = sup.T[lang]
+    hol = ""
+    if g.get("holiday_days"):
+        hol = t["hol"].format(days=g["holiday_days"])
+        if lang == "ru" and g.get("holiday"):
+            hol += f" ({g['holiday']})"
+    return t["lead"].format(days=g["lead_days"]) + hol
 
 
-def supplier_file(group: dict, as_of: str, path: Path) -> Path:
+def supplier_file(group: dict, as_of: str, path: Path, lang: str = "ru", name: str = "",
+                  contacts: list | None = None) -> Path:
+    """Файл заказа поставщику на его языке. Контакты — только в файле, собранном на компьютере закупщика."""
+    lang = lang if lang in sup.T else "ru"
+    t = sup.T[lang]
+    sid = group["supplier_id"] or ""
+    who = f"{name} ({sid})" if name and sid else (name or sid)
     wb = Workbook()
     ws = wb.active
-    ws.title = "Заказ"
-    lines = [l | {"urgent": "да" if l.get("deficit") else ""} for l in group["lines"]]
-    lead = _lead_text(group)
+    ws.title = t["sheet"]
+    lines = [l | {"urgent": t["yes"] if l.get("deficit") else "",
+                  "arrival_date": sup.fmt_date(l.get("arrival_date"), lang)} for l in group["lines"]]
+    lead = _lead_text(group, lang)
     title = [
-        f"Заказ поставщику {group['supplier_id']} от {ru_date(as_of)}",
-        f"Позиций: {group['skus']}, всего {group['qty']} шт."
-        + (f", вес около {group['weight_kg']} кг" if group.get("weight_kg") else ""),
-        f"Нужно к {ru_date(group['arrival_date'])}" + (f" ({lead})" if lead else "") if group.get("arrival_date") else "",
-        "Позиции с пометкой «Срочно» нужны как можно раньше: если можно, отгрузите их первыми." if group["deficit"] else "",
+        t["title"].format(who=who, date=sup.fmt_date(as_of, lang)),
+        t["count"].format(skus=group["skus"], qty=group["qty"])
+        + (t["weight"].format(kg=group["weight_kg"]) if group.get("weight_kg") else ""),
+        t["need"].format(date=sup.fmt_date(group["arrival_date"], lang)) + (f" ({lead})" if lead else "")
+        if group.get("arrival_date") else "",
+        t["urgent_note"] if group["deficit"] else "",
+        t["contacts"].format(list="; ".join(sup.contact_line(c, lang) for c in contacts)) if contacts else "",
     ]
-    cols = _sheet(ws, SUPPLIER_COLS, lines, [t for t in title if t], warn_key="deficit")
+    cols = [(t["cols"].get(k, h), k, w) for h, k, w in SUPPLIER_COLS]
+    cols = _sheet(ws, cols, lines, [x for x in title if x], warn_key="deficit", dates=False)
     total_row = ws.max_row + 2
-    ws.cell(row=total_row, column=1, value="Итого").font = BOLD
+    ws.cell(row=total_row, column=1, value=t["total"]).font = BOLD
     qcol = next(j for j, c in enumerate(cols, 1) if c[1] == "qty")
     ws.cell(row=total_row, column=qcol, value=group["qty"]).font = BOLD
-    path.parent.mkdir(parents=True, exist_ok=True)
+    if isinstance(path, Path):
+        path.parent.mkdir(parents=True, exist_ok=True)
     wb.save(path)
     return path
 
@@ -174,8 +190,12 @@ def csv_file(result: dict, path: Path) -> Path:
     return path
 
 
-def export_all(result: dict, out: Path) -> dict:
-    """Сохраняет файлы в out/ и возвращает {supplier_id: имя файла, '_all': ..., '_csv': ...}."""
+def export_all(result: dict, out: Path, info: dict | None = None) -> dict:
+    """Сохраняет файлы в out/ и возвращает {supplier_id: имя файла, '_all': ..., '_csv': ...}.
+
+    info — названия и языки поставщиков. Контактов в этих файлах нет: папка публикуется.
+    """
+    info = info or {}
     as_of = result["meta"]["as_of"]
     out.mkdir(parents=True, exist_ok=True)
     for old in out.glob("*.xlsx"):
@@ -185,7 +205,8 @@ def export_all(result: dict, out: Path) -> dict:
     files = {}
     for g in result["order_now"]:
         name = f"zakaz_{g['supplier_id'] or 'bez_postavshika'}_{as_of}.xlsx"
-        supplier_file(g, as_of, out / name)
+        i = info.get(g["supplier_id"]) or {}
+        supplier_file(g, as_of, out / name, i.get("lang", "ru"), i.get("name", ""))
         files[g["supplier_id"]] = name
     files["_all"] = all_file(result, out / f"vse_zakazy_{as_of}.xlsx").name
     files["_csv"] = csv_file(result, out / f"vse_zakazy_{as_of}.csv").name

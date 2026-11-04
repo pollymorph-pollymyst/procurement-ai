@@ -12,6 +12,9 @@
   POST /api/mapping          — {"sig", "table", "columns", "recalc"} — что лежит в нераспознанном файле
   POST /api/holidays         — {"holidays": [...], "countries": {...}, "recalc"} — праздники у поставщиков
   POST /api/open             — {"what": "inbox" | "orders" | "config"} — открыть папку/файл
+  GET  /api/contacts         — контакты поставщиков (только с этого компьютера, с заголовком)
+  POST /api/suppliers        — {"supplier_id", "name", "lang", "contacts"} — карточка поставщика
+  GET  /api/order.xlsx?sup=  — файл заказа поставщику с его контактами (в опубликованных файлах их нет)
 Каждый POST требует заголовок X-Procurement: 1 — чужая страница в браузере его не пошлёт.
 """
 from __future__ import annotations
@@ -27,9 +30,9 @@ import webbrowser
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, quote, urlparse
 
-from . import control, holidays, schedule, sources, writers
+from . import control, export, holidays, schedule, sources, suppliers, writers
 from . import settings as st
 from .config import ROOT, load_settings
 
@@ -74,6 +77,47 @@ def start_run() -> dict:
         JOB.update(running=False, ok=code == 0, code=code, finished=time.time(), seconds=round(time.time() - JOB["started"]))
     threading.Thread(target=pump, daemon=True).start()
     return JOB
+
+
+def _result() -> dict:
+    from .__main__ import _latest
+    return _latest(load_settings())
+
+
+def _known(result: dict) -> set[str]:
+    ids = {g.get("supplier_id") for g in result.get("suppliers", [])}
+    ids |= {g.get("supplier_id") for k in ("order_now", "order_soon") for g in result.get(k, [])}
+    return {i for i in ids if i}
+
+
+def save_supplier(body: dict) -> None:
+    """Сохранить карточку и сразу обновить файлы заказа и дашборд — без нового расчёта."""
+    from .build import build_dashboard
+    s = load_settings()
+    result = _result()
+    suppliers.save(s, body, _known(result))
+    if JOB.get("running"):
+        return  # идущий пересчёт сам соберёт файлы с новыми названиями
+    result["files"] = export.export_all(result, s.docs_dir / "orders", suppliers.read_info(s))
+    (s.out_dir / "latest" / "result.json").write_text(json.dumps(result, ensure_ascii=False, default=str),
+                                                      encoding="utf-8")
+    build_dashboard(result, s)
+
+
+def order_file(sid: str) -> tuple[str, bytes]:
+    """Файл заказа поставщику с контактами — собирается на лету и никуда не сохраняется."""
+    import io
+    s = load_settings()
+    result = _result()
+    g = next((g for g in result.get("order_now", []) if (g.get("supplier_id") or "") == sid), None)
+    if g is None:
+        raise suppliers.SupplierError("Для этого поставщика сейчас нет заказа.")
+    info = suppliers.read_info(s).get(sid) or {}
+    buf = io.BytesIO()
+    export.supplier_file(g, result["meta"]["as_of"], buf, info.get("lang", "ru"), info.get("name", ""),
+                         suppliers.read_contacts(s).get(sid))
+    name = (result.get("files") or {}).get(sid) or f"zakaz_{sid or 'bez_postavshika'}.xlsx"
+    return name, buf.getvalue()
 
 
 def _open(what: str) -> None:
@@ -124,14 +168,15 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _trusted(self) -> bool:
+    def _local(self) -> bool:
         host = (self.headers.get("Host") or "").split(":")[0]
         origin = self.headers.get("Origin")
         if host not in ("127.0.0.1", "localhost"):
             return False
-        if origin and urlparse(origin).hostname not in ("127.0.0.1", "localhost"):
-            return False
-        return self.headers.get("X-Procurement") == "1"
+        return not (origin and urlparse(origin).hostname not in ("127.0.0.1", "localhost"))
+
+    def _trusted(self) -> bool:
+        return self._local() and self.headers.get("X-Procurement") == "1"
 
     def do_GET(self):
         path = urlparse(self.path).path
@@ -139,6 +184,26 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(state())
         if path == "/api/run":
             return self._json({k: v for k, v in JOB.items() if k != "proc"})
+        if path == "/api/contacts":
+            if not self._trusted():
+                return self._json({"error": "Запрос отклонён."}, 403)
+            return self._json({"contacts": suppliers.read_contacts(load_settings())})
+        if path == "/api/order.xlsx":
+            # ссылку открывает сам браузер, без заголовка: проверяем, что адрес — этот компьютер
+            if not self._local():
+                return self._json({"error": "Запрос отклонён."}, 403)
+            try:
+                name, data = order_file((parse_qs(urlparse(self.path).query).get("sup") or [""])[0])
+            except (suppliers.SupplierError, Exception) as e:  # noqa: BLE001
+                return self._json({"ok": False, "error": str(e) if isinstance(e, suppliers.SupplierError)
+                                   else control.plain_error(e)}, 404)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            self.send_header("Content-Disposition", f"attachment; filename*=UTF-8''{quote(name)}")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return None
         return super().do_GET()
 
     def do_POST(self):
@@ -214,11 +279,15 @@ class Handler(SimpleHTTPRequestHandler):
                 if body.get("recalc"):
                     start_run()
                 return self._json({"ok": True, "job": {k: v for k, v in JOB.items() if k != "proc"}, **state()})
+            if path == "/api/suppliers":
+                save_supplier(body)
+                return self._json({"ok": True, "contacts": suppliers.read_contacts(load_settings()),
+                                   "supplier_info": suppliers.read_info(load_settings())})
             if path == "/api/open":
                 _open(body.get("what", "inbox"))
                 return self._json({"ok": True})
             return self._json({"error": "Нет такого действия."}, 404)
-        except (st.SettingsError, sources.IntakeError, writers.WriterError) as e:
+        except (st.SettingsError, sources.IntakeError, writers.WriterError, suppliers.SupplierError) as e:
             return self._json({"ok": False, "error": str(e)}, 400)
         except Exception as e:  # noqa: BLE001
             return self._json({"ok": False, "error": control.plain_error(e)}, 500)

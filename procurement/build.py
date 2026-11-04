@@ -33,7 +33,9 @@ def build_dashboard(result: dict, s: Settings) -> Path:
     if MARK not in tpl:
         raise RuntimeError("В шаблоне дашборда нет метки для данных")
     from .control import collect
-    result = {**result, "control": hide_paths(collect(s, result.get("meta", {}).get("as_of")), s.root)}
+    from .suppliers import read_info, schema
+    result = {**result, "control": hide_paths(collect(s, result.get("meta", {}).get("as_of")), s.root),
+              "supplier_info": read_info(s), "supplier_schema": schema()}
     data = json.dumps(result, ensure_ascii=False, separators=(",", ":"), default=str)
     data = data.replace("</", "<\\/")  # чтобы текст не закрыл тег <script>
     html = tpl.replace(MARK, data)

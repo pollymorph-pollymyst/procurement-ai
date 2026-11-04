@@ -113,7 +113,8 @@ def _run(args, s):
 
     result["commentary"] = commentary.make(result, s, changes, override=_override(s, result))
 
-    files = export.export_all(result, s.docs_dir / "orders")
+    from . import suppliers
+    files = export.export_all(result, s.docs_dir / "orders", suppliers.read_info(s))
     result["files"] = files
 
     latest = s.out_dir / "latest"
