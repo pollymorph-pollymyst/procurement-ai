@@ -79,7 +79,7 @@ def test_gigachat_gets_token_first(sb, monkeypatch):
 
 
 def test_parse_json_variants():
-    good = {"headline": "Заказать", "summary": ["a"], "actions": [], "warnings": []}
+    good = {"headline": "Заказать", "summary": ["a"], "actions": [], "warnings": [], "advice": ["b"]}
     assert writers.parse_json(json.dumps(good, ensure_ascii=False)) == good
     assert writers.parse_json("Вот ответ:\n```json\n" + json.dumps(good) + "\n```") == good
     assert writers.parse_json("<think>…</think>" + json.dumps(good))["headline"] == "Заказать"

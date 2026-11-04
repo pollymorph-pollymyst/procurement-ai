@@ -17,12 +17,13 @@ description: Пересчитать план закупок по свежей в
 3. Напиши комментарий строго по правилам из `prompts/analyst.md`. Главное:
    - каждое число — дословно из facts.json, ничего не пересчитывай сам;
    - простой русский, сначала действие;
-   - если в `changes` есть изменения — одна фраза о них.
+   - если в `changes` есть изменения — одна фраза о них;
+   - 2–4 совета `advice` по блоку `profit`: как заработать больше и что улучшить.
 
 4. Сохрани в `outputs/commentary_override.json`:
    ```json
    {"as_of": "<meta.as_of из facts.json>",
-    "comment": {"headline": "...", "summary": ["..."], "actions": ["..."], "warnings": ["..."],
+    "comment": {"headline": "...", "summary": ["..."], "actions": ["..."], "warnings": ["..."], "advice": ["..."],
                 "source": "claude-code"}}
    ```
 

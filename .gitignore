@@ -22,3 +22,6 @@ video/
 # контакты поставщиков — только на этом компьютере
 outputs/contacts.json
 outputs/templates.json
+
+# состояние загрузки из МойСклад на этом компьютере
+outputs/moysklad.json

@@ -87,6 +87,10 @@ def _run(args, s):
     from . import commentary, export, history
     from .pipeline import compute
 
+    from . import moysklad
+    pulled = moysklad.pull(s)
+    if pulled:
+        print(f"Данные из МойСклад загружены: {pulled}")
     took = intake(s)
     if took:
         print(f"Взята новая выгрузка: {took}")

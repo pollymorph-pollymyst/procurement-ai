@@ -9,6 +9,8 @@
   POST /api/sent             — {"supplier_id", "on"} — отметка «Отправлено»
   POST /api/source           — {"folder": путь или null} — папка с выгрузками
   POST /api/source/pick      — окно выбора папки
+  POST /api/moysklad         — {"on": bool, "token": "…"?} — загрузка из МойСклад (токен уходит только в .env)
+  POST /api/moysklad/test    — {"token": "…"?} — проверить токен
   POST /api/mapping          — {"sig", "table", "columns", "recalc"} — что лежит в нераспознанном файле
   POST /api/holidays         — {"holidays": [...], "countries": {...}, "recalc"} — праздники у поставщиков
   POST /api/open             — {"what": "inbox" | "orders" | "config"} — открыть папку/файл
@@ -34,7 +36,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
 
-from . import control, export, holidays, schedule, sources, stoplist, suppliers, writers
+from . import control, export, holidays, moysklad, schedule, sources, stoplist, suppliers, writers
 from . import settings as st
 from .config import ROOT, load_settings
 
@@ -258,6 +260,25 @@ class Handler(SimpleHTTPRequestHandler):
                 if picked:
                     _set_folder(picked)
                 return self._json({"ok": True, "picked": bool(picked), **state()})
+            if path == "/api/moysklad/test":
+                s = load_settings()
+                token = str(body.get("token") or "").strip() or (os.environ.get(moysklad.TOKEN_ENV, "")
+                                                                  if moysklad.has_token(s) else "")
+                if not token:
+                    raise moysklad.MoySkladError("Вставьте токен МойСклад.")
+                return self._json({"ok": True, "org": moysklad.test(token)})
+            if path == "/api/moysklad":
+                s = load_settings()
+                token = str(body.get("token") or "").strip()
+                if token:
+                    writers.save_key(s.root, moysklad.TOKEN_ENV, token)
+                on = bool(body.get("on"))
+                if on and not moysklad.has_token(s):
+                    raise moysklad.MoySkladError("Сначала вставьте токен МойСклад.")
+                st.save({(moysklad.SECTION, "включено"): on})
+                if on and body.get("recalc"):
+                    start_run()
+                return self._json({"ok": True, "job": {k: v for k, v in JOB.items() if k != "proc"}, **state()})
             if path == "/api/mapping":
                 s = load_settings()
                 sources.save_mapping(s, str(body["sig"]), str(body["table"]), dict(body.get("columns") or {}))
@@ -304,7 +325,7 @@ class Handler(SimpleHTTPRequestHandler):
                 return self._json({"ok": True})
             return self._json({"error": "Нет такого действия."}, 404)
         except (st.SettingsError, sources.IntakeError, writers.WriterError, suppliers.SupplierError,
-                stoplist.StopError) as e:
+                stoplist.StopError, moysklad.MoySkladError) as e:
             return self._json({"ok": False, "error": str(e)}, 400)
         except Exception as e:  # noqa: BLE001
             return self._json({"ok": False, "error": control.plain_error(e)}, 500)

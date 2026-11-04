@@ -306,13 +306,13 @@ def parse_json(text: str) -> dict:
     out = json.loads(text)
     if not isinstance(out, dict):
         raise ValueError("not an object")
-    for k in ("summary", "actions", "warnings"):
+    for k in ("summary", "actions", "warnings", "advice"):
         v = out.get(k, [])
         out[k] = [str(x) for x in v] if isinstance(v, list) else [str(v)] if v else []
     out["headline"] = str(out.get("headline", "")).strip()
     if not out["headline"]:
         raise ValueError("no headline")
-    return {k: out[k] for k in ("headline", "summary", "actions", "warnings")}
+    return {k: out[k] for k in ("headline", "summary", "actions", "warnings", "advice")}
 
 
 def test(s: Settings, body: dict) -> str:

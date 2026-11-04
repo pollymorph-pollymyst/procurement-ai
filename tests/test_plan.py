@@ -137,6 +137,32 @@ def test_rule_comment_uses_only_known_numbers(result):
     assert commentary.check_numbers(c, f) == []
 
 
+def test_advice_grounded_in_facts(result):
+    """Советы есть, называют конкретный товар или поставщика и не выдумывают чисел (денег в рублях — нет)."""
+    f = commentary.facts(result, None)
+    adv = commentary.rule_based(f)["advice"]
+    assert 2 <= len(adv) <= 4
+    assert all(("SKU-" in a or "SUP-" in a or "товар" in a) for a in adv)
+    assert not any("₽" in a or "руб" in a for a in adv)
+    assert commentary.check_numbers({"headline": "", "advice": adv}, f) == []
+
+
+def test_calm_day_comment_says_when_next_order(result):
+    """Сегодня заказывать нечего: заголовок это говорит, а действия — когда следующий заказ, без выдуманных дел."""
+    calm = json.loads(json.dumps(result))
+    calm["order_now"] = []
+    calm["lists"]["deficit"] = []
+    calm["kpi"].update(order_now_skus=0, order_now_qty=0, order_now_suppliers=0, deficit_skus=0,
+                       deficit_lost_units=0, out_of_stock_skus=0, doubtful_po=0)
+    f = commentary.facts(calm, None)
+    c = commentary.rule_based(f)
+    assert "Срочных заказов нет" in c["headline"]
+    assert c["summary"][0] == "Запаса хватает до прихода следующих заказов."
+    assert c["actions"] and all("Следующий заказ" in a for a in c["actions"])
+    assert not any("Отправить заказ" in a for a in c["actions"])
+    assert commentary.check_numbers(c, f) == []
+
+
 def test_invented_number_is_rejected(result, s):
     f = commentary.facts(result, None)
     fake = {"headline": "Сегодня нужно заказать 987654 шт.", "summary": [], "actions": [], "warnings": []}

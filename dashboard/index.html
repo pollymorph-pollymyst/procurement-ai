@@ -98,6 +98,9 @@ button,input,select{font:inherit;color:inherit}
 .comment li{padding:6px 0;border-top:1px solid var(--rule);font-size:14px;line-height:1.45}
 .comment li:first-child{border-top:0;padding-top:0}
 .comment .note{font-size:13px;color:var(--ink-3);margin-top:8px}
+.comment .c-adv{grid-column:2/-1;border-top:1px solid var(--rule-strong);padding-top:16px}
+.comment .c-adv ul{columns:2;column-gap:24px}
+.comment .c-adv li{break-inside:avoid}
 /* поставщики: название вместо кода, значки контактов, карточка */
 .sup-code{font-family:var(--num);font-weight:500;font-size:13px;color:var(--ink-3);margin-left:6px;white-space:nowrap}
 .ct-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
@@ -417,6 +420,8 @@ fieldset.ro[disabled] .dflt button{pointer-events:none}
 #sch-body.off{opacity:.5}
 .path{display:inline-block;font-size:14px;word-break:break-all;background:var(--leaf);border:1px solid var(--rule);padding:6px 10px}
 .mapbox{background:var(--leaf);padding:4px 16px 16px;margin-top:16px;border:1px solid var(--orange)}
+.ms-box{margin-top:20px;padding-top:4px;border-top:1px solid var(--rule)}
+.ms-box .btnrow{margin-top:12px}
 .mapbox .field{border-top-color:var(--rule)}
 .svc-list{display:grid;gap:8px;margin:4px 0 8px}
 .svc{display:grid;grid-template-columns:22px 1fr;gap:2px 10px;align-items:start;padding:12px 14px;border:1px solid var(--rule-strong);background:var(--leaf);border-radius:2px;cursor:pointer}
@@ -449,6 +454,7 @@ footer{border-top:1px solid var(--rule);padding:20px 0 40px;color:var(--ink-2);f
 @media (max-width:1060px){
   .comment{grid-template-columns:1fr 1fr}
   .comment h2{grid-column:1/-1}
+  .comment .c-adv{grid-column:1/-1}
   .months{grid-template-columns:repeat(4,1fr)}
   .sup-row{grid-template-columns:1fr 70px 90px 110px 100px auto 36px}
 }
@@ -469,6 +475,7 @@ footer{border-top:1px solid var(--rule);padding:20px 0 40px;color:var(--ink-2);f
   .m-hint{flex-basis:auto}
   .cta [data-go="calendar"]{display:none}
   .comment{grid-template-columns:1fr;padding:16px}
+  .comment .c-adv ul{columns:1}
   .sup-row{grid-template-columns:repeat(3,1fr) auto;gap:8px 12px}
   .sup-row .c-name{grid-column:1/4;grid-row:1}
   .sup-row .c-tg{grid-column:4;grid-row:1}
@@ -717,6 +724,7 @@ ${STALE ? `<div class="stale-bar" id="stale-bar" role="status">${ic("clock")}<di
   <div><h3>Что происходит</h3><ul>${(C.summary || []).map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
   <div><h3>Что сделать</h3><ul>${(C.actions || []).map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
   <div><h3>Обратить внимание</h3><ul>${(C.warnings || []).map(x => `<li>${esc(x)}</li>`).join("") || "<li>Ничего срочного.</li>"}</ul></div>
+  ${(C.advice || []).length ? `<div class="c-adv"><h3>Советы: как заработать больше</h3><ul>${C.advice.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
 </section>
 
 <nav class="tabs" role="tablist" aria-label="Разделы" id="tabs"></nav>
@@ -1399,9 +1407,26 @@ function secData(m) {
     <div class="sch-grid"><span class="lbl">Папка с выгрузками</span><div><span class="path">${esc(src.folder || "Входящие")}</span>
       ${m === "local" ? `<div class="quick"><button class="linkbtn" type="button" id="pick-folder">Выбрать другую папку…</button>${src.custom ? `<button class="linkbtn" type="button" id="reset-folder">Вернуть «Входящие»</button>` : ""}</div>` : ""}</div></div>
     <p class="small muted" style="max-width:62ch">Чтобы не носить файлы руками, попросите администратора 1С настроить «Рассылку отчётов» в эту папку по расписанию: автообновление каждый раз возьмёт свежие данные.</p>
+    ${msHtml(m)}
     ${m === "local" ? `<p class="small"><button class="linkbtn" type="button" id="redo-setup">Пройти первую настройку заново</button></p>` : ""}
     <span class="msg" id="src-msg" role="status"></span>
     ${ik ? intakeHtml(ik) : ""}</section>`;
+}
+function msHtml(m) {
+  const ms = CTL.st.moysklad || {}, on = ms.on && ms.has_token, l = ms.last;
+  const r = l && l.rows ? `${N(l.rows.sku_dim || 0)} товаров, ${N(l.rows.sales_monthly || 0)} строк продаж, ${N(l.rows.purchase_orders || 0)} строк заказов` : "";
+  const lastHtml = !l ? "" : l.ok ? `<p class="small">Последняя загрузка: ${when(l.when)} · ${r}.</p>`
+    : `<div class="err" role="alert">Последняя загрузка не удалась (${when(l.when)}): ${esc(l.error || "")}</div>`;
+  const now = on ? `<b>Подключён.</b> Перед каждым обновлением данные берутся из МойСклад сами — выгрузки не нужны.`
+    : ms.on ? `<b>Включён, но токен не задан.</b> Вставьте токен ниже.`
+    : `Не подключён. Если учёт ведётся в МойСклад, данные можно брать оттуда напрямую, без выгрузок.`;
+  const form = m !== "local" ? "" : `<div class="field wide"><label for="ms-token">Токен МойСклад</label>
+      <p class="help">МойСклад → «Настройки» → «Токены» → «Создать токен». ${ms.has_token ? "Токен уже сохранён — оставьте поле пустым, чтобы не менять." : "Хранится только на этом компьютере."}</p>
+      <div class="inp"><div class="ibox"><input type="password" id="ms-token" placeholder="${ms.has_token ? "сохранён" : "вставьте токен"}" spellcheck="false" autocomplete="off"></div></div></div>
+    <div class="btnrow"><button class="btn" type="button" id="ms-test">Проверить</button>
+      ${on ? `<button class="btn" type="button" id="ms-off">Отключить</button>` : `<button class="btn primary" type="button" id="ms-on">Подключить и обновить</button>`}
+      <span class="msg" id="ms-msg" role="status"></span></div>`;
+  return `<div class="ms-box"><h4>МойСклад</h4><p class="small" style="max-width:62ch">${now}</p>${lastHtml}${form}</div>`;
 }
 function intakeHtml(ik) {
   const rows = (ik.tables || []).map(r => `<tr><td>${r.ok ? `<span class="okc">${ic("check")}</span>` : `<span class="badc">${ic("alert")}</span>`}</td>
@@ -1816,6 +1841,11 @@ function bindCtl() {
   const srcMsg = t => { const m = $("#src-msg", ctl); if (m) m.textContent = t; };
   on("#pick-folder", () => { srcMsg("Откроется окно выбора папки — оно может появиться за браузером."); api("/api/source/pick", {}).then(j => { CTL.st = j.control; renderCtl(); }).catch(e => srcMsg(e.message)); });
   on("#redo-setup", () => { ctl.close(); WD.s = null; SU.prev = null; SU.auto = null; openSetup(); });
+  const msMsg = t => { const x = $("#ms-msg", ctl); if (x) x.textContent = t; };
+  const msTok = () => ($("#ms-token", ctl) || {}).value || "";
+  on("#ms-test", () => { msMsg("Проверяю…"); api("/api/moysklad/test", { token: msTok() }).then(j => msMsg(`Подключение есть: ${j.org}.`)).catch(e => msMsg(e.message)); });
+  on("#ms-on", () => { msMsg("Сохраняю и запускаю обновление…"); api("/api/moysklad", { on: true, token: msTok(), recalc: true }).then(j => { CTL.st = j.control; renderCtl(); startedJob(j); }).catch(e => msMsg(e.message)); });
+  on("#ms-off", () => api("/api/moysklad", { on: false }).then(j => { CTL.st = j.control; renderCtl(); }).catch(e => msMsg(e.message)));
   on("#reset-folder", () => api("/api/source", { folder: null }).then(j => { CTL.st = j.control; renderCtl(); }).catch(e => srcMsg(e.message)));
   ctl.querySelectorAll(".mapbox").forEach(box => {
     const sel = $("[data-map-table]", box); sel.onchange = () => mapCols(box); mapCols(box);

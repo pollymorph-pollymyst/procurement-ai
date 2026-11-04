@@ -170,7 +170,7 @@ def repo_info(root: Path) -> dict | None:
 # ------------------------------------------------------------------ всё вместе — в дашборд
 
 def collect(s: Settings, as_of: str | None = None) -> dict:
-    from . import holidays, schedule, sources, writers
+    from . import holidays, moysklad, schedule, sources, writers
     sch = st.schema()
     folder, custom = sources.source_folder(s)
     sent = read_sent(s).get(as_of or "", {}) if as_of else {}
@@ -184,6 +184,7 @@ def collect(s: Settings, as_of: str | None = None) -> dict:
         "inbox": str(s.inbox_dir),
         "intake": sources.read_report(s),
         "source": {"folder": str(folder), "custom": custom},
+        "moysklad": moysklad.status(s),
         "tables": sources.schema_for_panel(),
         "holidays": holidays.schema(),
         "writer": writers.state(s),
