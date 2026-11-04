@@ -1,0 +1,537 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-03T10:22:09+00:00",
+  "title": "Design System: Закупки",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Cool Newsprint",
+        "cssVar": "--ground",
+        "dark": "#121312",
+        "tonalRamp": [
+          "oklch(15% 0.001 146)",
+          "oklch(26% 0.001 146)",
+          "oklch(38% 0.002 146)",
+          "oklch(49% 0.003 146)",
+          "oklch(61% 0.003 146)",
+          "oklch(72% 0.003 146)",
+          "oklch(84% 0.002 146)",
+          "oklch(95% 0.001 146)"
+        ]
+      },
+      "leaf": {
+        "role": "neutral",
+        "displayName": "Leaf Paper",
+        "cssVar": "--leaf",
+        "dark": "#1b1d1c",
+        "tonalRamp": [
+          "oklch(15% 0.001 106)",
+          "oklch(26% 0.001 106)",
+          "oklch(38% 0.002 106)",
+          "oklch(49% 0.002 106)",
+          "oklch(61% 0.003 106)",
+          "oklch(72% 0.002 106)",
+          "oklch(84% 0.002 106)",
+          "oklch(95% 0.001 106)"
+        ]
+      },
+      "leaf-2": {
+        "role": "neutral",
+        "displayName": "Leaf Underside",
+        "cssVar": "--leaf-2",
+        "dark": "#222524",
+        "tonalRamp": [
+          "oklch(15% 0.001 128)",
+          "oklch(26% 0.001 128)",
+          "oklch(38% 0.002 128)",
+          "oklch(49% 0.002 128)",
+          "oklch(61% 0.003 128)",
+          "oklch(72% 0.002 128)",
+          "oklch(84% 0.002 128)",
+          "oklch(95% 0.001 128)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "cssVar": "--ink",
+        "dark": "#ecedea",
+        "tonalRamp": [
+          "oklch(15% 0.001 145)",
+          "oklch(26% 0.001 145)",
+          "oklch(38% 0.002 145)",
+          "oklch(49% 0.002 145)",
+          "oklch(61% 0.002 145)",
+          "oklch(72% 0.002 145)",
+          "oklch(84% 0.002 145)",
+          "oklch(95% 0.001 145)"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink Grey",
+        "cssVar": "--ink-2",
+        "dark": "#b5bab7",
+        "tonalRamp": [
+          "oklch(15% 0.002 165)",
+          "oklch(26% 0.003 165)",
+          "oklch(38% 0.004 165)",
+          "oklch(49% 0.005 165)",
+          "oklch(61% 0.006 165)",
+          "oklch(72% 0.005 165)",
+          "oklch(84% 0.004 165)",
+          "oklch(95% 0.003 165)"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Faint Ink",
+        "cssVar": "--ink-3",
+        "dark": "#8d9390",
+        "tonalRamp": [
+          "oklch(15% 0.002 170)",
+          "oklch(26% 0.003 170)",
+          "oklch(38% 0.004 170)",
+          "oklch(49% 0.006 170)",
+          "oklch(61% 0.007 170)",
+          "oklch(72% 0.005 170)",
+          "oklch(84% 0.004 170)",
+          "oklch(95% 0.003 170)"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "cssVar": "--rule",
+        "dark": "#323634",
+        "tonalRamp": [
+          "oklch(15% 0.001 154)",
+          "oklch(26% 0.003 154)",
+          "oklch(38% 0.004 154)",
+          "oklch(49% 0.005 154)",
+          "oklch(61% 0.006 154)",
+          "oklch(72% 0.005 154)",
+          "oklch(84% 0.004 154)",
+          "oklch(95% 0.002 154)"
+        ]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Strong Hairline",
+        "cssVar": "--rule-strong",
+        "dark": "#545a57",
+        "tonalRamp": [
+          "oklch(15% 0.002 157)",
+          "oklch(26% 0.004 157)",
+          "oklch(38% 0.006 157)",
+          "oklch(49% 0.007 157)",
+          "oklch(61% 0.009 157)",
+          "oklch(72% 0.007 157)",
+          "oklch(84% 0.005 157)",
+          "oklch(95% 0.004 157)"
+        ]
+      },
+      "red": {
+        "role": "primary",
+        "displayName": "Calendar Red",
+        "cssVar": "--red",
+        "dark": "#ef5a4b",
+        "tonalRamp": [
+          "oklch(15% 0.048 29)",
+          "oklch(26% 0.084 29)",
+          "oklch(38% 0.121 29)",
+          "oklch(49% 0.157 29)",
+          "oklch(61% 0.189 29)",
+          "oklch(72% 0.153 29)",
+          "oklch(84% 0.116 29)",
+          "oklch(95% 0.080 29)"
+        ]
+      },
+      "red-ink": {
+        "role": "primary",
+        "displayName": "Deep Calendar Red",
+        "cssVar": "--red-ink",
+        "dark": "#ff8476",
+        "tonalRamp": [
+          "oklch(15% 0.042 29)",
+          "oklch(26% 0.073 29)",
+          "oklch(38% 0.105 29)",
+          "oklch(49% 0.137 29)",
+          "oklch(61% 0.164 29)",
+          "oklch(72% 0.133 29)",
+          "oklch(84% 0.101 29)",
+          "oklch(95% 0.069 29)"
+        ]
+      },
+      "red-wash": {
+        "role": "primary",
+        "displayName": "Red Wash",
+        "cssVar": "--red-wash",
+        "dark": "#3a1d1a",
+        "tonalRamp": [
+          "oklch(15% 0.006 27)",
+          "oklch(26% 0.010 27)",
+          "oklch(38% 0.015 27)",
+          "oklch(49% 0.019 27)",
+          "oklch(61% 0.023 27)",
+          "oklch(72% 0.019 27)",
+          "oklch(84% 0.014 27)",
+          "oklch(95% 0.010 27)"
+        ]
+      },
+      "amber": {
+        "role": "status",
+        "displayName": "Amber",
+        "cssVar": "--amber",
+        "dark": "#e8a73a",
+        "tonalRamp": [
+          "oklch(15% 0.031 70)",
+          "oklch(26% 0.055 70)",
+          "oklch(38% 0.079 70)",
+          "oklch(49% 0.103 70)",
+          "oklch(61% 0.124 70)",
+          "oklch(72% 0.100 70)",
+          "oklch(84% 0.076 70)",
+          "oklch(95% 0.052 70)"
+        ]
+      },
+      "amber-wash": {
+        "role": "status",
+        "displayName": "Amber Wash",
+        "cssVar": "--amber-wash",
+        "dark": "#352a14",
+        "tonalRamp": [
+          "oklch(15% 0.009 86)",
+          "oklch(26% 0.016 86)",
+          "oklch(38% 0.023 86)",
+          "oklch(49% 0.030 86)",
+          "oklch(61% 0.036 86)",
+          "oklch(72% 0.029 86)",
+          "oklch(84% 0.022 86)",
+          "oklch(95% 0.015 86)"
+        ]
+      },
+      "orange": {
+        "role": "status",
+        "displayName": "Rust Orange",
+        "cssVar": "--orange",
+        "dark": "#ec8a5a",
+        "tonalRamp": [
+          "oklch(15% 0.036 44)",
+          "oklch(26% 0.063 44)",
+          "oklch(38% 0.090 44)",
+          "oklch(49% 0.118 44)",
+          "oklch(61% 0.142 44)",
+          "oklch(72% 0.114 44)",
+          "oklch(84% 0.087 44)",
+          "oklch(95% 0.060 44)"
+        ]
+      },
+      "orange-wash": {
+        "role": "status",
+        "displayName": "Orange Wash",
+        "cssVar": "--orange-wash",
+        "dark": "#37231a",
+        "tonalRamp": [
+          "oklch(15% 0.006 50)",
+          "oklch(26% 0.011 50)",
+          "oklch(38% 0.016 50)",
+          "oklch(49% 0.020 50)",
+          "oklch(61% 0.025 50)",
+          "oklch(72% 0.020 50)",
+          "oklch(84% 0.015 50)",
+          "oklch(95% 0.010 50)"
+        ]
+      },
+      "green": {
+        "role": "status",
+        "displayName": "Ledger Green",
+        "cssVar": "--green",
+        "dark": "#4cc06a",
+        "tonalRamp": [
+          "oklch(15% 0.034 148)",
+          "oklch(26% 0.059 148)",
+          "oklch(38% 0.085 148)",
+          "oklch(49% 0.110 148)",
+          "oklch(61% 0.133 148)",
+          "oklch(72% 0.107 148)",
+          "oklch(84% 0.082 148)",
+          "oklch(95% 0.056 148)"
+        ]
+      },
+      "green-wash": {
+        "role": "status",
+        "displayName": "Green Wash",
+        "cssVar": "--green-wash",
+        "dark": "#16301d",
+        "tonalRamp": [
+          "oklch(15% 0.006 152)",
+          "oklch(26% 0.010 152)",
+          "oklch(38% 0.014 152)",
+          "oklch(49% 0.018 152)",
+          "oklch(61% 0.022 152)",
+          "oklch(72% 0.018 152)",
+          "oklch(84% 0.014 152)",
+          "oklch(95% 0.009 152)"
+        ]
+      },
+      "blue": {
+        "role": "chart",
+        "displayName": "Chart Blue",
+        "cssVar": "--blue",
+        "dark": "#3987e5",
+        "tonalRamp": [
+          "oklch(15% 0.041 256)",
+          "oklch(26% 0.072 256)",
+          "oklch(38% 0.103 256)",
+          "oklch(49% 0.134 256)",
+          "oklch(61% 0.161 256)",
+          "oklch(72% 0.130 256)",
+          "oklch(84% 0.099 256)",
+          "oklch(95% 0.068 256)"
+        ]
+      },
+      "series-2": {
+        "role": "chart",
+        "displayName": "Forecast Orange",
+        "cssVar": "--series-2",
+        "dark": "#d95926",
+        "tonalRamp": [
+          "oklch(15% 0.044 41)",
+          "oklch(26% 0.077 41)",
+          "oklch(38% 0.110 41)",
+          "oklch(49% 0.144 41)",
+          "oklch(61% 0.173 41)",
+          "oklch(72% 0.140 41)",
+          "oklch(84% 0.106 41)",
+          "oklch(95% 0.073 41)"
+        ]
+      },
+      "series-3": {
+        "role": "chart",
+        "displayName": "Plan Green",
+        "cssVar": "--series-3",
+        "dark": "#199e70",
+        "tonalRamp": [
+          "oklch(15% 0.035 162)",
+          "oklch(26% 0.062 162)",
+          "oklch(38% 0.089 162)",
+          "oklch(49% 0.116 162)",
+          "oklch(61% 0.139 162)",
+          "oklch(72% 0.112 162)",
+          "oklch(84% 0.086 162)",
+          "oklch(95% 0.059 162)"
+        ]
+      },
+      "focus": {
+        "role": "utility",
+        "displayName": "Focus Blue",
+        "cssVar": "--focus",
+        "dark": "#6aa7f0",
+        "tonalRamp": [
+          "oklch(15% 0.041 256)",
+          "oklch(26% 0.072 256)",
+          "oklch(38% 0.103 256)",
+          "oklch(49% 0.134 256)",
+          "oklch(61% 0.161 256)",
+          "oklch(72% 0.130 256)",
+          "oklch(84% 0.099 256)",
+          "oklch(95% 0.068 256)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Day Numeral",
+        "purpose": "Today's day number on the day leaf only; 84px on phones."
+      },
+      "headline": {
+        "displayName": "Conclusion",
+        "purpose": "One-line answer to what to order today."
+      },
+      "title": {
+        "displayName": "Section Head",
+        "purpose": "Section heads over a 2px ink rule."
+      },
+      "figure": {
+        "displayName": "Print Figure",
+        "purpose": "Every quantity and date number; 20-34px by context."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reasons and prose; never below 15px."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Cell keys, sub-lines, hints."
+      },
+      "label": {
+        "displayName": "Printed Label",
+        "purpose": "Uppercase weekday/month on leaves and commentary column heads only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "leaf-lift",
+        "value": "0 1px 0 rgba(22,23,22,.06),0 6px 18px -10px rgba(22,23,22,.22)",
+        "dark": "0 1px 0 rgba(0,0,0,.3),0 8px 22px -12px rgba(0,0,0,.7)",
+        "purpose": "Paper leaves (day, stack, month, date) and the tooltip."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-leaf",
+        "value": "cubic-bezier(.2,.8,.2,1)",
+        "purpose": "Month leaf 3px hover rise (.18s), expand chevron (.2s), item sheet slide-in (.22s)."
+      },
+      {
+        "name": "duration-press",
+        "value": "150ms",
+        "purpose": "Button background/colour swap."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "none",
+        "purpose": "All animation and transition removed under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact",
+        "value": "1060px"
+      },
+      {
+        "name": "phone",
+        "value": "760px"
+      },
+      {
+        "name": "narrow",
+        "value": "640px"
+      }
+    ],
+    "knownDeviations": [
+      "Golos Text and Oswald load from Google Fonts rather than self-hosted; accepted because the page is served from GitHub Pages and opened online; system fallbacks cover the offline file."
+    ]
+  },
+  "components": [
+    {
+      "name": "Button",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "Default action, e.g. per-supplier Excel download.",
+      "html": "<button class=\"ds-btn\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 4v11m0 0-4-4m4 4 4-4M5 20h14\"/></svg>Скачать заказ (Excel)</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--ink,#161716);background:var(--leaf,#fafaf8);color:var(--ink,#161716);padding:9px 14px;font:600 14px 'Golos Text',system-ui,sans-serif;border-radius:2px;cursor:pointer;transition:background .15s,color .15s}.ds-btn svg{width:16px;height:16px}.ds-btn:focus-visible{outline:2px solid var(--focus,#2a78d6);outline-offset:2px}.ds-btn:hover{background:var(--ink,#161716);color:var(--leaf,#fafaf8)}"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single red action per screen: download all orders.",
+      "html": "<button class=\"ds-btn ds-btn-primary\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 4v11m0 0-4-4m4 4 4-4M5 20h14\"/></svg>Скачать все заказы (Excel)</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--ink,#161716);background:var(--leaf,#fafaf8);color:var(--ink,#161716);padding:9px 14px;font:600 14px 'Golos Text',system-ui,sans-serif;border-radius:2px;cursor:pointer;transition:background .15s,color .15s}.ds-btn svg{width:16px;height:16px}.ds-btn:focus-visible{outline:2px solid var(--focus,#2a78d6);outline-offset:2px}.ds-btn-primary{background:var(--red,#c42a1f);border-color:var(--red,#c42a1f);color:#fff}.ds-btn-primary:hover{background:var(--red-ink,#a3221a);border-color:var(--red-ink,#a3221a)}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary actions (CSV, show all, jump to calendar).",
+      "html": "<button class=\"ds-btn ds-btn-ghost\">CSV</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--ink,#161716);background:var(--leaf,#fafaf8);color:var(--ink,#161716);padding:9px 14px;font:600 14px 'Golos Text',system-ui,sans-serif;border-radius:2px;cursor:pointer;transition:background .15s,color .15s}.ds-btn svg{width:16px;height:16px}.ds-btn:focus-visible{outline:2px solid var(--focus,#2a78d6);outline-offset:2px}.ds-btn-ghost{background:transparent;border-color:var(--rule-strong,#9aa09c);font-weight:500}.ds-btn-ghost:hover{background:var(--leaf,#fafaf8)}"
+    },
+    {
+      "name": "Status Chips",
+      "kind": "chip",
+      "refersTo": "chip-critical",
+      "description": "Status always as icon + label on a wash.",
+      "html": "<span class=\"ds-st ds-crit\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 4 2.8 19.5h18.4L12 4Z\"/><path d=\"M12 10v4.5M12 17v.2\"/></svg>Заказать сейчас</span> <span class=\"ds-st ds-good\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"m8 12.2 2.7 2.7L16.2 9.4\"/></svg>В порядке</span>",
+      "css": ".ds-st{display:inline-flex;align-items:center;gap:5px;font:600 13px 'Golos Text',system-ui,sans-serif;padding:1px 7px 1px 5px;border-radius:2px}.ds-st svg{width:14px;height:14px}.ds-crit{color:var(--red-ink,#a3221a);background:var(--red-wash,#f8e3e0)}.ds-good{color:var(--green,#1d7a35);background:var(--green-wash,#e2f1e5)}"
+    },
+    {
+      "name": "Tabs",
+      "kind": "nav",
+      "refersTo": "tab",
+      "description": "Sticky section tabs; active tab has a 3px red underline.",
+      "html": "<div class=\"ds-tabs\"><button aria-selected=\"true\">Календарь <span>12</span></button><button>Риски <span>165</span></button><button>Все товары <span>791</span></button></div>",
+      "css": ".ds-tabs{display:flex;border-bottom:1px solid var(--rule-strong,#9aa09c);background:var(--ground,#eceeec)}.ds-tabs button{all:unset;cursor:pointer;padding:14px 16px 12px;font:600 14px 'Golos Text',system-ui,sans-serif;color:var(--ink-2,#4f5351);border-bottom:3px solid transparent;display:flex;gap:6px}.ds-tabs button span{font:500 13px Oswald,'Arial Narrow',system-ui,sans-serif;color:var(--ink-3,#727775)}.ds-tabs button:hover{color:var(--ink,#161716)}.ds-tabs button[aria-selected=true]{color:var(--ink,#161716);border-bottom-color:var(--red,#c42a1f)}.ds-tabs button:focus-visible{outline:2px solid var(--focus,#2a78d6);outline-offset:-2px}"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Filter field over the item table.",
+      "html": "<input class=\"ds-input\" placeholder=\"Поиск по артикулу\">",
+      "css": ".ds-input{border:1px solid var(--rule-strong,#9aa09c);background:var(--leaf,#fafaf8);color:var(--ink,#161716);padding:8px 10px;min-height:38px;border-radius:2px;font:400 15px 'Golos Text',system-ui,sans-serif}.ds-input:focus-visible{outline:2px solid var(--focus,#2a78d6);outline-offset:2px}"
+    },
+    {
+      "name": "Day Leaf",
+      "kind": "custom",
+      "refersTo": "day-leaf",
+      "description": "Signature: today's tear-off leaf on a two-sheet stack.",
+      "html": "<div class=\"ds-stack\"><div class=\"ds-leaf\"><div class=\"ds-wk\">четверг</div><div class=\"ds-day\">13</div><div class=\"ds-mon\">августа 2026</div></div></div>",
+      "css": ".ds-stack{position:relative;width:240px;margin-bottom:12px}.ds-stack::before{content:'';position:absolute;left:6px;right:6px;bottom:-5px;height:8px;background:var(--leaf-2,#f3f4f2);box-shadow:var(--shadow,0 1px 0 rgba(22,23,22,.06),0 6px 18px -10px rgba(22,23,22,.22))}.ds-leaf{position:relative;z-index:1;background:var(--leaf,#fafaf8);box-shadow:var(--shadow,0 1px 0 rgba(22,23,22,.06),0 6px 18px -10px rgba(22,23,22,.22));padding:26px 22px 22px;text-align:center;color:var(--ink,#161716)}.ds-leaf::before{content:'';position:absolute;left:0;right:0;top:0;height:10px;background:var(--red,#c42a1f)}.ds-leaf::after{content:'';position:absolute;left:10px;right:10px;top:16px;border-top:2px dotted var(--rule-strong,#9aa09c)}.ds-wk{margin-top:12px;text-transform:uppercase;letter-spacing:.12em;font:600 12px 'Golos Text',system-ui,sans-serif;color:var(--ink-2,#4f5351)}.ds-day{font:600 132px/.95 Oswald,'Arial Narrow',system-ui,sans-serif;letter-spacing:-.02em;color:var(--red,#c42a1f)}.ds-mon{font:500 24px Oswald,'Arial Narrow',system-ui,sans-serif;text-transform:uppercase;letter-spacing:.04em}"
+    },
+    {
+      "name": "Month Leaf",
+      "kind": "custom",
+      "refersTo": "month-leaf",
+      "description": "Signature: one order month in the calendar; red band when current.",
+      "html": "<button class=\"ds-ml ds-now\"><span class=\"ds-mm\">август</span><span class=\"ds-mq\">182</span><span class=\"ds-ms\">22 поставщика</span></button><button class=\"ds-ml\"><span class=\"ds-mm\">сентябрь</span><span class=\"ds-mq\">47</span><span class=\"ds-ms\">9 поставщиков</span></button>",
+      "css": ".ds-ml{all:unset;cursor:pointer;box-sizing:border-box;width:150px;min-height:132px;margin-right:8px;vertical-align:top;background:var(--leaf,#fafaf8);box-shadow:var(--shadow,0 1px 0 rgba(22,23,22,.06),0 6px 18px -10px rgba(22,23,22,.22));position:relative;padding:24px 12px 12px;display:inline-flex;flex-direction:column;color:var(--ink,#161716);transition:transform .18s cubic-bezier(.2,.8,.2,1)}.ds-ml::before{content:'';position:absolute;left:0;right:0;top:0;height:6px;background:var(--ink,#161716)}.ds-ml.ds-now::before{background:var(--red,#c42a1f)}.ds-ml::after{content:'';position:absolute;left:8px;right:8px;top:12px;border-top:2px dotted var(--rule-strong,#9aa09c)}.ds-ml:hover{transform:translateY(-3px)}.ds-ml:focus-visible{outline:2px solid var(--focus,#2a78d6);outline-offset:2px}.ds-mm{font:600 12px 'Golos Text',system-ui,sans-serif;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-2,#4f5351)}.ds-mq{font:600 34px/1.05 Oswald,'Arial Narrow',system-ui,sans-serif;margin-top:6px}.ds-now .ds-mq{color:var(--red,#c42a1f)}.ds-ms{font:12px 'Golos Text',system-ui,sans-serif;color:var(--ink-2,#4f5351);margin-top:auto}"
+    },
+    {
+      "name": "Date Leaf",
+      "kind": "custom",
+      "refersTo": "date-leaf",
+      "description": "Arrival date as a miniature leaf inside supplier rows.",
+      "html": "<span class=\"ds-dl\"><b>11</b><span>дек<br>2026</span></span>",
+      "css": ".ds-dl{display:inline-grid;grid-template-columns:auto auto;align-items:center;gap:8px;color:var(--ink,#161716)}.ds-dl b{font:600 26px/1 Oswald,'Arial Narrow',system-ui,sans-serif;border-top:4px solid var(--red,#c42a1f);background:var(--leaf,#fafaf8);padding:3px 6px 2px;min-width:40px;text-align:center;box-shadow:var(--shadow,0 1px 0 rgba(22,23,22,.06),0 6px 18px -10px rgba(22,23,22,.22))}.ds-dl span{font:13px/1.2 'Golos Text',system-ui,sans-serif;color:var(--ink-2,#4f5351)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Tear-Off Calendar",
+    "overview": "The page is printed like a Soviet wall calendar: the leaf is today, the task is printed on it, and everything else is dates ahead. Cool newsprint ground, black ink, and one calendar red reserved for \"today\" and \"will run out\". Condensed bold numerals carry dates and quantities; a plain humanist sans carries words. Structure comes from hairline rules, heavy 2px ink rules under section heads, the dotted perforation and the leaf stack, never from rounded cards.\n\nDensity is operational: supplier rows ranked by urgency in fixed columns, each with one download. Light and dark themes are complete twins; dark keeps the same ink-on-paper logic with lifted reds.",
+    "keyCharacteristics": [
+      "Paper leaves on a cool grey ground; square corners everywhere except 2px on controls.",
+      "Red means \"today / runs out\". Nothing decorative is red.",
+      "Numbers in condensed Oswald with tabular figures; words in Golos Text.",
+      "Hairline and 2px ink rules instead of boxes.",
+      "One soft leaf-lift shadow; no other depth."
+    ],
+    "rules": [
+      {
+        "name": "The Red Day Rule",
+        "body": "Red marks only what is today or what will run out before arrival. If an element is red, the buyer must act on it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Twin Theme Rule",
+        "body": "Every token has a dark twin declared both under `prefers-color-scheme: dark` and `[data-theme=\"dark\"]`; never hardcode a light-only value.",
+        "section": "colors"
+      },
+      {
+        "name": "The Numerals Are Print Rule",
+        "body": "A number the buyer reads as a quantity or date is set in Oswald; prose numbers stay in Golos.",
+        "section": "typography"
+      },
+      {
+        "name": "The Only Paper Lifts Rule",
+        "body": "If it is not a calendar leaf, it does not cast a shadow. Month leaves rise 3px on hover; nothing else moves.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep red for today and for \"runs out before arrival\" only.",
+      "Do set every quantity and date in Oswald with tabular figures.",
+      "Do carry status as icon + label in a chip, never colour alone.",
+      "Do separate with hairlines and 2px ink rules; keep surfaces square.",
+      "Do keep body text at 15px or larger and define a dark twin for every new token."
+    ],
+    "donts": [
+      "Don't build grey KPI-card grids or a sidebar; key numbers are inline margin notes.",
+      "Don't round surfaces or add shadows to anything that is not a leaf.",
+      "Don't add coloured side stripes to rows or multi-hue bars to month leaves.",
+      "Don't use uppercase tracked labels as kickers above headings."
+    ]
+  }
+}

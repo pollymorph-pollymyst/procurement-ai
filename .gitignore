@@ -1,0 +1,20 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+dist/
+outputs/latest/
+Входящие/обработано/
+.impeccable/review/*-full.png
+
+# видео: готовые ролики и служебные файлы HyperFrames
+video/renders/
+video/.hyperframes/
+
+# локальный отчёт о приёме выгрузки (с путём к папке на этом компьютере)
+outputs/intake.json
+
+# видео — только на этом компьютере, в репозиторий не кладём
+video/

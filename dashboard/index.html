@@ -1,0 +1,1504 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Закупки — что заказать сегодня</title>
+<meta name="description" content="План закупок: что, сколько и когда заказать у каждого поставщика.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='5' width='26' height='24' fill='%23f6f6f4' stroke='%23161716' stroke-width='2'/%3E%3Crect x='3' y='5' width='26' height='7' fill='%23c42a1f'/%3E%3Ctext x='16' y='26' font-family='Arial' font-weight='700' font-size='13' text-anchor='middle' fill='%23161716'%3E13%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --ground:#eceeec; --leaf:#fafaf8; --leaf-2:#f3f4f2; --ink:#161716; --ink-2:#4f5351; --ink-3:#5f6461;
+  --rule:#cdd1ce; --rule-strong:#9aa09c; --red:#c42a1f; --red-ink:#a3221a; --red-wash:#f8e3e0;
+  --amber:#8a5700; --amber-wash:#fbefd5; --green:#1d7a35; --green-wash:#e2f1e5; --orange:#9a4115; --orange-wash:#f9e6dc;
+  --blue:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a; --series-4:#eda100; --series-5:#e87ba4; --series-6:#6250d6;
+  --focus:#2a78d6; --shadow:0 1px 0 rgba(22,23,22,.06),0 6px 18px -10px rgba(22,23,22,.22);
+  --num:"Oswald","Arial Narrow",system-ui,sans-serif; --sans:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#121312; --leaf:#1b1d1c; --leaf-2:#222524; --ink:#ecedea; --ink-2:#b5bab7; --ink-3:#8d9390;
+  --rule:#323634; --rule-strong:#545a57; --red:#ef5a4b; --red-ink:#ff8476; --red-wash:#3a1d1a;
+  --amber:#e8a73a; --amber-wash:#352a14; --green:#4cc06a; --green-wash:#16301d; --orange:#ec8a5a; --orange-wash:#37231a;
+  --blue:#3987e5; --series-2:#d95926; --series-3:#199e70; --series-4:#c98500; --series-5:#d55181; --series-6:#9085e9;
+  --focus:#6aa7f0; --shadow:0 1px 0 rgba(0,0,0,.3),0 8px 22px -12px rgba(0,0,0,.7); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --ground:#121312; --leaf:#1b1d1c; --leaf-2:#222524; --ink:#ecedea; --ink-2:#b5bab7; --ink-3:#8d9390;
+  --rule:#323634; --rule-strong:#545a57; --red:#ef5a4b; --red-ink:#ff8476; --red-wash:#3a1d1a;
+  --amber:#e8a73a; --amber-wash:#352a14; --green:#4cc06a; --green-wash:#16301d; --orange:#ec8a5a; --orange-wash:#37231a;
+  --blue:#3987e5; --series-2:#d95926; --series-3:#199e70; --series-4:#c98500; --series-5:#d55181; --series-6:#9085e9;
+  --focus:#6aa7f0; --shadow:0 1px 0 rgba(0,0,0,.3),0 8px 22px -12px rgba(0,0,0,.7); color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font:400 15px/1.5 var(--sans);font-variant-numeric:tabular-nums}
+::selection{background:var(--red);color:#fff}
+a{color:inherit;text-underline-offset:3px;text-decoration-thickness:1px}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.num{font-family:var(--num);font-weight:500;letter-spacing:.01em;font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-2)}
+.small{font-size:14px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* top bar */
+.top{border-bottom:1px solid var(--rule);background:var(--ground)}
+.top .wrap{display:flex;align-items:center;gap:16px;min-height:56px}
+.brand{font-weight:700;font-size:17px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.brand i{display:inline-block;width:14px;height:16px;border:1.5px solid var(--ink);border-top:5px solid var(--red)}
+.iconbtn{border:1px solid var(--rule-strong);background:transparent;width:36px;height:36px;display:grid;place-items:center;cursor:pointer;border-radius:2px}
+.iconbtn:hover{background:var(--leaf)}
+.iconbtn svg{width:18px;height:18px}
+
+/* today */
+.today{display:grid;grid-template-columns:minmax(220px,280px) 1fr;gap:32px;padding:24px 0 0}
+.leaf-stack{position:relative;align-self:start;margin-bottom:10px}
+.leaf-stack::before,.leaf-stack::after{content:"";position:absolute;height:8px;background:var(--leaf-2);box-shadow:var(--shadow)}
+.leaf-stack::before{left:6px;right:6px;bottom:-5px;z-index:0}
+.leaf-stack::after{left:12px;right:12px;bottom:-10px;z-index:-1}
+.leaf{background:var(--leaf);box-shadow:var(--shadow);position:relative;z-index:1;padding:26px 22px 22px;text-align:center}
+.leaf::before{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:var(--red)}
+.leaf::after{content:"";position:absolute;left:10px;right:10px;top:16px;border-top:2px dotted var(--rule-strong)}
+.leaf-week{margin-top:12px;text-transform:uppercase;letter-spacing:.12em;font-size:13px;font-weight:600;color:var(--ink-2)}
+.leaf-day{font-family:var(--num);font-weight:600;font-size:132px;line-height:.95;letter-spacing:-.02em;color:var(--red);margin:6px 0 2px}
+.leaf-month{font-family:var(--num);font-size:24px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.leaf-foot{border-top:1px solid var(--rule);margin-top:16px;padding-top:12px;font-size:14px;color:var(--ink-2);text-align:left}
+.headline{font-size:clamp(24px,2.4vw,32px);line-height:1.2;font-weight:600;letter-spacing:-.015em;margin:4px 0 16px;text-wrap:balance;max-width:28ch}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:24px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--ink);background:var(--leaf);color:var(--ink);padding:9px 14px;font-weight:600;font-size:14px;text-decoration:none;cursor:pointer;border-radius:2px;white-space:nowrap;transition:background .15s,color .15s}
+.btn:hover{background:var(--ink);color:var(--leaf)}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{background:var(--red-ink);border-color:var(--red-ink)}
+.btn.ghost{border-color:var(--rule-strong);background:transparent;font-weight:500}
+.btn.ghost:hover{background:var(--leaf);color:var(--ink)}
+.btn svg{width:16px;height:16px;flex:none}
+.margins{display:grid;grid-template-columns:repeat(3,1fr);margin:0;border-top:2px solid var(--ink)}
+.margins button{all:unset;cursor:pointer;padding:14px 16px 14px 0;border-right:1px solid var(--rule);display:flex;flex-wrap:wrap;align-items:baseline;align-content:flex-start;gap:2px 8px}
+.margins button + button{padding-left:16px}
+.margins button:last-child{border-right:0}
+.margins button:hover .m-label{text-decoration:underline}
+.margins button:focus-visible{outline:2px solid var(--focus)}
+.m-num{font-family:var(--num);font-weight:500;font-size:28px;line-height:1}
+.m-num small{font-size:20px;color:var(--ink-2);margin-left:4px}
+.m-label{font-weight:600;display:flex;align-items:center;gap:6px}
+.m-hint{font-size:14px;color:var(--ink-2);flex-basis:100%}
+.m-red .m-num{color:var(--red)}
+.m-label svg{width:15px;height:15px;flex:none}
+
+/* commentary */
+.comment{margin:28px 0 8px;background:var(--leaf);padding:20px 22px;display:grid;grid-template-columns:200px 1fr 1fr 1fr;gap:24px;border-top:1px solid var(--rule)}
+.comment h2{font-size:15px;margin:0;font-weight:700}
+.comment h3{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-2);margin:0 0 8px;font-weight:600}
+.comment ul{margin:0;padding:0;list-style:none}
+.comment li{padding:6px 0;border-top:1px solid var(--rule);font-size:14px;line-height:1.45}
+.comment li:first-child{border-top:0;padding-top:0}
+.comment .note{font-size:13px;color:var(--ink-3);margin-top:8px}
+
+/* sections */
+section.block{margin-top:40px}
+.sec-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:0}
+.sec-head h2{font-size:22px;margin:0;font-weight:700;letter-spacing:-.01em}
+.sec-head p{margin:0;color:var(--ink-2);font-size:14px}
+.sec-head .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+
+/* supplier rows */
+.sup{border-bottom:1px solid var(--rule);background:transparent}
+.sup-row{display:grid;grid-template-columns:minmax(170px,1.4fr) 90px 110px 150px 120px auto 40px;gap:16px;align-items:center;padding:14px 0}
+.sup-name{font-weight:700;font-size:16px}
+.sup-sub{font-size:14px;color:var(--ink-2)}
+.cell-k{font-size:13px;color:var(--ink-3);display:block}
+.cell-v{font-family:var(--num);font-size:22px;font-weight:500;line-height:1.1}
+.cell-v.red{color:var(--red)}
+.date-leaf{display:inline-grid;grid-template-columns:auto auto;align-items:center;gap:8px}
+.date-leaf b{font-family:var(--num);font-weight:600;font-size:26px;line-height:1;border-top:4px solid var(--red);background:var(--leaf);padding:3px 6px 2px;min-width:40px;text-align:center;box-shadow:var(--shadow)}
+.date-leaf span{font-size:14px;line-height:1.2;color:var(--ink-2)}
+.toggle{width:36px;height:36px;border:1px solid var(--rule-strong);background:transparent;cursor:pointer;display:grid;place-items:center;border-radius:2px}
+.toggle:hover{background:var(--leaf)}
+.toggle svg{width:16px;height:16px;transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.sup.open .toggle svg{transform:rotate(180deg)}
+.sup-lines{display:none;padding:0 0 18px}
+.sup.open .sup-lines{display:block}
+.more-row{padding:14px 0;color:var(--ink-2);font-size:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--rule);background:var(--leaf)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-weight:600;font-size:13px;color:var(--ink-2);background:var(--leaf-2);position:sticky;top:0;z-index:1;white-space:nowrap}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--ink)}
+th[aria-sort="ascending"]::after{content:" ↑"}
+th[aria-sort="descending"]::after{content:" ↓"}
+td.n,th.n{text-align:right;white-space:nowrap}
+tbody tr.click{cursor:pointer}
+tbody tr.click:hover td{background:var(--leaf-2)}
+td .why{color:var(--ink-2);font-size:14px;max-width:62ch}
+.sku{font-weight:600;white-space:nowrap}
+.linkbtn{all:unset;cursor:pointer;font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.linkbtn:focus-visible{outline:2px solid var(--focus)}
+.linkbtn.sku,td.id{white-space:nowrap}
+td .why{min-width:440px}
+
+/* status chips */
+.st{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:600;white-space:nowrap;padding:1px 7px 1px 5px;border-radius:2px}
+.st svg{width:14px;height:14px;flex:none}
+.st.critical{color:var(--red-ink);background:var(--red-wash)}
+.st.warning{color:var(--amber);background:var(--amber-wash)}
+.st.serious{color:var(--orange);background:var(--orange-wash)}
+.st.good{color:var(--green);background:var(--green-wash)}
+.st.neutral{color:var(--ink-2);background:var(--leaf-2)}
+.flag{display:inline-flex;gap:5px;align-items:flex-start;font-size:14px;color:var(--orange);margin:2px 12px 0 0}
+.flag svg{width:14px;height:14px;flex:none;margin-top:2px}
+
+/* tabs */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--rule-strong);overflow-x:auto;scrollbar-width:none;margin-top:48px;position:sticky;top:0;background:var(--ground);z-index:5}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{all:unset;cursor:pointer;padding:14px 16px 12px;font-weight:600;font-size:14px;color:var(--ink-2);border-bottom:3px solid transparent;white-space:nowrap;display:flex;gap:6px;align-items:center}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--red)}
+.tabs button:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.tabs .cnt{font-family:var(--num);font-weight:500;font-size:13px;color:var(--ink-3)}
+.panel{padding:24px 0 64px}
+.panel[hidden]{display:none}
+.panel h3{font-size:18px;margin:28px 0 10px;font-weight:700}
+.panel h3:first-child{margin-top:0}
+.panel p.lead{margin:0 0 16px;color:var(--ink-2);max-width:72ch}
+
+/* calendar of leaves (signature) */
+.months{display:grid;grid-template-columns:repeat(6,1fr);gap:14px 12px;margin-top:8px}
+.mleaf{all:unset;cursor:pointer;background:var(--leaf);box-shadow:var(--shadow);position:relative;padding:24px 12px 12px;display:flex;flex-direction:column;min-height:132px;transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s}
+.mleaf::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--ink)}
+.mleaf.now::before{background:var(--red)}
+.mleaf::after{content:"";position:absolute;left:8px;right:8px;top:12px;border-top:2px dotted var(--rule-strong)}
+.mleaf.empty::after{display:none}
+.mleaf.empty{background:transparent;box-shadow:none;border:1px dashed var(--rule-strong);cursor:default}
+.mleaf.empty::before{display:none}
+.mleaf:not(.empty):hover{transform:translateY(-3px)}
+.mleaf[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:2px}
+.mleaf:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.ml-m{font-size:13px;text-transform:uppercase;letter-spacing:.1em;font-weight:600;color:var(--ink-2)}
+.ml-q{font-family:var(--num);font-weight:600;font-size:34px;line-height:1.05;margin-top:6px}
+.ml-s{font-size:13px;color:var(--ink-2);margin-top:auto}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--ink-2);margin:8px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;display:inline-block;border-radius:1px}
+.legend i.line{height:3px}
+.legend i.dash{height:0;border-top:2px dashed currentColor;width:14px}
+
+/* segmented list chooser */
+.seg{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.seg button{border:1px solid var(--rule-strong);background:transparent;padding:7px 12px;cursor:pointer;font-size:14px;font-weight:500;display:flex;gap:8px;align-items:center;border-radius:2px}
+.seg button:hover{background:var(--leaf)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--leaf);border-color:var(--ink)}
+.seg button .num{font-size:15px}
+
+/* filters */
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center}
+.filters input,.filters select{border:1px solid var(--rule-strong);background:var(--leaf);padding:8px 10px;min-height:38px;border-radius:2px}
+.filters input{min-width:240px;flex:1;max-width:360px}
+.filters .count{margin-left:auto;color:var(--ink-2);font-size:14px}
+.empty-state{padding:32px;text-align:center;color:var(--ink-2);background:var(--leaf);border:1px dashed var(--rule-strong)}
+
+/* charts */
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;overflow:visible}
+.chart text{fill:var(--ink-3);font:12px var(--sans)}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--leaf);font-size:13px;padding:8px 10px;z-index:50;min-width:140px;box-shadow:var(--shadow);opacity:0;transition:opacity .1s;border-radius:2px}
+.tip b{display:block;margin-bottom:4px}
+.tip div{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.tip i{width:9px;height:9px;display:inline-block;margin-right:6px}
+.cats{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.cat{background:var(--leaf);padding:16px;border-top:3px solid var(--ink)}
+.cat h4{margin:0;font-size:16px}
+.cat .sub{font-size:13px;color:var(--ink-2);margin:2px 0 8px}
+.score{display:grid;grid-template-columns:repeat(3,auto);gap:4px 28px;justify-content:start;background:var(--leaf);padding:16px 20px;margin-bottom:20px}
+.score .num{font-size:36px;line-height:1}
+@media (max-width:640px){.score{grid-template-columns:auto auto}.score>:nth-child(3){grid-column:1/-1}}
+
+/* item dialog */
+dialog.card{border:0;padding:0;margin:0 0 0 auto;height:100%;max-height:100%;width:min(760px,100%);background:var(--ground);color:var(--ink);box-shadow:var(--shadow)}
+dialog.card{scroll-padding-top:100px;scroll-padding-bottom:80px}  /* фокус и прокрутка не уходят под липкую шапку и нижнюю панель */
+dialog.card::backdrop{background:rgba(10,12,11,.45)}
+dialog.card[open]{animation:slide .22s cubic-bezier(.2,.8,.2,1)}
+@keyframes slide{from{transform:translateX(30px);opacity:.6}to{transform:none;opacity:1}}
+.card-head{position:sticky;top:0;background:var(--ground);padding:18px 24px 12px;border-bottom:2px solid var(--ink);display:flex;gap:12px;align-items:flex-start;z-index:2}
+.card-head h2{margin:0;font-size:22px}
+.card-head .close{margin-left:auto}
+.card-body{padding:18px 24px 40px}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--rule);margin:16px 0}
+.facts div{padding:10px 12px 10px 0;border-bottom:1px solid var(--rule)}
+.facts dt{font-size:13px;color:var(--ink-3)}
+.facts dd{margin:0;font-family:var(--num);font-size:20px;font-weight:500}
+.reason{font-size:15px;line-height:1.55;background:var(--leaf);padding:14px 16px;margin:12px 0;max-width:70ch}
+.card-body h3{font-size:15px;margin:22px 0 6px}
+
+details.method{background:var(--leaf);padding:0 20px;border-top:1px solid var(--rule)}
+details.method summary{cursor:pointer;padding:16px 0;font-weight:600}
+details.method[open] summary{border-bottom:1px solid var(--rule)}
+.method-body{max-width:76ch;padding:8px 0 20px}
+.method-body h4{margin:18px 0 4px;font-size:15px}
+.method-body p{margin:4px 0}
+
+/* status + control panel */
+.ctl-open{all:unset;cursor:pointer;margin-left:auto;display:flex;align-items:center;gap:12px;padding:6px 10px 6px 12px;border:1px solid var(--rule-strong);border-radius:2px;min-height:44px;box-sizing:border-box}
+.ctl-open:hover{background:var(--leaf)}
+.ctl-open:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.ctl-open .st-text{font-size:13px;line-height:1.35;color:var(--ink-2);text-align:right}
+.ctl-open .st-text b{color:var(--ink);font-weight:600}
+.ctl-open .gear{display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;color:var(--ink);border-left:1px solid var(--rule);padding-left:12px;align-self:stretch}
+.ctl-open svg{width:18px;height:18px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ink-3);margin-right:6px;vertical-align:1px}
+.dot.ok{background:var(--green)}
+.dot.bad{background:var(--orange)}
+.dot.run{background:var(--blue);animation:pulse 1s ease-in-out infinite alternate}
+@keyframes pulse{to{opacity:.35}}
+[hidden]{display:none!important}
+.stale-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--amber-wash);border:1px solid var(--amber);padding:12px 16px;margin-top:20px;font-size:15px}
+.stale-bar>svg{width:20px;height:20px;flex:none;color:var(--amber)}
+.stale-bar>div{flex:1;min-width:240px}
+.leaf.stale::before{background:var(--ink-2)}
+.leaf.stale .leaf-day{color:var(--ink)}
+.c-dl{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-items:center}
+.sup.sent .sup-row{grid-template-columns:1fr auto;padding:10px 0}
+.sup.sent .sup-row .c-name{grid-column:1;grid-row:1}
+.sup.sent .sup-row .c-dl{grid-column:2;grid-row:1}
+.sup.sent .sup-name{color:var(--ink-2);font-weight:600}
+.sent-mark{display:inline-flex;gap:6px;align-items:center;color:var(--green);font-weight:600;font-size:14px}
+.sent-mark svg{width:16px;height:16px}
+.sent-count{color:var(--green);font-weight:600}
+.sent-left{display:flex;gap:8px;align-items:flex-start;color:var(--green);font-weight:600;margin:-6px 0 16px;max-width:52ch}
+.sent-left:empty,.c-note:empty{display:none}
+.sent-left svg{width:18px;height:18px;flex:none;margin-top:2px}
+.c-note{grid-column:1/-1;margin:0}
+.sup.sent .sent-mark+.small{display:block;flex-basis:100%;text-align:right}
+.acc{margin-top:20px;border-top:1px solid var(--rule);padding-top:14px}
+.acc h3{font-size:16px;margin:0 0 4px}
+.acc-row{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--rule);font-size:15px}
+.acc-row .linkbtn{min-height:44px}
+.alt-link{font-size:14px;color:var(--ink-2)}
+.seg .more{border-style:dashed}
+.ctl-sec{padding:22px 0;border-bottom:1px solid var(--rule)}
+.ctl-sec:last-child{border-bottom:0}
+.ctl-sec h3{font-size:18px;margin:0 0 6px;font-weight:700}
+.ctl-sec>.lead{color:var(--ink-2);font-size:14px;margin:0 0 14px;max-width:62ch}
+.ctl-sec h4{font-size:15px;margin:22px 0 2px;font-weight:700}
+.mode{background:var(--leaf);padding:12px 14px;font-size:14px;display:flex;gap:10px;align-items:flex-start;margin-top:16px;max-width:66ch}
+.mode svg{width:18px;height:18px;flex:none;margin-top:1px}
+.runline{display:flex;gap:10px;align-items:flex-start;margin:0 0 14px;font-size:15px}
+.runline svg{width:18px;height:18px;flex:none;margin-top:2px}
+.runline .okc{color:var(--green)}
+.runline .badc{color:var(--orange)}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn[disabled],.btn.primary[disabled]{background:var(--leaf-2);border-color:var(--rule-strong);color:var(--ink-2);opacity:.75;cursor:not-allowed;pointer-events:none}
+.log{font-size:13px;line-height:1.5;background:var(--leaf);border:1px solid var(--rule);padding:10px 12px;max-height:180px;overflow:auto;margin-top:12px;white-space:pre-wrap}
+.err{background:var(--orange-wash);border:1px solid var(--orange);padding:10px 12px;font-size:14px;margin:12px 0;max-width:66ch}
+.okmsg{color:var(--green);font-weight:600;font-size:14px}
+.sw{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:12px;font-weight:600;font-size:15px;min-height:44px}
+.sw i{width:44px;height:24px;border:1px solid var(--ink);background:var(--leaf-2);position:relative;border-radius:2px;flex:none;transition:background .15s}
+.sw i::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;background:var(--ink-2);transition:transform .18s cubic-bezier(.2,.8,.2,1),background .15s}
+.sw[aria-checked="true"] i{background:var(--ink)}
+.sw[aria-checked="true"] i::after{transform:translateX(20px);background:var(--leaf)}
+.sw:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.sch-grid{display:grid;grid-template-columns:auto 1fr;gap:14px 20px;align-items:center;margin:14px 0}
+.sch-grid>label,.sch-grid>.lbl{font-weight:600;font-size:15px}
+.days{display:flex;gap:6px;flex-wrap:wrap}
+.days button{all:unset;cursor:pointer;min-width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--rule-strong);font-weight:600;font-size:14px;border-radius:2px;box-sizing:border-box}
+.days button:hover{background:var(--leaf)}
+.days button[aria-pressed="true"]{background:var(--ink);color:var(--leaf);border-color:var(--ink)}
+.days button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.quick{display:flex;gap:16px;font-size:14px;margin-top:8px}
+.tinput{border:1px solid var(--rule-strong);background:var(--leaf);padding:6px 10px;min-height:44px;border-radius:2px;font-family:var(--num);font-size:20px;box-sizing:border-box}
+.sum{font-size:15px;margin:6px 0 0}
+.field{display:grid;grid-template-columns:1fr 170px;gap:4px 20px;padding:14px 0;border-top:1px solid var(--rule);align-items:start}
+.field label{font-weight:600;font-size:15px}
+.field .help{grid-column:1;font-size:14px;color:var(--ink-2);max-width:52ch;margin:0}
+.field .inp{grid-column:2;grid-row:1/3;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.field.wide{grid-template-columns:1fr}
+.field.wide .inp{grid-column:1;grid-row:auto;align-items:flex-start}
+.ibox{display:flex;align-items:center;border:1px solid var(--rule-strong);background:var(--leaf);border-radius:2px;min-height:44px}
+.ibox:focus-within{outline:2px solid var(--focus);outline-offset:1px}
+.ibox input,.ibox select{border:0;background:transparent;padding:8px 10px;outline:0}
+.ibox input[type=number]{width:96px;text-align:right;font-family:var(--num);font-size:19px}
+.ibox input[type=text]{width:220px}
+.ibox span{padding-right:10px;color:var(--ink-2);font-size:14px;white-space:nowrap}
+.field .dflt{font-size:13px;color:var(--ink-2)}
+.field .dflt button{all:unset;cursor:pointer;text-decoration:underline;text-underline-offset:3px;color:var(--ink)}
+.field.changed .ibox{border-color:var(--ink)}
+.field.hol{grid-template-columns:1fr auto}
+.field.hol .help{margin-top:4px}
+.field.hol .inp{flex-direction:row;flex-wrap:wrap;gap:8px}
+.field.hol .ibox input[type=number]{width:56px}
+.field.hol .ibox span:first-child{padding:0 0 0 10px}
+details.adv{margin-top:22px;border-top:2px solid var(--ink)}
+details.adv>summary{cursor:pointer;padding:14px 0;font-weight:700;font-size:16px}
+details.adv>.lead{color:var(--ink-2);font-size:14px;margin:0 0 6px}
+fieldset.ro{border:0;padding:0;margin:0;min-width:0}
+.ctl-save{position:sticky;bottom:0;background:var(--ground);border-top:2px solid var(--ink);padding:12px 24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;z-index:2}
+.ctl-save .msg{font-size:14px;color:var(--ink-2)}
+
+.ctl-save[hidden]{display:none}
+.msg.bad{color:var(--orange);font-weight:600}
+.okc{color:var(--green)}
+.badc{color:var(--orange)}
+.okc svg,.badc svg{width:18px;height:18px;vertical-align:-4px}
+#sch-body.off{opacity:.5}
+.path{display:inline-block;font-size:14px;word-break:break-all;background:var(--leaf);border:1px solid var(--rule);padding:6px 10px}
+.mapbox{background:var(--leaf);padding:4px 16px 16px;margin-top:16px;border:1px solid var(--orange)}
+.mapbox .field{border-top-color:var(--rule)}
+.svc-list{display:grid;gap:8px;margin:4px 0 8px}
+.svc{display:grid;grid-template-columns:22px 1fr;gap:2px 10px;align-items:start;padding:12px 14px;border:1px solid var(--rule-strong);background:var(--leaf);border-radius:2px;cursor:pointer}
+.svc:hover{border-color:var(--ink-2)}
+.svc:has(input:checked){border-color:var(--ink);box-shadow:inset 3px 0 0 var(--ink)}
+.svc:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:1px}
+.svc input{margin:3px 0 0;width:18px;height:18px;accent-color:var(--ink)}
+.svc b{font-size:15px}
+.svc .small{grid-column:2}
+.wr-det{padding:0 14px 6px;border:1px solid var(--ink);border-top:0;margin-top:-9px;background:var(--leaf)}
+.wr-det .field:first-child{border-top:0}
+.wr-det .field{grid-template-columns:minmax(0,1fr) minmax(0,260px)}
+.wr-det .ibox,.wr-det .ibox input,.wr-det .ibox select{width:100%;min-width:0;box-sizing:border-box}
+.wr-det .field .inp{align-items:stretch;min-width:0}
+.wr-now{font-size:14px;margin:0 0 12px;max-width:66ch}
+dialog.setup{border:0;padding:0;width:min(680px,calc(100% - 32px));max-height:calc(100% - 32px);background:var(--ground);color:var(--ink);box-shadow:var(--shadow)}
+dialog.setup::backdrop{background:rgba(10,12,11,.55)}
+dialog.setup .card-body{padding:24px}
+dialog.setup h2{margin:0 0 8px;font-size:24px}
+dialog.setup .lead{color:var(--ink-2);margin:0 0 16px;max-width:60ch}
+dialog.setup h2:focus{outline:0}
+.su-steps{display:flex;flex-wrap:wrap;gap:4px 16px;margin:0 0 14px;font-size:13px;color:var(--ink-2)}
+.su-steps .on{color:var(--ink);font-weight:700;box-shadow:inset 0 -2px 0 var(--ink)}
+.su-steps .done{color:var(--green)}
+.su-note{font-size:14px;margin:12px 0 8px;max-width:62ch}
+.su-nav{margin-top:20px;padding-top:16px;border-top:1px solid var(--rule)}
+
+footer{border-top:1px solid var(--rule);padding:20px 0 40px;color:var(--ink-2);font-size:14px}
+
+@media (max-width:1060px){
+  .comment{grid-template-columns:1fr 1fr}
+  .comment h2{grid-column:1/-1}
+  .months{grid-template-columns:repeat(4,1fr)}
+  .sup-row{grid-template-columns:1fr 70px 90px 110px 100px auto 36px}
+}
+@media (max-width:760px){
+  .wrap{padding:0 16px}
+  .today{grid-template-columns:1fr;gap:20px;padding-top:20px}
+  .leaf{display:grid;grid-template-columns:auto 1fr;text-align:left;gap:0 16px;align-items:center;padding:22px 16px 14px}
+  .leaf-week{grid-column:2;margin:0;align-self:end}
+  .leaf-day{grid-row:1/3;font-size:84px;margin:0}
+  .leaf-month{grid-column:2;align-self:start;font-size:20px}
+  .leaf-foot{display:none}
+  .leaf{padding:18px 16px 10px}
+  .leaf-day{font-size:60px}
+  .leaf-stack{margin-bottom:4px}
+  .margins{grid-template-columns:1fr}
+  .margins button,.margins button + button{padding:10px 0;border-right:0;border-bottom:1px solid var(--rule)}
+  .m-num{font-size:24px}
+  .m-hint{flex-basis:auto}
+  .cta [data-go="calendar"]{display:none}
+  .comment{grid-template-columns:1fr;padding:16px}
+  .sup-row{grid-template-columns:repeat(3,1fr) auto;gap:8px 12px}
+  .sup-row .c-name{grid-column:1/4;grid-row:1}
+  .sup-row .c-tg{grid-column:4;grid-row:1}
+  .sup-row .c-sk,.sup-row .c-q,.sup-row .c-def,.sup-row .c-arr{grid-row:2;text-align:left;align-self:end}
+  .sup-row .c-dl{grid-column:1/-1;grid-row:3}
+  .months{grid-template-columns:repeat(2,1fr)}
+  .cats{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr 1fr}
+  .filters input{min-width:0;max-width:none;width:100%}
+  .tabs{flex-wrap:wrap;position:static;overflow:visible}
+  .tabs button{padding:10px 12px 8px;min-height:44px;box-sizing:border-box}
+  .iconbtn,.toggle{width:44px;height:44px}
+  .btn{min-height:44px}
+  .seg button{min-height:44px}
+  .ctl-open .st-text{display:none}
+  .ctl-open .gear{border-left:0;padding-left:0}
+  .field,.field.hol{grid-template-columns:1fr}
+  .wr-det .field{grid-template-columns:1fr}
+  .field .inp{grid-column:1;grid-row:auto;align-items:flex-start}
+  .sch-grid{grid-template-columns:1fr;gap:8px}
+  .card-head,.card-body,.ctl-save{padding-left:16px;padding-right:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{.tabs,.top button,.toggle,.cta{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand"><i aria-hidden="true"></i>Закупки</div>
+  <button class="ctl-open" id="ctl-open" type="button" aria-haspopup="dialog"></button>
+  <button class="iconbtn" id="theme" type="button" aria-label="Переключить светлую или тёмную тему"></button>
+</div></header>
+
+<main class="wrap" id="app"></main>
+
+<dialog class="card" id="card" aria-labelledby="card-title"></dialog>
+<dialog class="card" id="ctl" aria-labelledby="ctl-title"></dialog>
+<dialog class="setup" id="setup" aria-labelledby="setup-title"></dialog>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script>
+const DATA = /*__DATA__*/null;
+</script>
+<script>
+(() => {
+"use strict";
+const D = DATA;
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const N = x => x == null || isNaN(x) ? "—" : Math.round(x).toLocaleString("ru-RU").replace(/ /g, " ");
+const MG = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+const MN = ["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
+const MS = ["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+const pd = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d || 1); };
+const rd = s => { if (!s) return "—"; const d = pd(s); return `${d.getDate()} ${MG[d.getMonth()]} ${d.getFullYear()}`; };
+const rdShort = s => { if (!s) return "—"; const d = pd(s); return `${d.getDate()} ${MS[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`; };
+const ym = s => { const d = pd(s); return `${MN[d.getMonth()]} ${d.getFullYear()}`; };
+const ymShort = s => { const d = pd(s); return `${MS[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`; };
+const plural = (n, a, b, c) => { n = Math.abs(n) % 100; const k = n % 10; if (n > 10 && n < 20) return c; if (k > 1 && k < 5) return b; if (k === 1) return a; return c; };
+const tov = n => `${N(n)} ${plural(n, "товар", "товара", "товаров")}`;
+
+/* ---------- icons (one stroke family) ---------- */
+const I = {
+  download: '<path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/>',
+  alert: '<path d="M12 4 2.8 19.5h18.4L12 4Z"/><path d="M12 10v4.5M12 17v.2"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  check: '<circle cx="12" cy="12" r="8.5"/><path d="m8 12.2 2.7 2.7L16.2 9.4"/>',
+  box: '<path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5v-9Z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/>',
+  empty: '<circle cx="12" cy="12" r="8.5"/><path d="M6 18 18 6"/>',
+  tag: '<path d="M3.5 12.5V4h8.5l8.5 8.5-8.5 8.5-8.5-8.5Z"/><circle cx="8.2" cy="8.2" r="1.3"/>',
+  user: '<circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/>',
+  calendar: '<rect x="3.5" y="5" width="17" height="15.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  layers: '<path d="m12 4 8.5 4.5L12 13 3.5 8.5 12 4Z"/><path d="m3.5 12.5 8.5 4.5 8.5-4.5"/>',
+  minus: '<circle cx="12" cy="12" r="8.5"/><path d="M8 12h8"/>',
+  chev: '<path d="m6 9 6 6 6-6"/>',
+  x: '<path d="M6 6l12 12M18 6 6 18"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>',
+  moon: '<path d="M19.5 14.5A8 8 0 1 1 9.5 4.5a6.5 6.5 0 0 0 10 10Z"/>',
+  sliders: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+  refresh: '<path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.6 4.2v4.3h-4.3"/>',
+  folder: '<path d="M3.5 6h6l2 2.2h9V19h-17z"/>',
+  ext: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v6H4V6h6"/>',
+  send: '<path d="M4 12 20 4l-5 16-3.5-6.5L4 12Z"/><path d="m11.5 13.5 3-3"/>',
+  truck: '<path d="M3 6.5h11v9H3zM14 9.5h3.8l3.2 3.3v2.7H14"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/>',
+};
+const ic = (k, cls = "") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
+
+const ST = {
+  ORDER_NOW: ["critical", "alert"], ORDER_SOON: ["warning", "clock"], NEED_SUPPLIER: ["serious", "user"],
+  REVIEW_PRICE: ["serious", "tag"], RARE: ["neutral", "minus"], PLANNED: ["neutral", "calendar"],
+  OK: ["good", "check"], EXCESS: ["warning", "layers"], DEAD: ["neutral", "box"], INACTIVE: ["neutral", "empty"],
+};
+const LABEL = Object.fromEntries(Object.entries(D.meta.statuses).map(([k, v]) => [k, v.label]));
+const KEY_BY_LABEL = Object.fromEntries(Object.entries(LABEL).map(([k, v]) => [v, k]));
+const chip = st => { const [c, i] = ST[st] || ["neutral", "minus"]; return `<span class="st ${c}">${ic(i)}${esc(LABEL[st] || st)}</span>`; };
+const chipL = label => chip(KEY_BY_LABEL[label] || "");
+const SKU = Object.fromEntries(D.skus.map(r => [r.sku_id, r]));
+const fileUrl = name => name ? `orders/${encodeURIComponent(name)}` : null;
+const K = D.kpi;
+
+/* ---------- theme ---------- */
+const root = document.documentElement;
+const themeBtn = $("#theme");
+const sysDark = () => matchMedia("(prefers-color-scheme: dark)").matches;
+function applyTheme(t) {
+  if (t) root.dataset.theme = t; else delete root.dataset.theme;
+  const dark = t ? t === "dark" : sysDark();
+  themeBtn.innerHTML = ic(dark ? "sun" : "moon");
+}
+let saved = null; try { saved = localStorage.getItem("theme"); } catch (e) {}
+applyTheme(saved);
+themeBtn.onclick = () => {
+  const dark = root.dataset.theme ? root.dataset.theme === "dark" : sysDark();
+  const t = dark ? "light" : "dark"; applyTheme(t); try { localStorage.setItem("theme", t); } catch (e) {}
+  rerenderCharts();
+};
+
+/* ---------- header ---------- */
+const rdNY = s => { const d = pd(s); return `${d.getDate()} ${MG[d.getMonth()]}`; };
+
+/* ---------- today ---------- */
+const asOf = pd(D.meta.as_of);
+const C = D.commentary || {};
+const files = D.files || {};
+const app = $("#app");
+const weekday = asOf.toLocaleDateString("ru-RU", { weekday: "long" });
+const today0 = new Date(); today0.setHours(0, 0, 0, 0);
+const ageDays = Math.round((today0 - asOf) / 864e5);
+const STALE = ageDays > 2;
+const headline = (C.headline || "").replace(/^Сегодня/, STALE ? `На ${rdNY(D.meta.as_of)}` : "Сегодня");
+const nextMonth = MG[(asOf.getMonth()+5)%12].replace(/я$/,"ю").replace(/а$/,"у");
+
+const marg = [
+  { id: "deficit", red: true, num: N(K.deficit_skus), label: "Не успеем довезти", icon: "truck",
+    hint: "кончатся до прихода нового заказа" },
+  { id: "oos", num: N(K.out_of_stock_skus), label: "Нет на складе", icon: "empty", hint: "из тех, что продаются" },
+  { id: "excess", num: N(K.excess_skus), label: "Избыток", icon: "layers", hint: `лишние ${N(K.excess_qty)} шт.` },
+];
+
+app.innerHTML = `
+${STALE ? `<div class="stale-bar" id="stale-bar" role="status">${ic("clock")}<div><b>Данные устарели: выгрузка от ${rd(D.meta.as_of)}, ${N(ageDays)} ${plural(ageDays, "день", "дня", "дней")} назад.</b>
+  Заказы ниже посчитаны на эту дату. Положите свежую выгрузку в папку с выгрузками и обновите анализ.</div>
+  <button class="btn" type="button" data-ctl="run">${ic("refresh")}Как обновить</button></div>` : ""}
+<div id="intake-bar"></div>
+<section class="today" aria-labelledby="headline">
+  <div class="leaf-stack"><div class="leaf ${STALE ? "stale" : ""}" aria-label="${STALE ? "Дата выгрузки" : "Сегодня"}: ${rd(D.meta.as_of)}">
+    <div class="leaf-week">${esc(weekday)}</div>
+    <div class="leaf-day">${asOf.getDate()}</div>
+    <div class="leaf-month">${MG[asOf.getMonth()]} ${asOf.getFullYear()}</div>
+    <div class="leaf-foot">${STALE ? `Расчёт на дату выгрузки. Поставка из Китая идёт 4–6 месяцев: заказ от этой даты закрывает спрос к ${nextMonth}.` : `Поставка из Китая идёт 4–6 месяцев, поэтому заказываем сегодня то, что понадобится к ${nextMonth}.`}</div>
+  </div></div>
+  <div>
+    <h1 class="headline" id="headline">${esc(headline).replace(/(\d) (?=\d|шт\.)/g, "$1 ")}</h1>
+    <p class="sent-left" id="sent-left" role="status"></p>
+    <div class="cta">
+      ${files._all ? `<a class="btn primary" href="${fileUrl(files._all)}" download>${ic("download")}Скачать все заказы (Excel)</a>` : ""}
+      <button class="btn ghost" type="button" data-go="calendar">${ic("calendar")}Когда заказывать дальше</button>
+      ${files._csv ? `<a class="alt-link" href="${fileUrl(files._csv)}" download>другой формат: CSV</a>` : ""}
+    </div>
+    <div class="margins">
+      ${marg.map(m => `<button type="button" class="${m.red ? "m-red" : ""}" data-kpi="${m.id}">
+        <div class="m-num">${m.num}</div>
+        <div class="m-label">${ic(m.icon)}${m.label}</div>
+        <div class="m-hint">${m.hint}</div></button>`).join("")}
+    </div>
+  </div>
+</section>
+
+<section class="block" id="orders" aria-labelledby="o-h">
+  <div class="sec-head">
+    <h2 id="o-h">${STALE ? `Заказать на ${rdNY(D.meta.as_of)}` : "Заказать сегодня"}</h2>
+    <p>${tov(K.order_now_skus)}, ${N(K.order_now_qty)} шт. Сверху — поставщики, у которых больше всего товаров кончится раньше прихода. <span id="sent-count"></span></p>
+  </div>
+  <div id="sup-list"></div>
+  <div id="sent-acc"></div>
+</section>
+
+<section class="comment" aria-labelledby="c-h">
+  <h2 id="c-h">Комментарий аналитика</h2>
+  <p class="c-note small muted" id="c-note"></p>
+  <div><h3>Что происходит</h3><ul>${(C.summary || []).map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+  <div><h3>Что сделать</h3><ul>${(C.actions || []).map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+  <div><h3>Обратить внимание</h3><ul>${(C.warnings || []).map(x => `<li>${esc(x)}</li>`).join("") || "<li>Ничего срочного.</li>"}</ul></div>
+</section>
+
+<nav class="tabs" role="tablist" aria-label="Разделы" id="tabs"></nav>
+<div id="panels"></div>
+
+<footer>Расчёт по выгрузке из учётной системы на ${rd(D.meta.as_of)}. План на ${N(D.meta.settings.horizon_months)} мес. вперёд, до ${rd(D.meta.horizon_end)}.
+Файлы заказов лежат рядом с этой страницей, в папке «orders». Настройки, расписание и история обновлений — кнопка «Управление» вверху.</footer>`;
+
+app.addEventListener("click", e => {
+  const g = e.target.closest("[data-go]"); if (g) { showTab(g.dataset.go, true); return; }
+  const c = e.target.closest("[data-ctl]"); if (c) { openCtl(c.dataset.ctl); return; }
+  const rc = e.target.closest("[data-recalc]");
+  if (rc) { rc.disabled = true; api("/api/run", {}).then(j => { startedJob(j); openCtl("run"); }).catch(err => { rc.disabled = false; rc.textContent = err.message; }); return; }
+  const k = e.target.closest("[data-kpi]");
+  if (k) {
+    const id = k.dataset.kpi;
+    if (id === "orders") $("#orders").scrollIntoView({ behavior: "smooth" });
+    else if (id === "deficit") { riskSel = "deficit"; showTab("risks", true); }
+    else if (id === "excess") { riskSel = "excess"; showTab("risks", true); }
+    else if (id === "oos") { allFilter.oos = true; showTab("all", true); }
+    return;
+  }
+  const s = e.target.closest("[data-sku]"); if (s) { openCard(s.dataset.sku); }
+});
+
+/* ---------- supplier orders ---------- */
+const linesTable = (lines, opts = {}) => `<div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table>
+  <thead><tr><th>Артикул</th><th>Категория</th><th class="n">Заказать</th><th class="n">На складе</th><th class="n">В пути</th><th>Хватит до</th>${opts.orderDate ? "<th>Заказать до</th>" : ""}<th>Почему</th></tr></thead>
+  <tbody>${lines.map(l => `<tr class="click ${l.deficit ? "warn" : ""}" data-sku="${esc(l.sku_id)}">
+    <td><button class="linkbtn sku" type="button">${esc(l.sku_id)}</button>${l.abc === "A" ? ' <span class="small muted" title="Важный товар: даёт основную часть продаж в категории">· важный</span>' : ""}</td>
+    <td>${esc(l.category_name)}</td><td class="n num">${N(l.qty)}</td><td class="n">${N(l.on_hand)}</td><td class="n">${N(l.pipeline)}</td>
+    <td style="white-space:nowrap">${l.deficit ? `<span class="st critical">${ic("truck")}${rdShort(l.cover_until)}</span>` : rdShort(l.cover_until)}</td>
+    ${opts.orderDate ? `<td style="white-space:nowrap">${rdShort(l.order_date)}</td>` : ""}
+    <td><div class="why">${esc(l.reason)}</div></td></tr>`).join("")}</tbody></table></div>`;
+
+const SENT_KEY = "sent:" + D.meta.as_of;
+let sent = {}; try { sent = JSON.parse(localStorage.getItem(SENT_KEY) || "{}") || {}; } catch (e) {}
+Object.assign(sent, (D.control || {}).sent || {});
+const supKey = g => g.supplier_id || "—";
+// заказы, которые уже учтены в расчёте как «в пути» (отправлены, но ещё не попали в выгрузку)
+const ACC = D.sent_orders || [], ACC_SET = new Set(ACC.map(x => x.supplier_id));
+// панель управления объявлена ниже — до её появления считаем, что режим не локальный
+function LOCAL() { try { return CTL.mode === "local"; } catch (e) { return false; } }
+const isSent = g => !!sent[supKey(g)] && !ACC_SET.has(supKey(g));
+function setSent(g, on) {
+  const k = supKey(g);
+  if (on) sent[k] = new Date().toISOString(); else delete sent[k];
+  try { localStorage.setItem(SENT_KEY, JSON.stringify(sent)); } catch (e) {}
+  if (CTL.mode === "local") api("/api/sent", { supplier_id: k, on }).catch(() => {});
+}
+const dm = iso => { const d = new Date(iso); return isNaN(d) ? "" : `${d.getDate()} ${MS[d.getMonth()]}, ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
+function supRow(g, i) {
+  const f = fileUrl(files[g.supplier_id]);
+  if (isSent(g)) return `<div class="sup sent" id="sup-${i}"><div class="sup-row">
+    <div class="c-name"><div class="sup-name">${esc(g.supplier_id || "Без поставщика")}</div><div class="sup-sub">${N(g.skus)} поз. · ${N(g.qty)} шт.${f ? ` · <a href="${f}" download>файл заказа</a>` : ""}</div></div>
+    <div class="c-dl"><span class="sent-mark">${ic("check")}Отправлено ${dm(sent[supKey(g)])}</span>${LOCAL() ? `<span class="small muted">при пересчёте станет заказом «в пути»</span>` : ""}
+      <button class="btn ghost" type="button" data-sent="${i}" data-on="0">Вернуть в список</button></div></div></div>`;
+  const type = g.supply_type === "local" ? "местный" : g.supply_type === "import" ? "импорт" : "";
+  const fill = g.fill_rate != null && g.fill_rate >= 0.05 && g.fill_rate < 0.6 ? ` · довозит ${Math.round(g.fill_rate * 100)}% заказанного` : "";
+  const a = g.arrival_date ? pd(g.arrival_date) : null;
+  return `<div class="sup" id="sup-${i}">
+    <div class="sup-row">
+      <div class="c-name"><div class="sup-name">${esc(g.supplier_id || "Без поставщика")}</div>
+        <div class="sup-sub">${type}${g.lead_days ? ` · везёт ${g.lead_days} дн.` : ""}${g.holiday_days ? ` + ${g.holiday_days} дн. простоя (${esc(g.holiday)})` : ""}${fill}</div></div>
+      <div class="c-sk"><span class="cell-k">позиций</span><span class="cell-v">${N(g.skus)}</span></div>
+      <div class="c-q"><span class="cell-k">штук</span><span class="cell-v">${N(g.qty)}</span></div>
+      <div class="c-def"><span class="cell-k">не успеем довезти</span><span class="cell-v ${g.deficit ? "red" : ""}">${N(g.deficit)}</span></div>
+      <div class="c-arr">${a ? `<span class="cell-k">придёт к</span><span class="date-leaf"><b>${a.getDate()}</b><span>${MS[a.getMonth()]}<br>${a.getFullYear()}</span></span>` : ""}</div>
+      <div class="c-dl">${f ? `<a class="btn" href="${f}" download>${ic("download")}Скачать заказ (Excel)</a>` : ""}
+        <button class="btn ghost" type="button" data-sent="${i}" data-on="1" aria-label="Отметить: заказ поставщику ${esc(g.supplier_id)} отправлен">${ic("send")}Отправлено</button></div>
+      <div class="c-tg"><button class="toggle" type="button" aria-expanded="false" aria-controls="sup-l-${i}" aria-label="Показать состав заказа ${esc(g.supplier_id)}">${ic("chev")}</button></div>
+    </div>
+    <div class="sup-lines" id="sup-l-${i}"></div>
+  </div>`;
+}
+const SHOW_SUP = 8;
+let supAll = false;
+function renderSuppliers(all) {
+  supAll = all;
+  const list = $("#sup-list");
+  const idx = D.order_now.map((g, i) => i);
+  // отправленные — всегда видны, под списком к отправке
+  const todo = idx.filter(i => !isSent(D.order_now[i])), done = idx.filter(i => isSent(D.order_now[i]));
+  const shown = all ? todo : todo.slice(0, SHOW_SUP), hidden = todo.length - shown.length;
+  const cnt = done.length;
+  const left = todo.map(i => D.order_now[i]), lq = left.reduce((a, g) => a + g.qty, 0), ls = left.reduce((a, g) => a + g.skus, 0);
+  $("#sent-count").innerHTML = cnt ? `<span class="sent-count">Отправлено ${N(cnt)} из ${N(D.order_now.length)}.</span>` : "";
+  // заголовок и комментарий посчитаны до отметок — показываем, сколько осталось, и предлагаем пересчитать
+  $("#sent-left").innerHTML = cnt ? `${ic("check")}<span>Отправлено ${N(cnt)} из ${N(D.order_now.length)} ${plural(D.order_now.length, "поставщика", "поставщиков", "поставщиков")}. ${left.length ? `Осталось отправить: ${N(left.length)} ${plural(left.length, "поставщик", "поставщика", "поставщиков")}, ${tov(ls)}, ${N(lq)} шт.` : "Всё отправлено."}</span>` : "";
+  $("#c-note").innerHTML = cnt ? `Комментарий написан до отметок «Отправлено» и обновится при пересчёте.${LOCAL() ? ` <button class="linkbtn" type="button" data-recalc>Пересчитать сейчас</button>` : ""}` : "";
+  list.innerHTML = shown.map(i => supRow(D.order_now[i], i)).join("") + (todo.length > SHOW_SUP ? `<div class="more-row">
+    ${all ? "" : `Ещё ${hidden} ${plural(hidden, "поставщик", "поставщика", "поставщиков")} к отправке.`}
+    <button class="btn ghost" type="button" id="sup-more">${all ? "Свернуть" : "Показать всех"}</button></div>` : "")
+    + done.map(i => supRow(D.order_now[i], i)).join("")
+    + (D.order_now.length ? "" : `<div class="empty-state">Сегодня ничего заказывать не нужно. Ближайшие заказы — во вкладке «Календарь заказов».</div>`);
+  const m = $("#sup-more"); if (m) m.onclick = () => renderSuppliers(!all);
+  $("#sent-acc").innerHTML = ACC.length ? `<div class="acc"><h3>Уже отправлено — учтено как заказы в пути</h3>
+    <p class="small muted">Пока этих заказов нет в выгрузке из учётной системы, расчёт считает их едущими и не предлагает заказать повторно.</p>
+    ${ACC.map(x => `<div class="acc-row"><span><b>${esc(x.supplier_id)}</b> · ${N(x.skus)} поз., ${N(x.qty)} шт. · отправлено ${dm(x.when)}</span>
+      ${LOCAL() ? `<button class="linkbtn" type="button" data-unsent="${esc(x.supplier_id)}">Не отправляли — убрать</button>` : ""}</div>`).join("")}</div>` : "";
+}
+$("#sent-acc").addEventListener("click", e => {
+  const b = e.target.closest("[data-unsent]"); if (!b) return;
+  b.disabled = true; b.textContent = "Пересчитываю…";
+  api("/api/sent", { supplier_id: b.dataset.unsent, on: false }).then(() => api("/api/run", {})).then(j => { startedJob(j); openCtl("run"); })
+    .catch(err => { b.disabled = false; b.textContent = err.message; });
+});
+$("#sup-list").addEventListener("click", e => {
+  const b = e.target.closest(".toggle");
+  if (b) {
+    const sup = b.closest(".sup"); const i = +sup.id.slice(4); const open = !sup.classList.contains("open");
+    sup.classList.toggle("open", open); b.setAttribute("aria-expanded", open);
+    const box = $(".sup-lines", sup); if (open && !box.innerHTML) box.innerHTML = linesTable(D.order_now[i].lines);
+    return;
+  }
+  const s = e.target.closest("[data-sent]");
+  if (s) { setSent(D.order_now[+s.dataset.sent], s.dataset.on === "1"); renderSuppliers(supAll); }
+});
+renderSuppliers(false);
+
+/* ---------- charts ---------- */
+const tip = $("#tip");
+const charts = [];
+function cssv(v) { const m = /^var\((--[\w-]+)\)$/.exec(v); return m ? getComputedStyle(root).getPropertyValue(m[1]).trim() : v; }
+function niceMax(v) { if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); const r = v / p; return (r <= 1 ? 1 : r <= 2 ? 2 : r <= 2.5 ? 2.5 : r <= 5 ? 5 : 10) * p; }
+/* spec: {labels, labelFmt, series:[{name, color, type:'bar'|'line', values, dash, stack}], marks?:bool[], markLabel, height, split?: index of "today"} */
+function chart(el, spec) {
+  const c = { el, spec }; charts.push(c); draw(c); return c;
+}
+function draw(c) {
+  const { el, spec } = c;
+  const W = Math.max(280, el.clientWidth), H = spec.height || 220, L = 44, R = 8, T = 8, B = 26;
+  const n = spec.labels.length;
+  const vals = spec.series.flatMap(s => s.values.filter(v => v != null));
+  const mx = niceMax(Math.max(1, ...vals));
+  const x0 = i => L + (W - L - R) * (i + 0.5) / n, bw = Math.max(2, (W - L - R) / n * 0.68);
+  const y = v => T + (H - T - B) * (1 - v / mx);
+  let g = "";
+  for (let k = 0; k <= 4; k++) { const v = mx * k / 4, yy = y(v);
+    g += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" stroke="${cssv("var(--rule)")}" stroke-width="1"/>`;
+    g += `<text x="${L - 6}" y="${yy + 4}" text-anchor="end">${N(v)}</text>`; }
+  if (spec.marks) spec.marks.forEach((m, i) => { if (m) g += `<rect x="${x0(i) - (W - L - R) / n / 2}" y="${T}" width="${(W - L - R) / n}" height="${H - T - B}" fill="${cssv("var(--red-wash)")}"/>`; });
+  if (spec.split != null) { const xs = x0(spec.split) - (W - L - R) / n / 2;
+    g += `<line x1="${xs}" x2="${xs}" y1="${T}" y2="${H - B}" stroke="${cssv("var(--ink)")}" stroke-dasharray="3 3"/><text x="${xs + 4}" y="${T + 12}" style="fill:${cssv("var(--ink-2)")}">сегодня</text>`; }
+  spec.series.filter(s => s.type === "bar").forEach(s => s.values.forEach((v, i) => { if (v == null) return;
+    g += `<rect x="${x0(i) - bw / 2}" y="${y(v)}" width="${bw}" height="${Math.max(0, y(0) - y(v))}" fill="${cssv(s.color)}" rx="1"/>`; }));
+  spec.series.filter(s => s.type === "line").forEach(s => { let d = "", pen = false;
+    s.values.forEach((v, i) => { if (v == null) { pen = false; return; } d += `${pen ? "L" : "M"}${x0(i).toFixed(1)},${y(v).toFixed(1)}`; pen = true; });
+    g += `<path d="${d}" fill="none" stroke="${cssv(s.color)}" stroke-width="2" ${s.dash ? 'stroke-dasharray="5 4"' : ""} stroke-linejoin="round"/>`; });
+  const every = Math.max(1, Math.ceil(n / Math.floor((W - L) / 56)));
+  spec.labels.forEach((lb, i) => { if (i % every === 0) g += `<text x="${x0(i)}" y="${H - 8}" text-anchor="middle">${esc(spec.labelFmt ? spec.labelFmt(lb) : lb)}</text>`; });
+  g += `<line class="hair" x1="0" x2="0" y1="${T}" y2="${H - B}" stroke="${cssv("var(--ink-3)")}" visibility="hidden"/>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="${esc(spec.aria || "График")}">${g}</svg>`;
+  const svg = $("svg", el), hair = $(".hair", el);
+  svg.onmousemove = e => {
+    const r = svg.getBoundingClientRect(); const px = (e.clientX - r.left) * W / r.width;
+    const i = Math.min(n - 1, Math.max(0, Math.floor((px - L) / ((W - L - R) / n)))); const xi = x0(i);
+    hair.setAttribute("x1", xi); hair.setAttribute("x2", xi); hair.setAttribute("visibility", "visible");
+    const rows = spec.series.map(s => s.values[i] == null ? "" : `<div><span><i style="background:${cssv(s.color)}"></i>${esc(s.name)}</span><b style="margin:0">${N(s.values[i])}</b></div>`).join("");
+    tip.innerHTML = `<b>${esc(spec.tipFmt ? spec.tipFmt(spec.labels[i]) : spec.labels[i])}</b>${rows}${spec.marks && spec.marks[i] ? `<div class="small">${esc(spec.markLabel || "")}</div>` : ""}`;
+    tip.style.opacity = 1;
+    const tx = Math.min(innerWidth - tip.offsetWidth - 8, e.clientX + 14); tip.style.left = tx + "px"; tip.style.top = (e.clientY - 10 - tip.offsetHeight) + "px";
+  };
+  svg.onmouseleave = () => { tip.style.opacity = 0; hair.setAttribute("visibility", "hidden"); };
+}
+function legend(items) { return `<div class="legend">${items.map(([name, color, kind]) => `<span><i class="${kind || ""}" style="${kind === "dash" ? `color:${color}` : `background:${color}`}"></i>${esc(name)}</span>`).join("")}</div>`; }
+function rerenderCharts() { for (let i = charts.length - 1; i >= 0; i--) { if (!document.body.contains(charts[i].el)) charts.splice(i, 1); else draw(charts[i]); } }
+let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(rerenderCharts, 120); });
+
+/* ---------- tabs ---------- */
+const L_ = D.lists;
+const riskN = L_.deficit.length + L_.review_price.length + L_.need_supplier.length + L_.excess.length + L_.dead.length + L_.rare.length;
+const ch = D.changes || {};
+const TABS = [
+  ["calendar", "Календарь заказов", D.calendar.length ? null : 0],
+  ["risks", "Риски", riskN],
+  ["all", "Все товары", D.skus.filter(r => r.status !== "INACTIVE").length],
+  ["changes", "Что изменилось", ch.available ? ch.became_order_now.length + ch.left_order_now.length + ch.status_changed.length : null],
+  ["forecast", "Прогноз и сезоны", null],
+  ["suppliers", "Поставщики", D.suppliers.length],
+  ["method", "Как считаем", null],
+];
+$("#tabs").innerHTML = TABS.map(([id, t, c]) => `<button role="tab" id="t-${id}" aria-controls="p-${id}" aria-selected="false" tabindex="-1" type="button">${t}${c != null ? `<span class="cnt">${N(c)}</span>` : ""}</button>`).join("");
+$("#panels").innerHTML = TABS.map(([id]) => `<section class="panel" role="tabpanel" id="p-${id}" aria-labelledby="t-${id}" hidden></section>`).join("");
+const rendered = {};
+let current = null;
+function showTab(id, scroll) {
+  if (!TABS.some(t => t[0] === id)) id = "calendar";
+  TABS.forEach(([t]) => { const b = $("#t-" + t), p = $("#p-" + t); const on = t === id; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; p.hidden = !on; });
+  if (!rendered[id] || id === "risks" || id === "all") { RENDER[id]($("#p-" + id)); rendered[id] = true; }
+  current = id;
+  if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+  if (scroll) $("#tabs").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("#tabs").addEventListener("click", e => { const b = e.target.closest("[role=tab]"); if (b) showTab(b.id.slice(2)); });
+$("#tabs").addEventListener("keydown", e => {
+  if (!["ArrowRight", "ArrowLeft"].includes(e.key)) return;
+  const ids = TABS.map(t => t[0]); let i = ids.indexOf(current) + (e.key === "ArrowRight" ? 1 : -1);
+  i = (i + ids.length) % ids.length; showTab(ids[i]); $("#t-" + ids[i]).focus();
+});
+
+/* ---------- calendar (signature: months as leaves) ---------- */
+let calSel = null;
+const RENDER = {};
+RENDER.calendar = p => {
+  const byM = Object.fromEntries(D.calendar.map(c => [c.month, c]));
+  const start = new Date(asOf.getFullYear(), asOf.getMonth(), 1);
+  const months = []; for (let i = 0; i < D.meta.settings.horizon_months; i++) { const d = new Date(start.getFullYear(), start.getMonth() + i, 1); months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`); }
+  const cats = D.categories.map(c => c.category_name);
+  const soon = D.order_soon.flatMap(g => g.lines.map(l => ({ ...l, supplier_id: g.supplier_id })));
+  p.innerHTML = `<p class="lead">Каждый лист — месяц, в который нужно разместить заказы, чтобы товар не кончился. Учтены сезонность, срок поставки каждого поставщика и то, что уже едет. Нажмите на месяц, чтобы увидеть, что заказывать.</p>
+  <div class="months">${months.map((m, i) => { const c = byM[m]; const d = pd(m + "-01");
+    if (!c) return `<div class="mleaf empty"><div class="ml-m">${MN[d.getMonth()]} ${d.getFullYear()}</div><div class="ml-s">заказов нет</div></div>`;
+    const tot = c.qty || 1;
+    return `<button type="button" class="mleaf ${i === 0 ? "now" : ""}" data-m="${m}" aria-pressed="${calSel === m}">
+      <span class="ml-m">${MN[d.getMonth()]} ${d.getFullYear()}</span>
+      <span class="ml-q">${N(c.qty)}</span>
+      <span class="ml-s">шт. · ${tov(c.skus)} · ${N(c.suppliers)} пост.</span>${i === 0 && K.order_now_qty && c.qty > K.order_now_qty ? `<span class="ml-s">из них сегодня — ${N(K.order_now_qty)}, остальное до конца месяца</span>` : ""}</button>`; }).join("")}</div>
+  <div id="cal-detail"></div>
+  <h3>В ближайшие 30 дней</h3>
+  <p class="lead">Эти заказы ещё не срочные, но их пора готовить. ${tov(soon.length)}, ${N(D.kpi.order_soon_qty)} шт.</p>
+  ${soon.length ? linesTable(soon, { orderDate: true }) : `<div class="empty-state">В ближайший месяц новых заказов нет.</div>`}`;
+  p.querySelectorAll(".mleaf[data-m]").forEach(b => b.onclick = () => { calSel = calSel === b.dataset.m ? null : b.dataset.m; p.querySelectorAll(".mleaf[data-m]").forEach(x => x.setAttribute("aria-pressed", x.dataset.m === calSel)); calDetail(); });
+  calDetail();
+};
+function calDetail() {
+  const box = $("#cal-detail"); if (!box) return;
+  if (!calSel) { box.innerHTML = ""; return; }
+  const rows = D.calendar_lines.filter(c => c.date.startsWith(calSel)).sort((a, b) => a.date.localeCompare(b.date) || b.qty - a.qty);
+  box.innerHTML = `<h3>Заказы на ${ym(calSel + "-01")}</h3><div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr><th>Заказать до</th><th>Поставщик</th><th>Артикул</th><th>Категория</th><th class="n">Штук</th><th>Придёт к</th></tr></thead><tbody>
+    ${rows.map(r => { const s = SKU[r.sku_id] || {}; return `<tr class="click" data-sku="${esc(r.sku_id)}"><td>${rdShort(r.date)}</td><td>${esc(r.supplier_id)}</td><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(s.category_name)}</td><td class="n num">${N(r.qty)}</td><td>${rdShort(r.arrival)}</td></tr>`; }).join("")}
+  </tbody></table></div>`;
+}
+
+/* ---------- risks ---------- */
+let riskSel = "deficit", riskMore = false;
+const RISK_MAIN = ["deficit", "po", "excess", "review_price"];
+const S = D.meta.settings;
+const RISKS = {
+  deficit: ["Не успеем довезти", "Эти товары закончатся раньше, чем придёт заказ, размещённый сегодня. Если заказ уже в пути — товара не будет до его прихода. Обычной поставкой не спасти: попросите поставщика ускорить отгрузку, ищите быструю поставку (авиа, местный поставщик) или договоритесь о частичной отгрузке.", L_.deficit, ["lost_units", "cover_until", "gap_until"]],
+  review_price: ["Пересмотреть цену", `Наценка ниже ${N(S.min_markup_pct)}%. В файлы заказов эти товары не попадают — сначала решите, поднимать ли цену или выводить товар.`, L_.review_price, ["markup", "qty"]],
+  need_supplier: ["Нужен поставщик", "Пора заказывать, но у товара не указан поставщик. Назначьте поставщика в учётной системе.", L_.need_supplier, ["qty", "cover_until"]],
+  rare: ["Редкий спрос", `Продаются реже ${N(S.rare_per_year)} шт. в год. Держать запас невыгодно — заказывайте под конкретного клиента.`, L_.rare, ["demand_12m"]],
+  excess: ["Избыток", `Запаса больше чем на ${N(S.excess_months)} мес. Новых заказов не нужно; часть можно распродать.`, L_.excess, ["excess_qty", "demand_12m"]],
+  dead: ["Мёртвый остаток", "Продаж не было больше 12 месяцев, но товар лежит на складе. Кандидаты на распродажу или возврат поставщику.", L_.dead, []],
+  po: ["Заказы в пути под вопросом", `Заказы, которые опаздывают или просрочены больше чем на ${N(S.doubtful_overdue_days)} дн. Сильно просроченные в расчёте не учитываются — уточните у поставщика.`, D.open_po.filter(o => o.state !== "в пути"), null],
+};
+const COLS = { qty: ["К заказу, шт.", r => N(r.qty)], lost_units: ["Упустим, шт.", r => N(r.lost_units)], cover_until: ["Хватит до", r => rdShort(r.cover_until)], gap_until: ["Заказ в пути придёт", r => r.gap_until ? rdShort(r.gap_until) : "—"],
+  markup: ["Наценка", r => r.markup == null ? "—" : N(r.markup) + "%"], demand_12m: ["Спрос за год", r => N(r.demand_12m)], excess_qty: ["Лишнее, шт.", r => N(r.excess_qty)] };
+RENDER.risks = p => {
+  const [title, lead, rows, cols] = RISKS[riskSel];
+  const more = riskMore || !RISK_MAIN.includes(riskSel);
+  const keys = Object.keys(RISKS).filter(k => more || RISK_MAIN.includes(k)).sort((a, b) => (RISK_MAIN.indexOf(a) + 1 || 9) - (RISK_MAIN.indexOf(b) + 1 || 9));
+  const restN = Object.keys(RISKS).filter(k => !RISK_MAIN.includes(k)).reduce((s, k) => s + RISKS[k][2].length, 0);
+  p.innerHTML = `<div class="seg" role="group" aria-label="Список рисков">${keys.map(k => { const v = RISKS[k]; return `<button type="button" data-r="${k}" aria-pressed="${k === riskSel}">${esc(v[0])} <span class="num">${N(v[2].length)}</span></button>`; }).join("")}
+    ${more ? "" : `<button type="button" class="more" data-rmore="1" aria-expanded="false">Ещё 3 списка <span class="num">${N(restN)}</span></button>`}</div>
+  <p class="lead">${esc(lead)}</p>
+  ${!rows.length ? `<div class="empty-state">Таких товаров нет.</div>` : cols ? `<div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr><th>Артикул</th><th>Категория</th><th>Поставщик</th><th class="n">На складе</th><th class="n">В пути</th>${cols.map(c => `<th class="n">${COLS[c][0]}</th>`).join("")}<th>Почему</th></tr></thead><tbody>
+    ${rows.map(r => `<tr class="click" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(r.category_name)}</td><td class="id">${esc(r.supplier_id || "—")}</td><td class="n">${N(r.on_hand)}</td><td class="n">${N(r.pipeline)}</td>${cols.map(c => `<td class="n">${COLS[c][1](r)}</td>`).join("")}<td><div class="why">${esc(r.reason)}</div></td></tr>`).join("")}
+  </tbody></table></div>` : `<div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr><th>Заказ</th><th>Артикул</th><th>Поставщик</th><th>Заказан</th><th>Обещали к</th><th class="n">Ждём, шт.</th><th>Состояние</th></tr></thead><tbody>
+    ${rows.sort((a, b) => b.overdue_days - a.overdue_days).map(o => `<tr class="click" data-sku="${esc(o.sku_id)}"><td>${esc(o.po_id)}</td><td><button class="linkbtn sku" type="button">${esc(o.sku_id)}</button></td><td>${esc(o.supplier_id)}</td><td>${rdShort(o.order_date)}</td><td>${rdShort(o.promised)}</td><td class="n">${N(o.qty)}</td>
+      <td>${o.state === "сомнительный" ? `<span class="st critical">${ic("alert")}просрочен на ${N(o.overdue_days)} дн. — не учтён</span>` : `<span class="st warning">${ic("clock")}опаздывает на ${N(o.overdue_days)} дн.</span>`}</td></tr>`).join("")}
+  </tbody></table></div>`}`;
+  p.querySelectorAll("[data-r]").forEach(b => b.onclick = () => { riskSel = b.dataset.r; RENDER.risks(p); });
+  const rm = $("[data-rmore]", p); if (rm) rm.onclick = () => { riskMore = true; RENDER.risks(p); $("[data-r]:nth-child(5)", p)?.focus(); };
+};
+
+/* ---------- all items ---------- */
+const allFilter = { q: "", st: "", cat: "", oos: false, sort: "priority", dir: 1 };
+const ALL_COLS = [["sku_id", "Артикул"], ["status", "Что делать"], ["category_name", "Категория"], ["supplier_id", "Поставщик"], ["on_hand", "На складе", 1], ["pipeline", "В пути", 1], ["demand_3m", "Спрос 3 мес.", 1], ["cover_until", "Хватит до"], ["order_date", "Заказать до"], ["qty", "Сколько", 1]];
+RENDER.all = p => {
+  if (!p.dataset.ready) {
+    const cats = [...new Set(D.skus.map(r => r.category_name))].sort();
+    const sts = Object.keys(LABEL).filter(k => D.skus.some(r => r.status === k));
+    p.innerHTML = `<div class="filters">
+      <label class="sr" for="f-q">Поиск по артикулу или поставщику</label><input id="f-q" type="search" placeholder="Артикул или поставщик, например SKU-D99C27" autocomplete="off">
+      <label class="sr" for="f-st">Что делать</label><select id="f-st"><option value="">Все рекомендации</option>${sts.map(k => `<option value="${k}">${esc(LABEL[k])}</option>`).join("")}</select>
+      <label class="sr" for="f-cat">Категория</label><select id="f-cat"><option value="">Все категории</option>${cats.map(c => `<option>${esc(c)}</option>`).join("")}</select>
+      <label class="small" style="display:flex;gap:6px;align-items:center"><input id="f-oos" type="checkbox" style="min-height:auto">Только нет на складе</label>
+      <span class="count" id="f-count"></span></div><div id="all-tbl"></div>`;
+    p.dataset.ready = 1;
+    $("#f-q").oninput = e => { allFilter.q = e.target.value.trim().toLowerCase(); allTable(); };
+    $("#f-st").onchange = e => { allFilter.st = e.target.value; allTable(); };
+    $("#f-cat").onchange = e => { allFilter.cat = e.target.value; allTable(); };
+    $("#f-oos").onchange = e => { allFilter.oos = e.target.checked; allTable(); };
+  }
+  $("#f-oos").checked = allFilter.oos;
+  allTable();
+};
+function allTable() {
+  const f = allFilter;
+  let rows = D.skus.filter(r => (f.st ? r.status === f.st : r.status !== "INACTIVE")
+    && (!f.cat || r.category_name === f.cat) && (!f.oos || r.out_of_stock)
+    && (!f.q || r.sku_id.toLowerCase().includes(f.q) || (r.supplier_id || "").toLowerCase().includes(f.q)));
+  const k = f.sort;
+  rows = rows.slice().sort((a, b) => { let x = a[k], y = b[k]; if (k === "status") { x = a.priority; y = b.priority; }
+    if (x == null) return 1; if (y == null) return -1; return (x > y ? 1 : x < y ? -1 : 0) * f.dir || (b.qty - a.qty); });
+  $("#f-count").textContent = `Показано: ${tov(rows.length)}${f.st ? "" : " (без тех, что не продаются)"}`;
+  const max = 300;
+  $("#all-tbl").innerHTML = rows.length ? `<div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица" style="max-height:70vh"><table><thead><tr>${ALL_COLS.map(([key, t, num]) => `<th class="sortable ${num ? "n" : ""}" data-k="${key}" ${f.sort === key ? `aria-sort="${f.dir > 0 ? "ascending" : "descending"}"` : ""} tabindex="0">${t}</th>`).join("")}</tr></thead><tbody>
+    ${rows.slice(0, max).map(r => `<tr class="click ${r.deficit ? "warn" : ""}" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${chip(r.status)}</td><td>${esc(r.category_name)}</td><td>${esc(r.supplier_id || "—")}</td>
+      <td class="n">${N(r.on_hand)}</td><td class="n">${N(r.pipeline)}</td><td class="n">${N(r.demand_3m)}</td><td style="white-space:nowrap">${r.level > 0 ? (r.cover_until ? rdShort(r.cover_until) : "больше 1,5 лет") : "—"}</td><td style="white-space:nowrap">${r.order_date ? rdShort(r.order_date) : "—"}</td><td class="n num">${r.qty ? N(r.qty) : "—"}</td></tr>`).join("")}
+  </tbody></table></div>${rows.length > max ? `<p class="small muted">Показаны первые ${max}. Уточните поиск или фильтр.</p>` : ""}` : `<div class="empty-state">Ничего не найдено. Проверьте артикул или сбросьте фильтры.</div>`;
+  document.querySelectorAll("#all-tbl th.sortable").forEach(th => { const go = () => { if (f.sort === th.dataset.k) f.dir *= -1; else { f.sort = th.dataset.k; f.dir = th.classList.contains("n") ? -1 : 1; } allTable(); };
+    th.onclick = go; th.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } }; });
+}
+
+/* ---------- changes ---------- */
+RENDER.changes = p => {
+  if (!ch.available) { p.innerHTML = `<div class="empty-state">Это первый анализ — сравнивать пока не с чем. После следующего обновления здесь появится, что изменилось.</div>`; return; }
+  const kp = ch.kpi_prev, d = ch.kpi_delta;
+  const rowsK = [["Заказать сейчас, товаров", "order_now_skus"], ["Заказать сейчас, шт.", "order_now_qty"], ["Не успеем довезти", "deficit_skus"], ["Нет на складе", "out_of_stock_skus"], ["Избыток, товаров", "excess_skus"], ["В пути, шт.", "pipeline_qty"], ["Пересмотреть цену", "review_price_skus"]];
+  const sign = v => v > 0 ? `+${N(v)}` : v < 0 ? `−${N(-v)}` : "0";
+  const tbl = (rows, head, fn) => rows.length ? `<div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(fn).join("")}</tbody></table></div>` : `<div class="empty-state">Нет.</div>`;
+  p.innerHTML = `<p class="lead">Сравнение с прошлой выгрузкой — анализом на ${rd(ch.prev_as_of)}.${ch.sent_skus ? ` Учтены заказы, отмеченные «Отправлено»: их товары (${N(ch.sent_skus)}) ушли из «Заказать сейчас», потому что уже едут.` : ""}</p>
+  <div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица" style="max-width:640px"><table><thead><tr><th>Показатель</th><th class="n">Было</th><th class="n">Стало</th><th class="n">Изменение</th></tr></thead><tbody>
+  ${rowsK.map(([t, k]) => `<tr><td>${t}</td><td class="n">${N(kp[k])}</td><td class="n">${N(K[k])}</td><td class="n num">${sign(d[k] || 0)}</td></tr>`).join("")}</tbody></table></div>
+  <h3>Добавились в «Заказать сейчас» · ${N(ch.became_order_now.length)}</h3>
+  ${tbl(ch.became_order_now, ["Артикул", "Категория", "Поставщик", "Было", "Заказать, шт."], r => `<tr class="click" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(r.category_name)}</td><td>${esc(r.supplier_id || "—")}</td><td>${chipL(r.from)}</td><td class="num">${N(r.qty)}</td></tr>`)}
+  <h3>Ушли из «Заказать сейчас» · ${N(ch.left_order_now.length)}</h3>
+  ${tbl(ch.left_order_now, ["Артикул", "Категория", "Теперь", "Почему"], r => `<tr class="click" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(r.category_name)}</td><td>${chipL(r.to)}</td><td class="small">${r.why ? esc(r.why.charAt(0).toUpperCase() + r.why.slice(1)) : "—"}</td></tr>`)}
+  ${ch.qty_changed.length ? `<h3>Сильно изменилось количество · ${N(ch.qty_changed.length)}</h3>${tbl(ch.qty_changed, ["Артикул", "Категория", "Было, шт.", "Стало, шт."], r => `<tr class="click" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(r.category_name)}</td><td class="num">${N(r.was)}</td><td class="num">${N(r.now)}</td></tr>`)}` : ""}
+  <h3>Другие смены рекомендации · ${N(ch.status_changed.length)}</h3>
+  ${tbl(ch.status_changed, ["Артикул", "Категория", "Было", "Стало"], r => `<tr class="click" data-sku="${esc(r.sku_id)}"><td><button class="linkbtn sku" type="button">${esc(r.sku_id)}</button></td><td>${esc(r.category_name)}</td><td>${chipL(r.from)}</td><td>${chipL(r.to)}</td></tr>`)}`;
+};
+
+/* ---------- forecast & seasons ---------- */
+RENDER.forecast = p => {
+  const bt = D.backtest || {};
+  const pct = v => N(v * 100) + "%";
+  const hm = D.axes.history_months, fm = D.axes.forecast_months;
+  const labels = hm.concat(fm.slice(1));
+  p.innerHTML = `${bt.available ? `<h3>Насколько можно доверять прогнозу</h3>
+    <p class="lead">Проверка на прошлом: мы «забыли» последний год, построили прогноз так, как будто сегодня ${rd(bt.from)}, и сравнили с тем, что продалось на самом деле. Средняя ошибка по товару за месяц:</p>
+    <div class="score"><div><div class="num">${pct(bt.model_error)}</div><div class="small muted">наш прогноз</div></div>
+      <div><div class="num muted">${pct(bt.naive_error)}</div><div class="small muted">простое «среднее за год»</div></div>
+      <div style="align-self:center;max-width:40ch" class="small">${bt.model_error < bt.naive_error ? "Наш прогноз точнее простого среднего: он учитывает сезон и месяцы, когда товара не было." : "По точности близко к простому среднему."} Ошибка по отдельному товару велика, потому что продажи штучные и неравномерные — поэтому в расчёт заложен страховой запас.</div></div>
+    <div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица" style="max-width:760px"><table><thead><tr><th>Категория</th><th class="n">Товаров</th><th class="n">Наш прогноз</th><th class="n">Простое среднее</th></tr></thead><tbody>
+    ${bt.categories.map(c => `<tr><td>${esc(c.category_name)}</td><td class="n">${N(c.skus)}</td><td class="n num">${pct(c.model_error)}</td><td class="n">${pct(c.naive_error)}</td></tr>`).join("")}</tbody></table></div>` : ""}
+    <h3>Продажи и прогноз по категориям</h3>
+    <p class="lead">Столбики — продажи за 3 года, линия — ожидаемый спрос на 1,5 года вперёд. По сезонным категориям заказ нужно размещать за срок поставки до пика.</p>
+    ${legend([["Продажи", "var(--blue)"], ["Прогноз спроса", "var(--series-2)", "line"]])}
+    <div class="cats">${D.categories.map((c, i) => `<div class="cat"><h4>${esc(c.category_name)}</h4>
+      <div class="sub">Пик — ${MN[c.peak_month - 1]} · товаров в продаже: ${N(c.active_skus)} · заказать сейчас: ${N(c.order_now_qty)} шт.</div>
+      <div class="chart" id="cc-${i}"></div></div>`).join("")}</div>`;
+  D.categories.forEach((c, i) => {
+    const h = c.history.concat(Array(fm.length - 1).fill(null));
+    const f = Array(hm.length - 1).fill(null).concat([c.history[c.history.length - 1]]).concat(c.forecast.slice(1));
+    chart($("#cc-" + i), { labels, labelFmt: s => ymShort(s + "-01"), tipFmt: s => ym(s + "-01"), height: 180, split: hm.length,
+      aria: `${c.category_name}: продажи и прогноз`, series: [{ name: "Продажи", color: "var(--blue)", type: "bar", values: h }, { name: "Прогноз", color: "var(--series-2)", type: "line", values: f }] });
+  });
+};
+
+/* ---------- suppliers ---------- */
+RENDER.suppliers = p => {
+  p.innerHTML = `<p class="lead">Срок поставки и цикл заказа считаются по истории каждого поставщика. «Довозит» — какая доля заказанного по закрытым заказам действительно пришла.</p>
+  <div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr><th>Поставщик</th><th>Тип</th><th class="n">Везёт, дн.</th><th class="n">Заказ раз в, дн.</th><th class="n">Довозит</th><th class="n">Заказов в пути</th><th class="n">Товаров</th><th class="n">Заказать сейчас, шт.</th><th></th></tr></thead><tbody>
+  ${D.suppliers.map(s => `<tr><td class="sku">${esc(s.supplier_id)}</td><td>${s.supply_type === "local" ? "местный" : s.supply_type === "import" ? "импорт" : "—"}</td><td class="n">${N(s.lead_days)}</td><td class="n">${N(s.cycle_days)}</td>
+    <td class="n">${s.fill_rate == null ? "—" : s.fill_rate >= 0.05 && s.fill_rate < 0.6 ? `<span class="st serious">${ic("alert")}${N(s.fill_rate * 100)}%</span>` : N(s.fill_rate * 100) + "%"}</td>
+    <td class="n">${N(s.open_orders)}</td><td class="n">${N(s.active_skus)}</td><td class="n num">${s.order_now_qty ? N(s.order_now_qty) : "—"}</td>
+    <td>${files[s.supplier_id] ? `<a href="${fileUrl(files[s.supplier_id])}" download class="small">Excel</a>` : ""}</td></tr>`).join("")}</tbody></table></div>`;
+};
+
+/* ---------- method ---------- */
+RENDER.method = p => {
+  const sv = S.service;
+  p.innerHTML = `<details class="method" open><summary>Как получаются цифры — простыми словами</summary><div class="method-body">
+  <h4>1. Сколько есть</h4><p>Остаток на 1-е число месяца плюс пришедшие поставки, минус продажи до даты выгрузки. Заказы в пути добавляются в день, когда их обещали привезти. Если заказ опаздывает до ${N(S.doubtful_overdue_days)} дней — ждём его через 3 недели; если больше — не рассчитываем на него и показываем в «Рисках». Если поставщик обычно довозит не всё (например, 80% заказанного), то и от открытого заказа ждём столько же. Заказ, отмеченный здесь «Отправлено», до следующей выгрузки тоже считается заказом в пути.</p>
+  <h4>2. Сколько будут покупать</h4><p>Смотрим продажи за последние годы. Месяцы, когда товара не было на складе, не считаем — иначе получится, что товар никому не нужен. Учитываем сезон каждой категории (обогреватели — осень, триммеры — весна) и тренд год к году, но осторожно.</p>
+  <h4>3. Когда заказывать</h4><p>По дням проигрываем, как будет уменьшаться запас. Дата заказа — последний день, когда заказ ещё успевает прийти до того, как запас опустится ниже страхового. Срок поставки берём по истории поставщика. Если между заказом и приходом выпадают праздники в стране поставщика (Китайский Новый год, Золотая неделя, Дивали…), срок удлиняется на дни простоя фабрик, и заказ предлагается раньше. Праздники и страны поставщиков настраиваются в «Управлении».</p>
+  <h4>4. Сколько заказывать</h4><p>Столько, чтобы хватило до следующего прихода плюс страховой запас. Страховой запас больше для важных товаров: у важных (дают 80% продаж в категории) запас рассчитан так, чтобы товар был в наличии в ${N(sv.A * 100)}% случаев, у средних — ${N(sv.B * 100)}%, у остальных — ${N(sv.C * 100)}%. Количество округляется до кратности, по которой товар обычно заказывали.</p>
+  <h4>5. Что не попадает в заказ</h4><p>Товары с наценкой ниже ${N(S.min_markup_pct)}%, без поставщика и с редким спросом (меньше ${N(S.rare_per_year)} шт. в год) вынесены в отдельные списки — решение по ним принимает человек.</p>
+  <h4>6. Комментарий аналитика</h4><p>Короткий текст сверху пишет сервис, выбранный при первом запуске (Claude, ChatGPT, DeepSeek, YandexGPT, GigaChat или программа на этом компьютере), или сама программа по шаблону. Цифры для него берутся только из расчёта, и каждое число в тексте автоматически сверяется с расчётом: если сервис ошибся или не ответил, текст собирается по шаблону.</p>
+  <h4>7. Как обновить</h4><p>Положите новую выгрузку (xlsx, csv или zip) в папку с выгрузками и нажмите «Управление» → «Обновить сейчас» (или дважды щёлкните «Обновить анализ.bat»). Через несколько секунд страница обновится, а во вкладке «Что изменилось» будет видно отличие от прошлого раза. Автоматическое обновление и правила расчёта настраиваются там же, в «Управлении».</p>
+  </div></details>`;
+};
+
+/* ---------- item card ---------- */
+const dlg = $("#card");
+function openCard(id) {
+  const r = SKU[id]; if (!r) return;
+  const hm = D.axes.history_months, fm = D.axes.forecast_months;
+  const hist = r.history ? r.history.sales : [];
+  const facts = [["На складе", N(r.on_hand)], ["В пути", N(r.pipeline)], ["Спрос в месяц", N(r.demand_3m / 3)], ["Срок поставки", r.lead_days + " дн."],
+    ["Хватит до", r.level > 0 ? (r.cover_until ? rdShort(r.cover_until) : "> 1,5 лет") : "—"], ["Заказать до", r.order_date ? rdShort(r.order_date) : "—"], ["Сколько", r.qty ? N(r.qty) : "—"], ["Страховой запас", N(r.safety_stock)]];
+  dlg.innerHTML = `<div class="card-head"><div><h2 id="card-title">${esc(r.sku_id)}</h2><div class="small muted">${esc(r.category_name)} · ${esc(r.supplier_id || "без поставщика")} · ${r.abc === "A" ? "важный товар" : r.abc === "B" ? "средняя важность" : "низкая важность"}${r.markup != null ? ` · наценка ${N(r.markup)}%` : ""}</div></div>
+    <button class="iconbtn close" type="button" aria-label="Закрыть">${ic("x")}</button></div>
+  <div class="card-body">${chip(r.status)}
+    <div class="reason">${esc(r.reason)}</div>
+    ${r.flags && r.flags.length ? `<div>${r.flags.map(f => `<span class="flag">${ic("alert")}${esc(f)}</span>`).join("")}</div>` : ""}
+    <dl class="facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>
+    ${hist.length ? `<h3>Продажи и прогноз по месяцам</h3>${legend([["Продажи", "var(--blue)"], ["Прогноз спроса", "var(--series-2)", "line"], ["Товара не было на складе", "var(--red-wash)"]])}<div class="chart" id="ch-sales"></div>` : ""}
+    ${r.level > 0 ? `<h3>Запас на конец месяца</h3>${legend([["Если не заказывать", "var(--red)", "line"], ["С заказами по плану", "var(--series-3)", "line"]])}<div class="chart" id="ch-stock"></div>` : ""}
+    ${r.planned_orders && r.planned_orders.length ? `<h3>Заказы по плану</h3><div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr><th>Заказать до</th><th class="n">Штук</th><th>Придёт к</th></tr></thead><tbody>${r.planned_orders.map(o => `<tr><td>${rd(o.date)}</td><td class="n num">${N(o.qty)}</td><td>${rd(o.arrival)}</td></tr>`).join("")}</tbody></table></div>` : ""}
+    ${r.po && r.po.length ? `<h3>Уже заказано</h3><div class="tbl-wrap" tabindex="0" role="region" aria-label="Таблица"><table><thead><tr><th>Заказ</th><th class="n">Штук</th><th>Обещали к</th><th>Состояние</th></tr></thead><tbody>${r.po.map(o => `<tr><td>${esc(o.po_id)}</td><td class="n">${N(o.qty)}</td><td>${rdShort(o.promised)}</td><td>${esc(o.state)}${o.overdue_days ? `, просрочен на ${N(o.overdue_days)} дн.` : ""}</td></tr>`).join("")}</tbody></table></div>` : ""}
+  </div>`;
+  $(".close", dlg).onclick = () => dlg.close();
+  dlg.showModal();
+  if (hist.length) {
+    const labels = hm.concat(fm.slice(1));
+    const h = hist.concat(Array(fm.length - 1).fill(null));
+    const f = Array(hm.length).fill(null).concat(r.forecast.slice(1)); f[hm.length - 1] = null;
+    const fc = Array(hm.length - 1).fill(null).concat(r.forecast);
+    chart($("#ch-sales"), { labels, labelFmt: s => ymShort(s + "-01"), tipFmt: s => ym(s + "-01"), height: 200, split: hm.length, aria: "Продажи и прогноз",
+      marks: (r.history.stockout || []).concat(Array(fm.length - 1).fill(false)), markLabel: "товара не было на складе",
+      series: [{ name: "Продажи", color: "var(--blue)", type: "bar", values: h }, { name: "Прогноз", color: "var(--series-2)", type: "line", values: fc }] });
+  }
+  if (r.level > 0) {
+    const dates = D.axes.stock_dates;
+    chart($("#ch-stock"), { labels: dates, labelFmt: s => ymShort(s), tipFmt: s => rd(s), height: 180, aria: "Запас по месяцам",
+      series: [{ name: "Без заказов", color: "var(--red)", type: "line", values: r.stock_path.no_order }, { name: "По плану", color: "var(--series-3)", type: "line", values: r.stock_path.with_plan }] });
+  }
+}
+dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
+dlg.addEventListener("close", () => { tip.style.opacity = 0; });
+
+/* ---------- управление: статус, обновление, данные, расписание, правила, история ---------- */
+const CTL = { mode: /github\.io$/.test(location.hostname) ? "online" : "file", st: D.control || {}, job: null };
+const NO_LINK = "Нет связи с программой. Откройте «Открыть закупки.bat» и обновите страницу.";
+const api = (path, body) => fetch(path, body === undefined ? { cache: "no-store" } : { method: "POST", cache: "no-store", headers: { "Content-Type": "application/json", "X-Procurement": "1" }, body: JSON.stringify(body) })
+  .then(async r => { const j = await r.json().catch(() => ({})); if (!r.ok || j.ok === false) throw new Error(j.error || NO_LINK); return j; },
+        () => { throw new Error(NO_LINK); });
+const DAYS = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"], DAYS_T = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+const DAYS_ACC = ["понедельник", "вторник", "среду", "четверг", "пятницу", "субботу", "воскресенье"];
+const DAYS_NOM = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"];
+const hm2 = d => `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+const dayDiff = d => { const a = new Date(d); a.setHours(0, 0, 0, 0); return Math.round((a - today0) / 864e5); };
+function when(iso) { const d = new Date(iso); if (isNaN(d)) return "—"; const k = dayDiff(d); return (k === 0 ? "сегодня" : k === -1 ? "вчера" : `${d.getDate()} ${MG[d.getMonth()]}`) + " в " + hm2(d); }
+function whenNext(d) { if (!d) return "—"; const k = dayDiff(d); return (k === 0 ? "сегодня" : k === 1 ? "завтра" : `в ${DAYS_ACC[(d.getDay() + 6) % 7]}, ${d.getDate()} ${MG[d.getMonth()]},`) + " в " + hm2(d); }
+function nextRun(sch) {
+  if (!sch || !sch["включено"]) return null;
+  const t = sch.task; if (CTL.mode === "local" && t && t.exists && t.next) return new Date(t.next);
+  const [h, m] = (sch["время"] || "07:00").split(":").map(Number); const now = new Date();
+  for (let i = 0; i < 8; i++) { const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i, h, m); if (d > now && (sch["дни"] || []).includes(DAYS[(d.getDay() + 6) % 7])) return d; }
+  return null;
+}
+
+/* шапка: одна кнопка — и статус, и вход в управление */
+const ctlBtn = $("#ctl-open");
+function renderHead() {
+  const last = (CTL.st.runs || [])[0], j = CTL.job, running = j && j.running, bad = last && !last.ok;
+  const nx = nextRun(CTL.st.schedule);
+  const l2 = running ? "идёт обновление…" : bad ? `обновление ${when(last.finished)} не удалось` : `обновлено ${when(last ? last.finished : D.meta.generated_at)}`;
+  const l3 = nx ? `дальше ${whenNext(nx)}` : "автообновление выключено";
+  ctlBtn.innerHTML = `<span class="st-text"><b>Данные на ${rd(D.meta.as_of)}</b><br><span class="dot ${running ? "run" : bad ? "bad" : nx ? "ok" : ""}" aria-hidden="true"></span>${l2} · ${l3}</span><span class="gear">${ic("sliders")}Управление</span>`;
+  ctlBtn.setAttribute("aria-label", `Управление. Данные на ${rd(D.meta.as_of)}; ${l2}; ${l3}`);
+  const ib = $("#intake-bar"), un = (CTL.st.intake || {}).unknown || [];
+  if (ib) ib.innerHTML = CTL.mode === "local" && un.length && !running ? `<div class="stale-bar" role="status">${ic("alert")}<div><b>${un.length === 1 ? `Файл «${esc(un[0].file)}» не распознан` : `Не распознано файлов: ${un.length}`} — ${un.length === 1 ? "он не попал" : "они не попали"} в расчёт.</b>
+    Укажите один раз, что в нём, — дальше такие файлы будут браться сами.</div>
+    <button class="btn" type="button" data-ctl="data">Указать, что в файле</button></div>` : "";
+}
+
+const ctl = $("#ctl");
+function openCtl(sec) { renderCtl(); if (!ctl.open) ctl.showModal(); const el = sec && ((sec === "data" && $("#cs-data .mapbox", ctl)) || $("#cs-" + sec, ctl)); if (el) el.scrollIntoView({ block: "start" }); }
+ctlBtn.onclick = () => openCtl();
+ctl.addEventListener("click", e => { if (e.target === ctl) ctl.close(); });
+
+function ghLinks() {
+  const r = CTL.st.repo; if (!r) return null;
+  return { run: `${r.url}/actions/workflows/daily.yml`, upload: `${r.url}/upload/${r.branch}/${encodeURIComponent("Входящие")}`, edit: `${r.url}/edit/${r.branch}/config.toml` };
+}
+
+function renderCtl() {
+  const m = CTL.mode, gh = ghLinks(), y = ctl.scrollTop;
+  ctl.innerHTML = `<div class="card-head"><div><h2 id="ctl-title">Управление</h2><div class="small muted">${m === "local" ? "Изменения сохраняются на этом компьютере." : m === "online" ? "Онлайн-версия: здесь видно состояние, а изменения делаются на GitHub." : "Только просмотр."}</div></div>
+    <button class="iconbtn close" type="button" aria-label="Закрыть">${ic("x")}</button></div>
+  <div class="card-body">
+    ${m === "file" ? `<div class="mode">${ic("alert")}<div>Кнопки управления работают, когда дашборд открыт через файл <b>«Открыть закупки.bat»</b> в папке программы. Сейчас страница открыта напрямую, поэтому здесь можно только посмотреть.</div></div>`
+      : m === "online" ? `<div class="mode">${ic("ext")}<div>${gh ? "Обновить, загрузить выгрузку и поменять настройки можно на GitHub — кнопки ниже открывают нужную страницу (нужен вход в аккаунт)." : "Управлять можно на компьютере с программой: «Открыть закупки.bat»."}</div></div>` : ""}
+    ${secRun(m, gh)}${secData(m)}${secSchedule(m, gh)}${secSettings(m, gh)}${secHolidays(m, gh)}${secWriter(m)}${secHistory()}
+  </div>
+  ${m === "local" ? `<div class="ctl-save" id="ctl-save" hidden><button class="btn primary" type="button" id="set-save">Сохранить и пересчитать</button>
+    <button class="btn ghost" type="button" id="set-cancel">Отменить изменения</button><span class="msg" id="save-msg" role="status"></span></div>` : ""}`;
+  ctl.scrollTop = y;
+  bindCtl();
+  const wp = $("#wr-panel", ctl); if (wp) mountWriter(wp, "p", false);
+  renderJob();
+}
+
+// ---------- кто пишет «Комментарий аналитика»
+const SRC_TITLE = { claude: "Claude", api: "Claude", openai: "внешний сервис", gigachat: "GigaChat", local: "программа на этом компьютере", "claude-code": "Claude Code" };
+function writerNow() {
+  const src = C.source && SRC_TITLE[C.source];
+  return src ? `Сейчас комментарий написал: <b>${esc(src)}</b>.`
+    : `Сейчас комментарий собран по шаблону.${C.note ? ` <span class="muted">Почему: ${esc(C.note)}.</span>` : ""}`;
+}
+function secWriter(m) {
+  return `<section class="ctl-sec" id="cs-wr" aria-labelledby="cs-wr-h"><h3 id="cs-wr-h">Комментарий аналитика</h3>
+    <p class="lead">Короткий текст над заказами: что происходит и что сделать. Его может писать внешний сервис или сама программа по шаблону. На расчёт заказов это не влияет, а каждое число в тексте сверяется с расчётом.</p>
+    <p class="wr-now">${writerNow()}</p>${m === "local" ? `<div id="wr-panel"></div>` : ""}</section>`;
+}
+const WD = {};  // черновики формы: p — в «Управлении», s — первый запуск
+function wrDraft(pfx) {
+  const w = CTL.st.writer || {};
+  if (!WD[pfx]) WD[pfx] = { service: w.service || "", base: w.base || "", model: w.model || "", scope: w.scope || "GIGACHAT_API_PERS", key: "" };
+  return WD[pfx];
+}
+function wrSvc(id) { return ((CTL.st.writer || {}).services || []).find(x => x.id === id); }
+function wrPreset(svc, d) { return (svc.presets || []).find(p => p.base && p.base === d.base) || (svc.presets || []).slice(-1)[0]; }
+function writerHtml(pfx, first) {
+  const w = CTL.st.writer || { services: [], has_key: {} }, d = wrDraft(pfx), svc = wrSvc(d.service);
+  let det = "";
+  if (svc && svc.id !== "нет") {
+    const pr = svc.presets ? wrPreset(svc, d) : null, hk = (w.has_key || {})[svc.key_env];
+    const fld = (id, label, help, input) => `<div class="field"><label for="${pfx}-${id}">${label}</label><p class="help">${help}</p><div class="inp"><div class="ibox">${input}</div></div></div>`;
+    if (svc.presets) {
+      det += fld("pre", "Сервис", "Адрес подставится сам.", `<select id="${pfx}-pre">${svc.presets.map((p, i) => `<option value="${i}" ${p === pr ? "selected" : ""}>${esc(p.title)}</option>`).join("")}</select>`);
+      det += fld("base", "Адрес", "Из документации сервиса.", `<input type="text" id="${pfx}-base" value="${esc(d.base)}" placeholder="https://…" spellcheck="false" autocomplete="off">`);
+    }
+    const hint = (pr && pr.model_hint) || "";
+    det += fld("model", "Версия", hint ? `${esc(hint)}.` : svc.model ? `Обычно подходит ${esc(svc.model)}.` : "Название из документации сервиса.",
+      `<input type="text" id="${pfx}-model" value="${esc(d.model)}" placeholder="${esc(svc.model || "")}" spellcheck="false" autocomplete="off">`);
+    if (svc.scopes) det += fld("scope", "Тип доступа", "Как в личном кабинете GigaChat.",
+      `<select id="${pfx}-scope">${svc.scopes.map(s => `<option value="${s[0]}" ${d.scope === s[0] ? "selected" : ""}>${esc(s[1])}</option>`).join("")}</select>`);
+    if (svc.key_env) det += fld("key", "Ключ доступа",
+      `${svc.key_help ? esc(svc.key_help) + ". " : ""}${hk ? "Ключ уже сохранён — оставьте поле пустым, чтобы не менять." : svc.needs_key ? "Хранится только на этом компьютере." : "Обычно не нужен."}`,
+      `<input type="password" id="${pfx}-key" value="${esc(d.key)}" placeholder="${hk ? "сохранён" : svc.needs_key ? "вставьте ключ" : "не нужен"}" spellcheck="false" autocomplete="off">`);
+    det = `<div class="wr-det">${det}</div>`;
+  }
+  const list = (w.services || []).map(x => `<label class="svc"><input type="radio" name="${pfx}-svc" value="${esc(x.id)}" ${d.service === x.id ? "checked" : ""}>
+    <b>${esc(x.title)}</b><span class="small muted">${esc(x.help)}</span></label>${d.service === x.id ? det : ""}`).join("");
+  return `<div class="svc-list" role="radiogroup" aria-label="Кто пишет комментарий">${list}</div>
+    <div class="btnrow" style="margin-top:14px">
+      <button class="btn primary" type="button" data-wr="save" ${d.service ? "" : "disabled"}>${first ? "Дальше" : "Сохранить и пересчитать"}</button>
+      ${svc && svc.id !== "нет" ? `<button class="btn ghost" type="button" data-wr="test">Проверить связь</button>` : ""}
+      ${first ? `<button class="linkbtn" type="button" data-wr="skip">Пропустить — писать по шаблону</button>` : ""}
+      <span class="msg" data-wr-msg role="status"></span></div>`;
+}
+function mountWriter(box, pfx, first) {
+  const draw = () => { box.innerHTML = writerHtml(pfx, first); bind(); };
+  const msg = (t, bad) => { const m = $("[data-wr-msg]", box); m.className = "msg" + (bad ? " bad" : ""); m.textContent = t; };
+  const body = () => { const d = wrDraft(pfx); return { service: d.service, base: d.base, model: d.model, scope: d.scope, key: d.key }; };
+  const done = j => { WD[pfx] = null; if (first) { CTL.st = j.control; suStep(2); } else startedJob(j); };
+  function bind() {
+    const d = wrDraft(pfx), b = sel => $(`[data-wr="${sel}"]`, box);
+    box.querySelectorAll(`input[name="${pfx}-svc"]`).forEach(r => r.onchange = () => {
+      const svc = wrSvc(r.value), pr = svc && svc.presets ? svc.presets[0] : null;
+      d.service = r.value; d.key = ""; d.base = pr ? pr.base : ""; d.model = pr ? pr.model : (svc && svc.model) || "";
+      draw(); const f = $(`input[name="${pfx}-svc"]:checked`, box); if (f) f.focus();
+    });
+    const inp = (id, k) => { const el = $(`#${pfx}-${id}`, box); if (el) el.oninput = () => { d[k] = el.value; }; };
+    inp("base", "base"); inp("model", "model"); inp("key", "key");
+    const sc = $(`#${pfx}-scope`, box); if (sc) sc.onchange = () => { d.scope = sc.value; };
+    const pre = $(`#${pfx}-pre`, box);
+    if (pre) pre.onchange = () => { const p = wrSvc(d.service).presets[+pre.value]; d.base = p.base; d.model = p.model; draw(); $(`#${pfx}-${p.base ? "model" : "base"}`, box).focus(); };
+    if (b("test")) b("test").onclick = () => {
+      b("test").disabled = true; msg("Проверяю связь…");
+      api("/api/writer/test", body()).then(j => msg(`Связь есть. Ответ сервиса: «${j.reply}».`)).catch(e => msg(e.message, true)).finally(() => { b("test").disabled = false; });
+    };
+    if (b("save")) b("save").onclick = () => {
+      b("save").disabled = true; msg(d.service === "нет" ? "Сохраняю…" : "Проверяю связь и сохраняю…");
+      const go = () => api("/api/writer", { ...body(), recalc: !first }).then(done);
+      (d.service === "нет" ? go() : api("/api/writer/test", body()).then(go)).catch(e => { msg(e.message, true); b("save").disabled = false; });
+    };
+    if (b("skip")) b("skip").onclick = () => api("/api/writer", { service: "нет", recalc: !first }).then(done).catch(e => msg(e.message, true));
+  }
+  draw();
+}
+const setup = $("#setup"), SU = { step: 1, prev: null, auto: null };
+const SU_STEPS = ["Комментарий", "Данные", "Первый расчёт"];
+function suHead(title) {
+  return `<p class="su-steps" aria-label="Шаг ${SU.step} из 3">${SU_STEPS.map((s, i) => `<span class="${i + 1 === SU.step ? "on" : i + 1 < SU.step ? "done" : ""}">${i + 1}. ${s}</span>`).join("")}</p>
+    <h2 id="setup-title" tabindex="-1">${title}</h2>`;
+}
+function suPrevHtml(p) {
+  if (!p) return "";
+  const od = D.meta && D.meta.as_of ? rd(D.meta.as_of) : "";  // дата данных, а не дата копирования файла
+  const rows = p.tables.map(r => {
+    const st = r.state === "new" ? `<span class="okc">${ic("check")}</span>` : r.state === "old" ? `<span class="okc">${ic("check")}</span>` : r.required ? `<span class="badc">${ic("alert")}</span>` : `<span class="muted">—</span>`;
+    const what = r.state === "new" ? `${esc(r.file)} · ${N(r.rows)} ${plural(r.rows, "строка", "строки", "строк")}${r.period ? " · " + esc(r.period) : ""}`
+      : r.state === "old" ? `в папке нет — возьмём имеющуюся выгрузку${od ? " на " + od : ""}`
+      : r.required ? "нет — без этого посчитать не получится" : "нет — можно и без этого, но часть выводов не построится";
+    return `<tr><td>${st}</td><td><b>${esc(r.title)}</b>${r.required ? "" : ` <span class="small muted">желательно</span>`}<div class="small muted">${what}</div></td></tr>`;
+  }).join("");
+  const lead = !p.files.length
+    ? (p.ready ? `<p class="su-note">В папке пока нет файлов. Можно начать на имеющейся выгрузке${od ? " на " + od : ""} и положить свою позже — при обновлении она подхватится сама.</p>`
+               : `<div class="err" role="alert">В папке нет файлов. Положите в неё выгрузку и нажмите «Проверить ещё раз».</div>`)
+    : `<p class="su-note">Нашлось файлов: ${N(p.files.length)}.${p.unknown.length ? ` Не распознано: ${N(p.unknown.length)} — укажите ниже, что в них.` : ""}</p>`;
+  return `${lead}<div class="tbl-wrap" tabindex="0" role="region" aria-label="Что нашлось в папке"><table><tbody>${rows}</tbody></table></div>
+    ${p.unknown.map((u, i) => mapHtml(u, i, "setup")).join("")}`;
+}
+function suCheck() {
+  const box = $("#su-prev", setup), m = $("#su-msg", setup);
+  m.className = "msg"; m.textContent = "Смотрю, что в папке…";
+  return api("/api/intake/preview", {}).then(j => { SU.prev = j.preview; m.textContent = ""; box.innerHTML = suPrevHtml(SU.prev); suBindMaps(); $("#su-next", setup).disabled = !SU.prev.ready; })
+    .catch(e => { m.className = "msg bad"; m.textContent = e.message; $("#su-next", setup).disabled = true; });
+}
+function suBindMaps() {
+  setup.querySelectorAll(".mapbox").forEach(box => {
+    const sel = $("[data-map-table]", box); sel.onchange = () => mapCols(box); mapCols(box);
+    const b = $("[data-map-save]", box), msg = $("[data-map-msg]", box);
+    b.onclick = () => {
+      const u = SU.prev.unknown[+box.dataset.u], table = sel.value, columns = {};
+      if (!table) { msg.className = "msg bad"; msg.textContent = "Выберите, что в файле."; return; }
+      box.querySelectorAll("[data-h]").forEach(s => { if (s.value) columns[s.dataset.h] = s.value; });
+      b.disabled = true; msg.className = "msg"; msg.textContent = "Запоминаю…";
+      api("/api/mapping", { sig: u.sig, table, columns, recalc: false }).then(suCheck).catch(e => { b.disabled = false; msg.className = "msg bad"; msg.textContent = e.message; });
+    };
+  });
+}
+function suStep(n) {
+  SU.step = n;
+  const src = CTL.st.source || {};
+  if (n === 1) {
+    setup.innerHTML = `<div class="card-body">${suHead("Кто будет писать «Комментарий аналитика»?")}
+      <p class="lead">Три коротких шага — и программа покажет, что заказать. Заказы, сроки и риски она считает сама. Комментарий — короткий текст над ними: что происходит и что сделать сегодня. Его может писать один из сервисов ниже или сама программа по шаблону.</p>
+      <div id="wr-setup"></div></div>`;
+    mountWriter($("#wr-setup", setup), "s", true);
+  } else if (n === 2) {
+    setup.innerHTML = `<div class="card-body">${suHead("Где лежат выгрузки?")}
+      <p class="lead">Нужны выгрузки из 1С, другой учётной системы или Excel: <b>продажи по месяцам, остатки на складе и список товаров</b>. Желательно ещё заказы поставщикам, поступления и список поставщиков — без них программа не увидит товары в пути. Подойдут файлы xlsx, csv или zip-архив; колонки распознаются по названиям.</p>
+      <div class="sch-grid"><span class="lbl">Папка</span><div><span class="path">${esc(src.folder || "Входящие")}</span>
+        <div class="quick"><button class="linkbtn" type="button" id="su-open">Открыть папку</button><button class="linkbtn" type="button" id="su-pick">Выбрать другую папку…</button></div></div></div>
+      <p class="small muted" style="max-width:62ch">Положите файлы в папку и нажмите «Проверить ещё раз». Файлы на этом шаге только читаются — ничего не переносится.</p>
+      <div class="btnrow"><button class="btn" type="button" id="su-check">${ic("refresh")}Проверить ещё раз</button><span class="msg" id="su-msg" role="status"></span></div>
+      <div id="su-prev">${suPrevHtml(SU.prev)}</div>
+      <div class="btnrow su-nav"><button class="btn primary" type="button" id="su-next" ${SU.prev && SU.prev.ready ? "" : "disabled"}>Дальше</button><button class="btn ghost" type="button" id="su-back">Назад</button></div></div>`;
+    $("#su-open", setup).onclick = () => api("/api/open", { what: "inbox" }).catch(e => { $("#su-msg", setup).textContent = e.message; });
+    $("#su-pick", setup).onclick = () => { $("#su-msg", setup).textContent = "Откроется окно выбора папки — оно может появиться за браузером.";
+      api("/api/source/pick", {}).then(j => { CTL.st = j.control; SU.prev = null; suStep(2); }).catch(e => { $("#su-msg", setup).textContent = e.message; }); };
+    $("#su-check", setup).onclick = suCheck;
+    $("#su-back", setup).onclick = () => suStep(1);
+    $("#su-next", setup).onclick = () => suStep(3);
+    suBindMaps();
+    suCheck();
+  } else {
+    const p = SU.prev || {}, nf = (p.files || []).length, cur = CTL.st.schedule || {};
+    const tm = cur["время"] || "07:00", dn = (cur["дни"] && cur["дни"].length) ? cur["дни"] : DAYS.slice(0, 5);
+    if (SU.auto === null) SU.auto = cur["включено"] !== false;
+    const dtxt = dn.length === 7 ? "каждый день" : dn.join("") === DAYS.slice(0, 5).join("") ? "по будням" : "по дням: " + dn.join(", ");
+    setup.innerHTML = `<div class="card-body">${suHead("Первый расчёт")}
+      <p class="lead">${nf ? `Программа возьмёт ${N(nf)} ${plural(nf, "файл", "файла", "файлов")} из папки` : "Программа возьмёт имеющуюся выгрузку"} и посчитает, что, сколько и когда заказать. Это занимает около минуты. После расчёта файлы из папки «Входящие» переносятся в «обработано».</p>
+      <button class="sw" type="button" role="switch" id="su-auto" aria-checked="${SU.auto}"><i aria-hidden="true"></i>Обновлять автоматически: ${dtxt} в ${esc(tm)}</button>
+      <p class="small muted" style="max-width:62ch;margin-top:8px">Каждый раз берётся самая свежая выгрузка из папки. Компьютер в это время должен быть включён. Время и дни меняются в «Управлении» → «Расписание».</p>
+      <div class="btnrow su-nav"><button class="btn primary" type="button" id="su-go">${ic("refresh")}Посчитать</button><button class="btn ghost" type="button" id="su-back">Назад</button><span class="msg" id="su-msg" role="status"></span></div></div>`;
+    $("#su-auto", setup).onclick = e => { SU.auto = !SU.auto; e.currentTarget.setAttribute("aria-checked", SU.auto); };
+    $("#su-back", setup).onclick = () => suStep(2);
+    $("#su-go", setup).onclick = () => {
+      const b = $("#su-go", setup), m = $("#su-msg", setup); b.disabled = true; m.className = "msg"; m.textContent = "Запускаю…";
+      const sch = { "включено": SU.auto, "время": tm, "дни": dn, "часовой_пояс": cur["часовой_пояс"] || 3 };
+      api("/api/setup/done", { schedule: sch }).then(j => { setup.close(); openCtl("run"); startedJob(j); })
+        .catch(e => { b.disabled = false; m.className = "msg bad"; m.textContent = e.message; });
+    };
+  }
+  const h = $("#setup-title", setup); if (h) h.focus();
+  setup.scrollTop = 0;
+}
+function openSetup() { if (!setup.open) setup.showModal(); suStep(1); }
+setup.addEventListener("cancel", e => e.preventDefault());  // настройку нельзя закрыть мимо: только пройти или «Пропустить»
+
+
+function secRun(m, gh) {
+  const last = (CTL.st.runs || [])[0];
+  const lastHtml = !last ? `<div class="runline">${ic("clock")}<div>Обновлений ещё не было.</div></div>`
+    : last.ok ? `<div class="runline"><span class="okc">${ic("check")}</span><div>Последнее обновление ${when(last.finished)} — успешно${last.export ? `, взята выгрузка «${esc(last.export)}»` : ", новых выгрузок не было"}.</div></div>`
+    : `<div class="runline"><span class="badc">${ic("alert")}</span><div>Обновление ${when(last.finished)} не удалось. На странице — результат прошлого успешного расчёта.</div></div><div class="err" role="alert">${esc(last.error)}</div>`;
+  const btns = m === "local" ? `<div class="btnrow"><button class="btn primary" type="button" id="run-now">${ic("refresh")}Обновить сейчас</button>
+      <button class="btn ghost" type="button" data-open="inbox">${ic("folder")}Папка с выгрузками</button>
+      <button class="btn ghost" type="button" data-open="orders">${ic("folder")}Папка с заказами</button></div>`
+    : gh ? `<div class="btnrow"><a class="btn primary" href="${gh.run}" target="_blank" rel="noopener">${ic("ext")}Обновить на GitHub</a>
+      <a class="btn ghost" href="${gh.upload}" target="_blank" rel="noopener">${ic("ext")}Загрузить выгрузку</a></div>
+      <p class="small muted" style="max-width:62ch">На странице GitHub нажмите «Run workflow» и через 2–3 минуты обновите эту страницу. Загруженная выгрузка запускает пересчёт сама.</p>` : "";
+  return `<section class="ctl-sec" id="cs-run" aria-labelledby="cs-run-h"><h3 id="cs-run-h">Обновление</h3>
+    <p class="lead">Свежую выгрузку положите в папку с выгрузками — при обновлении она подхватится сама.</p><div id="run-last">${lastHtml}</div>${btns}<div id="job"></div></section>`;
+}
+
+function secData(m) {
+  const ik = CTL.st.intake, src = CTL.st.source || {};
+  return `<section class="ctl-sec" id="cs-data" aria-labelledby="cs-data-h"><h3 id="cs-data-h">Откуда берутся данные</h3>
+    <p class="lead">Подойдёт выгрузка из 1С, другой учётной системы или Excel: файлы xlsx или csv, можно в zip-архиве. Колонки распознаются по названиям. Если какой-то файл не распознан, один раз укажите, что в нём, — дальше такие файлы берутся сами.</p>
+    <div class="sch-grid"><span class="lbl">Папка с выгрузками</span><div><span class="path">${esc(src.folder || "Входящие")}</span>
+      ${m === "local" ? `<div class="quick"><button class="linkbtn" type="button" id="pick-folder">Выбрать другую папку…</button>${src.custom ? `<button class="linkbtn" type="button" id="reset-folder">Вернуть «Входящие»</button>` : ""}</div>` : ""}</div></div>
+    <p class="small muted" style="max-width:62ch">Чтобы не носить файлы руками, попросите администратора 1С настроить «Рассылку отчётов» в эту папку по расписанию: автообновление каждый раз возьмёт свежие данные.</p>
+    ${m === "local" ? `<p class="small"><button class="linkbtn" type="button" id="redo-setup">Пройти первую настройку заново</button></p>` : ""}
+    <span class="msg" id="src-msg" role="status"></span>
+    ${ik ? intakeHtml(ik) : ""}</section>`;
+}
+function intakeHtml(ik) {
+  const rows = (ik.tables || []).map(r => `<tr><td>${r.ok ? `<span class="okc">${ic("check")}</span>` : `<span class="badc">${ic("alert")}</span>`}</td>
+    <td><b>${esc(r.title)}</b><div class="small muted">${esc(r.file || "не найдено")}</div></td><td class="n">${r.rows != null ? N(r.rows) : "—"}</td>
+    <td style="white-space:nowrap">${esc(r.period || "")}</td><td class="small">${(r.notes || []).map(esc).join("<br>")}</td></tr>`).join("");
+  return `<h4>Что пришло в последний раз${ik.when ? ` · ${when(ik.when)}` : ""}</h4>
+    ${ik.export_date && !ik.error ? `<p class="small muted" style="max-width:62ch">Дата выгрузки: ${rd(ik.export_date)} (${esc(ik.export_date_src || "по дате файла")}). Если она другая — добавьте дату в имя файла, например «остатки 13.08.2026.xlsx».</p>` : ""}
+    ${ik.error ? `<div class="err" role="alert" id="ik-err">${esc(ik.error)}</div>` : ""}
+    ${ik.error && ik.suspect && CTL.mode === "local" ? `<div class="btnrow"><button class="btn" type="button" id="accept-partial">Взять как есть</button><span class="small muted">Файл правильный (например, остатки одного склада) — пересчитать на нём.</span></div>` : ""}
+    ${rows ? `<div class="tbl-wrap" tabindex="0" role="region" aria-label="Что загружено"><table><thead><tr><th><span class="sr">Состояние</span></th><th>Данные</th><th class="n">Строк</th><th>Период</th><th>Заметки</th></tr></thead><tbody>${rows}</tbody></table></div>` : ""}
+    ${(ik.unknown || []).map((u, i) => mapHtml(u, i)).join("")}`;
+}
+function mapHtml(u, i, src) {
+  const T = CTL.st.tables || [], ro = CTL.mode !== "local";
+  return `<div class="mapbox" data-u="${i}" data-src="${src || "panel"}"><h4>Не удалось понять: «${esc(u.file)}»${u.sheet ? `, лист «${esc(u.sheet)}»` : ""}</h4>
+    <p class="small muted">${esc(u.reason || "")} Укажите, что это за данные и что означают колонки. Это нужно один раз.</p>
+    <fieldset class="ro" ${ro ? "disabled" : ""}><div class="field wide"><label for="mt-${i}">Что в файле</label><div class="inp"><div class="ibox"><select id="mt-${i}" data-map-table>
+      <option value="">— выберите —</option>${T.map(t => `<option value="${t.key}" ${u.guess === t.key ? "selected" : ""}>${esc(t.title)}</option>`).join("")}<option value="_skip">Этот файл не нужен — пропускать</option></select></div></div></div>
+    <div data-map-cols></div></fieldset>
+    ${ro ? "" : `<div class="btnrow" style="margin-top:12px"><button class="btn primary" type="button" data-map-save>${src === "setup" ? "Запомнить" : "Запомнить и пересчитать"}</button><span class="msg" data-map-msg role="status"></span></div>`}</div>`;
+}
+function mapCols(box) {
+  const u = (box.dataset.src === "setup" ? SU.prev : CTL.st.intake).unknown[+box.dataset.u];
+  const key = $("[data-map-table]", box).value, t = (CTL.st.tables || []).find(x => x.key === key), c = $("[data-map-cols]", box);
+  if (!t) { c.innerHTML = ""; return; }
+  c.innerHTML = u.headers.map((h, j) => `<div class="field"><label for="mc-${box.dataset.u}-${j}">${esc(h)}</label><p class="help">${u.samples && u.samples[j] != null && u.samples[j] !== "" ? "например: " + esc(u.samples[j]) : ""}</p>
+    <div class="inp"><div class="ibox"><select id="mc-${box.dataset.u}-${j}" data-h="${esc(h)}"><option value="">не нужна</option>${t.cols.map(col => `<option value="${col.key}" ${(u.guess_cols || {})[h] === col.key ? "selected" : ""}>${esc(col.title)}${col.required ? " *" : ""}</option>`).join("")}</select></div></div></div>`).join("")
+    + `<p class="small muted">* — без этой колонки расчёт не получится.</p>`;
+}
+
+function secSchedule(m, gh) {
+  const s = CTL.st.schedule || { "включено": false, "время": "07:00", "дни": DAYS.slice(0, 5) }, t = s.task, ro = m !== "local";
+  return `<section class="ctl-sec" id="cs-sch" aria-labelledby="cs-sch-h"><h3 id="cs-sch-h">Расписание</h3>
+    <p class="lead">Когда пересчитывать автоматически. Каждый раз берётся самая свежая выгрузка из папки.</p>
+    <fieldset class="ro" ${ro ? "disabled" : ""}>
+      <button class="sw" type="button" role="switch" id="sch-on" aria-checked="${!!s["включено"]}"><i aria-hidden="true"></i>Обновлять автоматически</button>
+      <div class="sch-grid" id="sch-body">
+        <label for="sch-time">Во сколько</label><div><input class="tinput" type="time" id="sch-time" value="${esc(s["время"])}" step="300"></div>
+        <span class="lbl" id="sch-days-l">По каким дням</span><div><div class="days" role="group" aria-labelledby="sch-days-l">${DAYS.map((d, i) => `<button type="button" data-day="${d}" aria-pressed="${(s["дни"] || []).includes(d)}" aria-label="${DAYS_NOM[i]}">${DAYS_T[i]}</button>`).join("")}</div>
+          <div class="quick"><button class="linkbtn" type="button" data-days="all">Каждый день</button><button class="linkbtn" type="button" data-days="work">По будням</button></div></div>
+      </div></fieldset>
+    <p class="sum" id="sch-sum"></p>
+    ${m === "local" ? `${t && s["включено"] && !t.exists ? `<div class="err">На этом компьютере расписание ещё не включено. Нажмите «Сохранить расписание».</div>` : ""}
+      <p class="small muted" style="max-width:62ch">Компьютер должен быть включён. Если в это время он был выключен, обновление пройдёт сразу после включения.${CTL.st.repo ? " Онлайн-версия на GitHub обновляется по этому же расписанию." : ""}</p>
+      <div class="btnrow"><button class="btn" type="button" id="sch-save">Сохранить расписание</button><span class="msg" id="sch-msg" role="status"></span></div>`
+    : gh ? `<p><a class="btn ghost" href="${gh.edit}" target="_blank" rel="noopener">${ic("ext")}Изменить на GitHub</a></p><p class="small muted">Раздел «расписание» в файле настроек.</p>` : ""}
+  </section>`;
+}
+function schDraft() {
+  return { "включено": $("#sch-on", ctl).getAttribute("aria-checked") === "true", "время": $("#sch-time", ctl).value || "07:00",
+    "дни": [...ctl.querySelectorAll("[data-day][aria-pressed=true]")].map(b => b.dataset.day), "часовой_пояс": (CTL.st.schedule || {})["часовой_пояс"] ?? 3 };
+}
+function updSum() {
+  const s = schDraft(); $("#sch-body", ctl).classList.toggle("off", !s["включено"]);
+  $("#sch-sum", ctl).innerHTML = !s["включено"] ? "Автообновление выключено — обновляйте кнопкой «Обновить сейчас»."
+    : !s["дни"].length ? "Выберите хотя бы один день." : `Следующее обновление — <b>${whenNext(nextRun({ ...s, task: null }))}</b>.`;
+}
+
+const fv = (f, v) => v == null ? "" : f.kind === "pct" ? String(+(v * 100).toFixed(2)) : String(v);
+function fieldHtml(f) {
+  const i = CTL.st.settings.fields.indexOf(f), id = "fld-" + i, v = fv(f, f.value), d = fv(f, f.default);
+  const dTxt = f.kind === "select" ? ((f.options.find(o => o[0] === f.default) || [])[1] || d) : d + (f.unit ? " " + f.unit : "");
+  const attrs = `id="${id}" data-fid="${esc(f.id)}" data-orig="${esc(v)}"`;
+  const input = f.kind === "select" ? `<select ${attrs}>${f.options.map(([val, t]) => `<option value="${esc(val)}" ${val === v ? "selected" : ""}>${esc(t)}</option>`).join("")}</select>`
+    : f.kind === "date" ? `<input type="text" ${attrs} value="${esc(v)}" placeholder="авто или 2026-08-13" autocomplete="off">`
+    : `<input type="number" inputmode="decimal" ${attrs} value="${esc(v)}" min="${f.min}" max="${f.max}" step="${f.step}">${f.unit ? `<span>${esc(f.unit)}</span>` : ""}`;
+  return `<div class="field ${f.kind === "select" || f.kind === "date" ? "wide" : ""} ${v !== d ? "changed" : ""}" data-def="${esc(d)}" data-dtxt="${esc(dTxt)}">
+    <label for="${id}">${esc(f.label)}</label>${f.help ? `<p class="help">${esc(f.help)}</p>` : ""}
+    <div class="inp"><div class="ibox">${input}</div><span class="dflt">${dfltTxt(v, d, dTxt)}</span></div></div>`;
+}
+const dfltTxt = (v, d, dTxt) => v !== d ? `стандартно ${esc(dTxt)} · <button type="button" data-def-btn>вернуть</button>` : "";
+function secSettings(m, gh) {
+  const S_ = CTL.st.settings; if (!S_) return "";
+  const main = S_.fields.filter(f => f.level === "main"), extra = S_.fields.filter(f => f.level === "extra"), cats = Object.entries(S_.categories || {});
+  const grouped = list => { const g = {}; list.forEach(f => (g[f.group] = g[f.group] || []).push(f)); return Object.entries(g).map(([name, fs]) => `<h4>${esc(name)}</h4>${fs.map(fieldHtml).join("")}`).join(""); };
+  const nx = extra.length + (cats.length ? 1 : 0);
+  return `<section class="ctl-sec" id="cs-set" aria-labelledby="cs-set-h"><h3 id="cs-set-h">Правила расчёта</h3>
+    <p class="lead">Главное, что влияет на заказы. После сохранения всё пересчитается за несколько секунд.</p>
+    <fieldset class="ro" id="set-fs" ${m !== "local" ? "disabled" : ""}>${grouped(main)}
+      <details class="adv"><summary>Для специалиста — ещё ${nx} ${plural(nx, "настройка", "настройки", "настроек")}</summary>
+        <p class="lead">Тонкая настройка прогноза и сроков. Если не уверены — оставьте как есть: стандартные значения подобраны по истории продаж.</p>
+        ${grouped(extra)}
+        ${cats.length ? `<h4>Названия категорий</h4>${cats.map(([code, name], i) => `<div class="field"><label for="cat-${i}">${esc(name)}</label><p class="help">Как категория называется на страницах и в файлах заказов.</p><div class="inp"><div class="ibox"><input type="text" id="cat-${i}" data-cat="${esc(code)}" value="${esc(name)}" maxlength="60"></div></div></div>`).join("")}` : ""}
+      </details></fieldset>
+    ${m !== "local" && gh ? `<p style="margin-top:16px"><a class="btn ghost" href="${gh.edit}" target="_blank" rel="noopener">${ic("ext")}Изменить на GitHub</a></p>` : ""}
+    ${m === "local" ? `<p style="margin-top:16px"><button class="linkbtn" type="button" id="set-reset">Вернуть все стандартные значения</button></p>` : ""}
+  </section>`;
+}
+
+function secHolidays(m, gh) {
+  const H_ = CTL.st.holidays; if (!H_) return "";
+  const C = H_.countries || {}, list = H_.country_list || [], ro = m !== "local", today = new Date().toISOString().slice(0, 10);
+  const opt = (sel, extra) => (extra ? `<option value="">${esc(extra)}</option>` : "") + list.map(c => `<option value="${esc(c)}" ${c === sel ? "selected" : ""}>${esc(c)}</option>`).join("");
+  const sups = (D.suppliers || []).filter(s => s.supply_type !== "unknown");
+  const own = sups.filter(s => C[s.supplier_id]).length;
+  const hol = H_.holidays.map((h, i) => {
+    const next = h.dates.find(d => d >= today);
+    return `<div class="field hol" data-hol="${esc(h.name)}">
+      <div><button class="sw" type="button" role="switch" data-hol-on aria-checked="${h.on}"><i aria-hidden="true"></i>${esc(h.name)}</button>
+        <p class="help">${esc(h.countries.join(", "))}${next ? ` · ближайший — ${rd(next)}` : " · дат на будущее нет — добавьте в файл настроек"}. ${esc(h.note || "")}</p></div>
+      <div class="inp"><div class="ibox"><span>за</span><input type="number" inputmode="numeric" min="0" max="60" step="1" value="${h.before}" data-hol-before aria-label="${esc(h.name)}: дней простоя до праздника"><span>дн. до</span></div>
+        <div class="ibox"><input type="number" inputmode="numeric" min="0" max="90" step="1" value="${h.after}" data-hol-after aria-label="${esc(h.name)}: дней простоя с праздника"><span>дн. с праздника</span></div></div></div>`;
+  }).join("");
+  return `<section class="ctl-sec" id="cs-hol" aria-labelledby="cs-hol-h"><h3 id="cs-hol-h">Праздники у поставщиков</h3>
+    <p class="lead">Пока фабрики стоят, заказ не производится. Если праздник попадает между заказом и приходом, срок поставки удлиняется на дни простоя, и заказывать нужно раньше.</p>
+    <fieldset class="ro" id="hol-fs" ${ro ? "disabled" : ""}>
+      <h4>Чьи праздники учитывать</h4>
+      <div class="field wide"><label for="hc-imp">Импортные поставщики</label><div class="inp"><div class="ibox"><select id="hc-imp" data-cty="импорт">${opt(C["импорт"])}</select></div></div></div>
+      <div class="field wide"><label for="hc-loc">Местные поставщики</label><div class="inp"><div class="ibox"><select id="hc-loc" data-cty="местный">${opt(C["местный"])}</select></div></div></div>
+      ${sups.length ? `<details class="adv"><summary>Страна отдельного поставщика${own ? ` — задано у ${own}` : ""}</summary>
+        <p class="lead">Если поставщик не из Китая (например, из Индии или Вьетнама), выберите его страну. Остальные — как у всех своего типа.</p>
+        ${sups.map((s, i) => `<div class="field"><label for="hs-${i}">${esc(s.supplier_id)}</label><p class="help">${s.supply_type === "local" ? "местный" : "импорт"}</p>
+          <div class="inp"><div class="ibox"><select id="hs-${i}" data-cty="${esc(s.supplier_id)}" data-orig="${esc(C[s.supplier_id] || "")}">${opt(C[s.supplier_id], "как у всех " + (s.supply_type === "local" ? "местных" : "импортных"))}</select></div></div></div>`).join("")}
+      </details>` : ""}
+      <h4>Праздники и простой фабрик</h4>${hol}
+    </fieldset>
+    ${m === "local" ? `<p class="small muted" style="max-width:62ch">Даты праздников по лунному календарю меняются каждый год — они записаны в файле настроек до 2030 года. Сверяйте с поставщиком.</p>
+      <div class="btnrow"><button class="btn" type="button" id="hol-save">Сохранить и пересчитать</button><span class="msg" id="hol-msg" role="status"></span></div>`
+      : gh ? `<p><a class="btn ghost" href="${gh.edit}" target="_blank" rel="noopener">${ic("ext")}Изменить на GitHub</a></p><p class="small muted">Разделы «страна поставщика» и «праздник …» в файле настроек.</p>` : ""}
+  </section>`;
+}
+
+function secHistory() {
+  const runs = CTL.st.runs || [];
+  return `<section class="ctl-sec" id="cs-hist" aria-labelledby="cs-hist-h"><h3 id="cs-hist-h">История обновлений</h3>
+  ${runs.length ? `<div class="tbl-wrap" tabindex="0" role="region" aria-label="История обновлений"><table><thead><tr><th>Когда</th><th>Как</th><th>Данные на</th><th>Результат</th><th class="n">Заказать, поз.</th><th class="n">Штук</th></tr></thead><tbody>
+    ${runs.map(r => `<tr><td style="white-space:nowrap">${when(r.finished)}</td><td>${esc(r.trigger_label || "")}</td><td style="white-space:nowrap">${r.as_of ? rdShort(r.as_of) : "—"}</td>
+      <td>${r.ok ? `<span class="st good">${ic("check")}успешно</span>${r.export ? `<div class="small muted">${esc(r.export)}</div>` : ""}` : `<span class="st serious">${ic("alert")}ошибка</span><div class="small">${esc(r.error)}</div>`}</td>
+      <td class="n">${r.counts ? N(r.counts.skus) : "—"}</td><td class="n">${r.counts ? N(r.counts.qty) : "—"}</td></tr>`).join("")}</tbody></table></div>`
+    : `<div class="empty-state">Пока пусто. Здесь появится каждое обновление: когда, кто запустил и чем закончилось.</div>`}</section>`;
+}
+
+/* ход пересчёта */
+let polling = false;
+function renderJob() {
+  renderHead();
+  const j = CTL.job, box = $("#job", ctl), msg = $("#save-msg", ctl), rb = $("#run-now", ctl), running = !!(j && j.running);
+  if (rb) { rb.disabled = running; rb.innerHTML = `${ic("refresh")}${running ? "Обновляется…" : "Обновить сейчас"}`; }
+  ["#run-last", "#ik-err", "#accept-partial"].forEach(s => { const el = $(s, ctl); if (el) (s === "#accept-partial" ? el.parentElement : el).hidden = running; });
+  // после неудачи ошибка уже показана в строке о прошлом обновлении — журнал не дублирует её
+  if (box && j && !running && !j.ok) box.innerHTML = "";
+  else if (box && j && (running || j.ok != null)) box.innerHTML = `<div class="log" role="log">${esc((j.lines || []).join("\n") || "Запускаю…")}</div>${!running && j.ok ? `<p class="okmsg">Готово. Обновляю страницу…</p>` : ""}`;
+  if (msg && j && (running || j.ok != null)) { msg.className = "msg" + (!running && !j.ok ? " bad" : ""); msg.textContent = running ? "Пересчитываю…" : j.ok ? "Готово. Обновляю страницу…" : "Пересчёт не удался — подробности в разделе «Обновление»."; }
+}
+function poll() {
+  if (polling) return; polling = true;
+  const tick = () => api("/api/run").then(j => { CTL.job = j; renderJob(); if (j.running) setTimeout(tick, 700); else { polling = false; j.ok ? setTimeout(() => location.reload(), 800) : refreshState(); } })
+    .catch(() => { polling = false; });
+  tick();
+}
+function refreshState() { return api("/api/state").then(j => { CTL.st = j.control; CTL.job = j.job; renderHead(); if (ctl.open) renderCtl(); }); }
+function startedJob(j) { CTL.job = j.job || { running: true, lines: [] }; if (j.control) CTL.st = j.control; renderJob(); poll(); }
+
+function bindCtl() {
+  const on = (sel, fn) => { const el = $(sel, ctl); if (el) el.onclick = fn; };
+  on(".close", () => ctl.close());
+  on("#accept-partial", () => api("/api/intake/accept", {}).then(startedJob).catch(e => { $("#src-msg", ctl).className = "msg bad"; $("#src-msg", ctl).textContent = e.message; }));
+  on("#run-now", () => api("/api/run", {}).then(startedJob).catch(e => { $("#job", ctl).innerHTML = `<div class="err" role="alert">${esc(e.message)}</div>`; }));
+  ctl.querySelectorAll("[data-open]").forEach(b => b.onclick = () => api("/api/open", { what: b.dataset.open }).catch(e => alert(e.message)));
+  // данные
+  const srcMsg = t => { const m = $("#src-msg", ctl); if (m) m.textContent = t; };
+  on("#pick-folder", () => { srcMsg("Откроется окно выбора папки — оно может появиться за браузером."); api("/api/source/pick", {}).then(j => { CTL.st = j.control; renderCtl(); }).catch(e => srcMsg(e.message)); });
+  on("#redo-setup", () => { ctl.close(); WD.s = null; SU.prev = null; SU.auto = null; openSetup(); });
+  on("#reset-folder", () => api("/api/source", { folder: null }).then(j => { CTL.st = j.control; renderCtl(); }).catch(e => srcMsg(e.message)));
+  ctl.querySelectorAll(".mapbox").forEach(box => {
+    const sel = $("[data-map-table]", box); sel.onchange = () => mapCols(box); mapCols(box);
+    const b = $("[data-map-save]", box); if (!b) return;
+    b.onclick = () => {
+      const u = CTL.st.intake.unknown[+box.dataset.u], table = sel.value, columns = {};
+      const msg = $("[data-map-msg]", box);
+      if (!table) { msg.className = "msg bad"; msg.textContent = "Выберите, что в файле."; return; }
+      box.querySelectorAll("[data-h]").forEach(s => { if (s.value) columns[s.dataset.h] = s.value; });
+      b.disabled = true; msg.className = "msg"; msg.textContent = "Сохраняю…";
+      api("/api/mapping", { sig: u.sig, table, columns, recalc: true }).then(startedJob).catch(e => { b.disabled = false; msg.className = "msg bad"; msg.textContent = e.message; });
+    };
+  });
+  // расписание
+  const sw = $("#sch-on", ctl);
+  if (sw) {
+    sw.onclick = () => { sw.setAttribute("aria-checked", sw.getAttribute("aria-checked") !== "true"); updSum(); };
+    $("#sch-time", ctl).oninput = updSum;
+    ctl.querySelectorAll("[data-day]").forEach(b => b.onclick = () => { b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); updSum(); });
+    ctl.querySelectorAll("[data-days]").forEach(b => b.onclick = () => { const set = b.dataset.days === "all" ? DAYS : DAYS.slice(0, 5); ctl.querySelectorAll("[data-day]").forEach(x => x.setAttribute("aria-pressed", set.includes(x.dataset.day))); updSum(); });
+    updSum();
+  }
+  on("#sch-save", () => {
+    const m = $("#sch-msg", ctl), b = $("#sch-save", ctl); b.disabled = true; m.className = "msg"; m.textContent = "Сохраняю…";
+    api("/api/schedule", schDraft()).then(j => { CTL.st = j.control; renderCtl(); const m2 = $("#sch-msg", ctl); if (m2) { m2.className = "okmsg"; m2.textContent = "Сохранено."; } })
+      .catch(e => { b.disabled = false; m.className = "msg bad"; m.textContent = e.message; });
+  });
+  // праздники
+  ctl.querySelectorAll("[data-hol-on]").forEach(b => b.onclick = () => b.setAttribute("aria-checked", b.getAttribute("aria-checked") !== "true"));
+  on("#hol-save", () => {
+    const m = $("#hol-msg", ctl), b = $("#hol-save", ctl), countries = {};
+    const holidays = [...ctl.querySelectorAll("[data-hol]")].map(f => ({ name: f.dataset.hol, on: $("[data-hol-on]", f).getAttribute("aria-checked") === "true",
+      before: $("[data-hol-before]", f).value, after: $("[data-hol-after]", f).value }));
+    ctl.querySelectorAll("[data-cty]").forEach(s => { if (s.dataset.orig == null || s.value !== s.dataset.orig) countries[s.dataset.cty] = s.value; });
+    b.disabled = true; m.className = "msg"; m.textContent = "Сохраняю…";
+    api("/api/holidays", { holidays, countries, recalc: true }).then(startedJob).catch(e => { b.disabled = false; m.className = "msg bad"; m.textContent = e.message; });
+  });
+  // правила расчёта
+  const fs = $("#set-fs", ctl), bar = $("#ctl-save", ctl);
+  if (fs && bar) {
+    const dirty = () => [...ctl.querySelectorAll("[data-fid]")].some(el => el.value !== el.dataset.orig) || [...ctl.querySelectorAll("[data-cat]")].some(el => el.value !== el.defaultValue);
+    const upd = el => { const f = el.closest(".field"); if (f && f.dataset.def != null && el.dataset.fid) { const ch = el.value !== f.dataset.def; f.classList.toggle("changed", ch); $(".dflt", f).innerHTML = dfltTxt(el.value, f.dataset.def, f.dataset.dtxt); } bar.hidden = !dirty(); };
+    fs.addEventListener("input", e => upd(e.target));
+    fs.addEventListener("change", e => upd(e.target));
+    fs.addEventListener("click", e => { const b = e.target.closest("[data-def-btn]"); if (!b) return; const f = b.closest(".field"), el = $("[data-fid]", f); el.value = f.dataset.def; upd(el); el.focus(); });
+    on("#set-cancel", () => { ctl.querySelectorAll("[data-fid]").forEach(el => { el.value = el.dataset.orig; upd(el); }); ctl.querySelectorAll("[data-cat]").forEach(el => { el.value = el.defaultValue; }); bar.hidden = true; });
+    on("#set-save", () => {
+      const msg = $("#save-msg", ctl), values = {}, categories = {};
+      for (const el of ctl.querySelectorAll("[data-fid]")) {
+        if (el.validity && el.validity.badInput) { msg.className = "msg bad"; msg.textContent = `«${el.closest(".field").querySelector("label").textContent}»: нужно число.`; el.focus(); return; }
+        if (el.value !== el.dataset.orig) values[el.dataset.fid] = el.value;
+      }
+      ctl.querySelectorAll("[data-cat]").forEach(el => { if (el.value !== el.defaultValue) categories[el.dataset.cat] = el.value; });
+      $("#set-save", ctl).disabled = true; msg.className = "msg"; msg.textContent = "Сохраняю…";
+      api("/api/settings", { values, categories, recalc: true }).then(startedJob)
+        .catch(e => { $("#set-save", ctl).disabled = false; msg.className = "msg bad"; msg.textContent = e.message; });
+    });
+    let armed = 0;
+    on("#set-reset", () => {
+      const b = $("#set-reset", ctl);
+      if (Date.now() - armed > 4000) { armed = Date.now(); b.textContent = "Точно вернуть все стандартные? Нажмите ещё раз"; setTimeout(() => { if (b.isConnected) b.textContent = "Вернуть все стандартные значения"; }, 4000); return; }
+      api("/api/settings/reset", { recalc: true }).then(startedJob).catch(e => { b.textContent = e.message; });
+    });
+  }
+}
+
+function mergeSent(server) { if (!server) return; sent = { ...server }; try { localStorage.setItem(SENT_KEY, JSON.stringify(sent)); } catch (e) {} renderSuppliers(supAll); }
+renderHead();
+if (/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) {
+  api("/api/state").then(j => { CTL.mode = "local"; CTL.st = j.control; CTL.job = j.job; renderHead(); mergeSent(j.control.sent); if (j.job && j.job.running) poll();
+    else if (j.control.setup && !j.control.setup.done) { const sb = $("#stale-bar"); if (sb) sb.hidden = true; openSetup(); } }).catch(() => {});
+}
+
+showTab((location.hash || "#calendar").slice(1), false);
+addEventListener("hashchange", () => showTab(location.hash.slice(1), true));
+})();
+</script>
+</body>
+</html>

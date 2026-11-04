@@ -1,0 +1,46 @@
+# Ежедневный пересчёт и публикация дашборда на GitHub Pages (папка docs/).
+# Запускается: каждый день в 07:00 по Москве; когда во «Входящие» загружена новая выгрузка
+# или изменён config.toml; вручную — Actions → «Обновить анализ» → Run workflow.
+name: Обновить анализ
+
+on:
+  schedule:
+    - cron: "0 4 * * *"          # 04:00 UTC = 07:00 МСК
+  push:
+    branches: [main, master]
+    paths: ["Входящие/**", "config.toml", "procurement/**", "dashboard/**", "prompts/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-analysis
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - run: python -m pytest -q
+      - name: Пересчитать
+        env:
+          PYTHONIOENCODING: utf-8
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # необязательно
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}         # необязательно: ChatGPT, DeepSeek, YandexGPT…
+          GIGACHAT_AUTH_KEY: ${{ secrets.GIGACHAT_AUTH_KEY }}   # необязательно
+        run: python -m procurement run --no-open
+      - name: Сохранить результат
+        run: |
+          git config user.name "procurement-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A docs data/raw outputs/history outputs/runs.jsonl Входящие
+          if git diff --cached --quiet; then echo "Без изменений"; exit 0; fi
+          git commit -m "Анализ обновлён $(date -u +'%Y-%m-%d %H:%M') UTC"
+          git push
