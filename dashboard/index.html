@@ -338,6 +338,14 @@ details.adv{margin-top:22px;border-top:2px solid var(--ink)}
 details.adv>summary{cursor:pointer;padding:14px 0;font-weight:700;font-size:16px}
 details.adv>.lead{color:var(--ink-2);font-size:14px;margin:0 0 6px}
 fieldset.ro{border:0;padding:0;margin:0;min-width:0}
+/* онлайн-версия: поля только для чтения — и выглядят так */
+fieldset.ro[disabled] .ibox{background:var(--leaf-2);border-style:dashed}
+fieldset.ro[disabled] select,fieldset.ro[disabled] input{color:var(--ink-2);cursor:not-allowed;appearance:none;-webkit-appearance:none;opacity:1}
+fieldset.ro[disabled] .sw{cursor:not-allowed;opacity:.65}
+fieldset.ro[disabled] .dflt button{pointer-events:none}
+.ro-note{border-left:6px solid var(--ink);background:var(--leaf-2);padding:12px 16px;margin:4px 0 18px;font-size:15px;line-height:1.45}
+.ro-note b{display:block;margin-bottom:2px}
+.ro-note a{color:var(--ink);font-weight:600;text-underline-offset:3px}
 .ctl-save{position:sticky;bottom:0;background:var(--ground);border-top:2px solid var(--ink);padding:12px 24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;z-index:2}
 .ctl-save .msg{font-size:14px;color:var(--ink-2)}
 
@@ -1043,7 +1051,7 @@ ctl.addEventListener("click", e => { if (e.target === ctl) ctl.close(); });
 
 function ghLinks() {
   const r = CTL.st.repo; if (!r) return null;
-  return { run: `${r.url}/actions/workflows/daily.yml`, upload: `${r.url}/upload/${r.branch}/${encodeURIComponent("Входящие")}`, edit: `${r.url}/edit/${r.branch}/config.toml` };
+  return { run: `${r.url}/actions/workflows/daily.yml`, upload: `${r.url}/upload/${r.branch}/${encodeURIComponent("Входящие")}`, edit: `${r.url}/edit/${r.branch}/config.toml`, sched: `${r.url}/edit/${r.branch}/.github/workflows/daily.yml` };
 }
 
 function renderCtl() {
@@ -1290,11 +1298,19 @@ function mapCols(box) {
     + `<p class="small muted">* — без этой колонки расчёт не получится.</p>`;
 }
 
+// Почему поля не нажимаются: страница открыта не из программы на компьютере закупщика
+function roNote(m, gh, what) {
+  if (m === "local") return "";
+  const how = m === "online"
+    ? `Это онлайн-версия: она показывает текущие значения. Изменить их можно в программе на компьютере закупщика (ярлык «Открыть закупки»)${gh ? ` или <a href="${gh[what] || gh.edit}" target="_blank" rel="noopener">на GitHub</a>` : ""}.`
+    : "Страница открыта как файл. Чтобы менять настройки, откройте её ярлыком «Открыть закупки».";
+  return `<div class="ro-note" role="note"><b>Здесь только просмотр</b>${how}</div>`;
+}
 function secSchedule(m, gh) {
   const s = CTL.st.schedule || { "включено": false, "время": "07:00", "дни": DAYS.slice(0, 5) }, t = s.task, ro = m !== "local";
   return `<section class="ctl-sec" id="cs-sch" aria-labelledby="cs-sch-h"><h3 id="cs-sch-h">Расписание</h3>
     <p class="lead">Когда пересчитывать автоматически. Каждый раз берётся самая свежая выгрузка из папки.</p>
-    <fieldset class="ro" ${ro ? "disabled" : ""}>
+    ${roNote(m, gh, "sched")}<fieldset class="ro" ${ro ? "disabled" : ""}>
       <button class="sw" type="button" role="switch" id="sch-on" aria-checked="${!!s["включено"]}"><i aria-hidden="true"></i>Обновлять автоматически</button>
       <div class="sch-grid" id="sch-body">
         <label for="sch-time">Во сколько</label><div><input class="tinput" type="time" id="sch-time" value="${esc(s["время"])}" step="300"></div>
@@ -1338,7 +1354,7 @@ function secSettings(m, gh) {
   const nx = extra.length + (cats.length ? 1 : 0);
   return `<section class="ctl-sec" id="cs-set" aria-labelledby="cs-set-h"><h3 id="cs-set-h">Правила расчёта</h3>
     <p class="lead">Главное, что влияет на заказы. После сохранения всё пересчитается за несколько секунд.</p>
-    <fieldset class="ro" id="set-fs" ${m !== "local" ? "disabled" : ""}>${grouped(main)}
+    ${roNote(m, gh, "edit")}<fieldset class="ro" id="set-fs" ${m !== "local" ? "disabled" : ""}>${grouped(main)}
       <details class="adv"><summary>Для специалиста — ещё ${nx} ${plural(nx, "настройка", "настройки", "настроек")}</summary>
         <p class="lead">Тонкая настройка прогноза и сроков. Если не уверены — оставьте как есть: стандартные значения подобраны по истории продаж.</p>
         ${grouped(extra)}
@@ -1365,7 +1381,7 @@ function secHolidays(m, gh) {
   }).join("");
   return `<section class="ctl-sec" id="cs-hol" aria-labelledby="cs-hol-h"><h3 id="cs-hol-h">Праздники у поставщиков</h3>
     <p class="lead">Пока фабрики стоят, заказ не производится. Если праздник попадает между заказом и приходом, срок поставки удлиняется на дни простоя, и заказывать нужно раньше.</p>
-    <fieldset class="ro" id="hol-fs" ${ro ? "disabled" : ""}>
+    ${roNote(m, gh, "edit")}<fieldset class="ro" id="hol-fs" ${ro ? "disabled" : ""}>
       <h4>Чьи праздники учитывать</h4>
       <div class="field wide"><label for="hc-imp">Импортные поставщики</label><div class="inp"><div class="ibox"><select id="hc-imp" data-cty="импорт">${opt(C["импорт"])}</select></div></div></div>
       <div class="field wide"><label for="hc-loc">Местные поставщики</label><div class="inp"><div class="ibox"><select id="hc-loc" data-cty="местный">${opt(C["местный"])}</select></div></div></div>
